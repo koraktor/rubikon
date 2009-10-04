@@ -80,7 +80,7 @@ module Rubikon
           actions_to_call[arg_sym] = []
           last_action = arg_sym
         elsif last_action.nil?
-          raise "unknown argument"
+          raise UnknownArgumentError.new(arg)
         else
           actions_to_call[last_action] << arg
         end
