@@ -22,6 +22,10 @@ class RubikonTestApp < Rubikon::Application
     'default action'
   end
 
+  action 'object_id' do
+    object_id
+  end
+
   action 'noarg' do
     'noarg action'
   end
@@ -49,10 +53,9 @@ class RubikonTests < Test::Unit::TestCase
       @app = RubikonTestApp.instance
     end
 
-    # TODO
-    #should 'run it\'s instance for called methods' do
-    #  assert @app.run.inspect == RubikonTestApp.run
-    #end
+    should 'run it\'s instance for called methods' do
+      assert_equal @app.run(%w{--object_id}), RubikonTestApp.run(%w{--object_id})
+    end
   end
 
   context 'A Rubikon application' do
