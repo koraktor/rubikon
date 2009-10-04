@@ -24,16 +24,26 @@ module Rubikon
 
     # Run this action's code block
     def run(*args)
-      raise MissingArgument if args.size != @block.arity
-      raise TypeError unless check_args(args)
+      if (@block.arity >= 0 and args.size < @block.arity) or (@block.arity < 0 and args.size < -@block.arity - 1)
+        raise MissingArgumentError
+      elsif @block.arity >= 0 and args.size > @block.arity
+        raise OddArgumentError
+      end
+      raise TypeError unless check_argument_types(args)
       @block[*args]
     end
 
     private
 
-    def check_args(args)
-      args.each do |arg|
-        return false unless arg.is_a? @param_type
+    def check_argument_types(args)
+      if @param_type.is_a? Array
+        args.each_index do |i|
+          return false unless args[i].is_a? @param_type[i]
+        end
+      else
+        args.each do |arg|
+          return false unless arg.is_a? @param_type
+        end
       end
     end
 
