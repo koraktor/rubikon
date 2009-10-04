@@ -36,6 +36,9 @@ class RubikonTestApp < Rubikon::Application
   action 'noarg2' do
   end
 
+  action 'number_string', :param_type => [String, Numeric] do |s,n|
+  end
+
   action 'string', :param_type => String do |s|
   end
 
@@ -71,24 +74,38 @@ class RubikonTests < Test::Unit::TestCase
     end
 
     should 'run it\'s default action without arguments' do
-      assert_equal 'default action', RubikonTestApp.run
+      result = RubikonTestApp.run
+      assert_equal 1, result.size
+      assert_equal 'default action', result.first
     end
 
     should 'run with a mandatory argument' do
       result = RubikonTestApp.run(%w{--required arg})
-      assert_equal result.size, 1
+      assert_equal 1, result.size
       assert_equal 'required argument was arg', result.first
     end
 
-    should "don't run without a mandatory argument" do
-      assert_raise Rubikon::MissingArgument do
+    should 'not run without a mandatory argument' do
+      assert_raise Rubikon::MissingArgumentError do
         RubikonTestApp.run(%w{--required})
       end
     end
 
-    should "require an argument type if it has been defined" do
+    should 'require an argument type if it has been defined' do
       assert_raise TypeError do
         RubikonTestApp.run(['--string', 6])
+      end
+      assert_raise TypeError do
+        RubikonTestApp.run(['--number_string', 6, 6])
+      end
+    end
+
+    should 'throw an exception when using an unknown argument' do
+      assert_raise Rubikon::UnknownArgumentError do
+        RubikonTestApp.run(%{--unknown})
+      end
+      assert_raise Rubikon::UnknownArgumentError do
+        RubikonTestApp.run(%{--noarg --unknown})
       end
     end
 
