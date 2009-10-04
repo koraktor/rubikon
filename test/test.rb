@@ -6,8 +6,9 @@
 # Copyright (c) 2009, Sebastian Staudt
 
 require 'rubygems'
-require 'redgreen'
 require 'shoulda'
+
+begin require 'redgreen' rescue LoadError end
 
 require File.join(File.dirname(__FILE__), '..', 'lib', 'rubikon')
 
