@@ -14,14 +14,17 @@ module Rubikon
   version = YAML.load_file(File.join(File.dirname(__FILE__), '..', '..', 'VERSION.yml'))
   VERSION = "#{version[:major]}.#{version[:minor]}.#{version[:patch]}"
 
+  # The main class of Rubikon
   class Application
 
     include Singleton
 
+    # Sets an application setting
     def set(setting, value)
       @settings[setting.to_sym] = value
     end
 
+    # Initialize with default settings
     def initialize
       @actions  = {}
       @default  = nil
@@ -53,10 +56,13 @@ module Rubikon
 
     private
 
+    # This is used for convinience. Method calls on the class itself are
+    # relayed to the singleton instance
     def self.method_missing(method_name, *args, &block)
       instance.send(method_name, *args, &block)
     end
 
+    # Define an application action
     def action(name, options = {}, &block)
       raise "No block given" unless block_given?
 
@@ -66,10 +72,12 @@ module Rubikon
       @actions[key.to_sym] = Action.new(name, options, block)
     end
 
+    # Define the default action of the application
     def default(options = {}, &block)
       @default = Action.new(:default, options, block)
     end
 
+    # Parses the options used when starting the application
     def parse_options(options)
       actions_to_call = {}
       last_action     = nil
