@@ -39,7 +39,7 @@ class RubikonTestApp < Rubikon::Application
   action 'noarg2' do
   end
 
-  action 'number_string', :param_type => [String, Numeric] do |s,n|
+  action 'number_string', :param_type => [Numeric, String] do |s,n|
   end
 
   action 'string', :param_type => String do |s|
@@ -101,6 +101,9 @@ class RubikonTests < Test::Unit::TestCase
       assert_raise TypeError do
         RubikonTestApp.run(['--number_string', 6, 6])
       end
+      assert_raise TypeError do
+        RubikonTestApp.run(['--number_string', 'test' , 6])
+      end
     end
 
     should 'throw an exception when calling an action with the wrong number of
@@ -120,6 +123,9 @@ class RubikonTests < Test::Unit::TestCase
       assert_raise Rubikon::UnknownOptionError do
         RubikonTestApp.run(%{--noarg --unknown})
       end
+      assert_raise Rubikon::UnknownOptionError do
+        RubikonTestApp.run(%{--unknown --noarg})
+      end
     end
 
     should 'be able to handle user input' do
@@ -127,9 +133,11 @@ class RubikonTests < Test::Unit::TestCase
       @ostream = Tempfile.new('rubikon_test_ostream', 'tmp')
       RubikonTestApp.set :istream, @istream
       RubikonTestApp.set :ostream, @ostream
-      @istream << 'test'
+
+      input_string = 'test'
+      @istream << input_string
       @istream.rewind
-      assert_equal %w{test}, RubikonTestApp.run(%{--input})
+      assert_equal [input_string], RubikonTestApp.run(%{--input})
       @ostream.rewind
       assert_equal 'input: ', @ostream.gets
       @istream.delete
