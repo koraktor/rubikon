@@ -12,6 +12,7 @@ test_files = Dir.glob(File.join('test', '**', '*.rb'))
 
 task :default => :test
 
+# Test task
 Rake::TestTask.new do |t|
   t.libs << 'lib'
   t.test_files = test_files
