@@ -26,8 +26,6 @@ module Rubikon
     def run(*args)
       if (@block.arity >= 0 and args.size < @block.arity) or (@block.arity < 0 and args.size < -@block.arity - 1)
         raise MissingArgumentError
-      elsif @block.arity >= 0 and args.size > @block.arity
-        raise OddArgumentError
       end
       raise TypeError unless check_argument_types(args)
       @block[*args]
