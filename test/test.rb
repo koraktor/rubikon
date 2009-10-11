@@ -129,8 +129,8 @@ class RubikonTests < Test::Unit::TestCase
     end
 
     should 'be able to handle user input' do
-      @istream = Tempfile.new('rubikon_test_istream', 'tmp')
-      @ostream = Tempfile.new('rubikon_test_ostream', 'tmp')
+      @istream = Tempfile.new 'rubikon_test_istream'
+      @ostream = Tempfile.new 'rubikon_test_ostream'
       RubikonTestApp.set :istream, @istream
       RubikonTestApp.set :ostream, @ostream
 
