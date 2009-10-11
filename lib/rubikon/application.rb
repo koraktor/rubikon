@@ -28,10 +28,14 @@ module Rubikon
     def initialize
       @actions  = {}
       @default  = nil
-      @settings = {}
-      @settings[:dashed_options] = true
-      @settings[:help_banner]    = "Usage: #{$0}"
-      @settings[:name]           = self.class.to_s
+      @settings = {
+        :dashed_options => true,
+        :help_banner    => "Usage: #{$0}",
+        :istream        => $stdin,
+        :name           => self.class.to_s,
+        :ostream        => $stdout,
+        :raise_errors   => false
+      }
     end
 
     # Run this application
@@ -75,6 +79,13 @@ module Rubikon
     # Define the default action of the application
     def default(options = {}, &block)
       @default = Action.new(:default, options, block)
+    end
+
+    def input(prompt = '')
+      unless prompt.empty?
+        @settings[:ostream] << "#{prompt}: "
+      end
+      @settings[:istream].gets
     end
 
     # Parses the options used when starting the application
