@@ -38,6 +38,11 @@ module Rubikon
       }
     end
 
+    # Output a line of text using IO#puts of the output stream
+    def puts(text)
+      @settings[:ostream].puts text
+    end
+
     # Run this application
     def run(args = ARGV)
       begin
@@ -64,6 +69,11 @@ module Rubikon
     # relayed to the singleton instance
     def self.method_missing(method_name, *args, &block)
       instance.send(method_name, *args, &block)
+    end
+
+    # Relay puts to the instance method
+    def self.puts(text)
+      instance.puts text
     end
 
     # Define an application action
