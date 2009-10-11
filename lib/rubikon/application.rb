@@ -39,7 +39,7 @@ module Rubikon
         if !@default.nil? and args.empty?
           action_results << @default.run
         else
-          parse_args(args).each do |action, args|
+          parse_options(args).each do |action, args|
             action_results << @actions[action].run(*args)
           end
         end
@@ -70,19 +70,19 @@ module Rubikon
       @default = Action.new(:default, options, block)
     end
 
-    def parse_args(args)
+    def parse_options(options)
       actions_to_call = {}
       last_action     = nil
 
-      args.each do |arg|
-        arg_sym = arg.to_sym
-        if @actions.keys.include? arg_sym
-          actions_to_call[arg_sym] = []
-          last_action = arg_sym
+      options.each do |option|
+        option_sym = option.to_sym
+        if @actions.keys.include? option_sym
+          actions_to_call[option_sym] = []
+          last_action = option_sym
         elsif last_action.nil?
-          raise UnknownArgumentError.new(arg)
+          raise UnknownOptionError.new(option)
         else
-          actions_to_call[last_action] << arg
+          actions_to_call[last_action] << option
         end
       end
 

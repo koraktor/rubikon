@@ -73,13 +73,13 @@ class RubikonTests < Test::Unit::TestCase
       end
     end
 
-    should 'run it\'s default action without arguments' do
+    should 'run it\'s default action without options' do
       result = RubikonTestApp.run
       assert_equal 1, result.size
       assert_equal 'default action', result.first
     end
 
-    should 'run with a mandatory argument' do
+    should 'run with a mandatory option' do
       result = RubikonTestApp.run(%w{--required arg})
       assert_equal 1, result.size
       assert_equal 'required argument was arg', result.first
@@ -100,11 +100,11 @@ class RubikonTests < Test::Unit::TestCase
       end
     end
 
-    should 'throw an exception when using an unknown argument' do
-      assert_raise Rubikon::UnknownArgumentError do
+    should 'throw an exception when using an unknown option' do
+      assert_raise Rubikon::UnknownOptionError do
         RubikonTestApp.run(%{--unknown})
       end
-      assert_raise Rubikon::UnknownArgumentError do
+      assert_raise Rubikon::UnknownOptionError do
         RubikonTestApp.run(%{--noarg --unknown})
       end
     end

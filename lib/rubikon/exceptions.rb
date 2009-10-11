@@ -3,10 +3,10 @@ module Rubikon
   class MissingArgumentError < ArgumentError
   end
 
-  class OddArgumentError < ArgumentError
+  class MissingOptionError < ArgumentError
   end
 
-  class UnknownArgumentError < ArgumentError
+  class UnknownOptionError < ArgumentError
 
     def initialize(arg)
       super "Unknown argument: #{arg}"
