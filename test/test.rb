@@ -8,7 +8,7 @@
 require 'rubygems'
 require 'shoulda'
 
-begin require 'redgreen' rescue LoadError end
+begin require 'redgreen'; rescue LoadError; end
 
 require File.join(File.dirname(__FILE__), '..', 'lib', 'rubikon')
 
