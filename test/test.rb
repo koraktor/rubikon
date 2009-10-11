@@ -7,6 +7,7 @@
 
 require 'rubygems'
 require 'shoulda'
+require 'tempfile'
 
 begin require 'redgreen'; rescue LoadError; end
 
@@ -20,6 +21,10 @@ class RubikonTestApp < Rubikon::Application
 
   default do
     'default action'
+  end
+
+  action 'input' do
+    input 'input'
   end
 
   action 'object_id' do
@@ -117,6 +122,20 @@ class RubikonTests < Test::Unit::TestCase
       assert_raise Rubikon::UnknownOptionError do
         RubikonTestApp.run(%{--noarg --unknown})
       end
+    end
+
+    should 'be able to handle user input' do
+      @istream = Tempfile.new('rubikon_test_istream', 'tmp')
+      @ostream = Tempfile.new('rubikon_test_ostream', 'tmp')
+      RubikonTestApp.set :istream, @istream
+      RubikonTestApp.set :ostream, @ostream
+      @istream << 'test'
+      @istream.rewind
+      assert_equal %w{test}, RubikonTestApp.run(%{--input})
+      @ostream.rewind
+      assert_equal 'input: ', @ostream.gets
+      @istream.delete
+      @ostream.delete
     end
 
   end
