@@ -19,6 +19,13 @@ module Rubikon
 
     include Singleton
 
+    attr_reader :settings
+
+    # Returns whether this application should be ran automatically
+    def self.autorun?
+      instance.settings[:autorun] || false
+    end
+
     # Sets an application setting
     def set(setting, value)
       @settings[setting.to_sym] = value
@@ -29,6 +36,7 @@ module Rubikon
       @actions  = {}
       @default  = nil
       @settings = {
+        :autorun        => true,
         :dashed_options => true,
         :help_banner    => "Usage: #{$0}",
         :istream        => $stdin,
@@ -64,6 +72,12 @@ module Rubikon
     end
 
     private
+
+    # Enables autorun functionality
+    def self.inherited(subclass)
+      Singleton.__init__(subclass)
+      at_exit { subclass.run if subclass.autorun? }
+    end
 
     # This is used for convinience. Method calls on the class itself are
     # relayed to the singleton instance

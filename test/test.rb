@@ -13,8 +13,8 @@ require File.join(File.dirname(__FILE__), '..', 'lib', 'rubikon')
 
 class RubikonTestApp < Rubikon::Application
 
+  set :autorun, false
   set :name, 'Rubikon test application'
-
   set :raise_errors, true
 
   default do
