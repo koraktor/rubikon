@@ -91,8 +91,10 @@ module Rubikon
       @default = Action.new(:default, options, block)
     end
 
+    # Prompts the user for input
+    # If +prompt+ is not empty this will display a prompt using +prompt.to_s+.
     def input(prompt = '')
-      unless prompt.empty?
+      unless prompt.to_s.empty?
         @settings[:ostream] << "#{prompt}: "
       end
       @settings[:istream].gets
