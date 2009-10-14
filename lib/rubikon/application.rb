@@ -154,7 +154,7 @@ module Rubikon
       unless prompt.to_s.empty?
         @settings[:ostream] << "#{prompt}: "
       end
-      @settings[:istream].gets
+      @settings[:istream].gets[0..-2]
     end
 
     # Parses the options used when starting the application
