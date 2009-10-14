@@ -14,7 +14,8 @@ module Rubikon
   version = YAML.load_file(File.join(File.dirname(__FILE__), '..', '..', 'VERSION.yml'))
   VERSION = "#{version[:major]}.#{version[:minor]}.#{version[:patch]}"
 
-  # The main class of Rubikon
+  # The main class of Rubikon. Let your own application class inherit from this
+  # one.
   class Application
 
     include Singleton
@@ -27,6 +28,9 @@ module Rubikon
     end
 
     # Sets an application setting
+    #
+    # +setting+:: The name of the setting to change, will be symbolized first.
+    # +value+::   The value the setting should be changed to
     def set(setting, value)
       @settings[setting.to_sym] = value
     end
@@ -46,12 +50,17 @@ module Rubikon
       }
     end
 
-    # Output a line of text using IO#puts of the output stream
+    # Output a line of text using +IO#puts+ of the output stream
+    #
+    # +text+:: The text to write into the output stream
     def puts(text)
       @settings[:ostream].puts text
     end
 
     # Run this application
+    #
+    # +args+:: The command line arguments that should be given to the
+    #          application as options
     def run(args = ARGV)
       begin
         action_results = []
@@ -73,24 +82,47 @@ module Rubikon
 
     private
 
-    # Enables autorun functionality
+    # Enables autorun functionality using <tt>Kernel#at_exit</tt>
+    #
+    # +subclass+:: The subclass inheriting from Application. This is the user's
+    #              application.
+    #
+    # <em>This is called automatically when subclassing Application.</em>
     def self.inherited(subclass)
       Singleton.__init__(subclass)
       at_exit { subclass.run if subclass.autorun? }
     end
 
     # This is used for convinience. Method calls on the class itself are
-    # relayed to the singleton instance
+    # relayed to the singleton instance.
+    #
+    # +method_name+:: The name of the method being called
+    # +args+::        Any arguments that are given to the method
+    # +block+::       A block that may be given to the method
+    #
+    # <em>This is called automatically when calling methods on the class.</em>
     def self.method_missing(method_name, *args, &block)
       instance.send(method_name, *args, &block)
     end
 
     # Relay puts to the instance method
+    #
+    # This is used to hide <tt>Kernel#puts</tt> so that the Application's output IO
+    # object is used for printing text
+    #
+    # +text+:: The text to write into the output stream
     def self.puts(text)
       instance.puts text
     end
 
-    # Define an application action
+    # Define an Application Action
+    #
+    # +name+::    The name of the action. Used as an option parameter.
+    # +options+:: A Hash of options to be used on the created Action
+    #             (default: <tt>{}</tt>)
+    # +block+::   A block containing the code that should be executed when this
+    #             Action is called, i.e. when the Application is called with
+    #             the associated option parameter
     def action(name, options = {}, &block)
       raise "No block given" unless block_given?
 
@@ -100,13 +132,24 @@ module Rubikon
       @actions[key.to_sym] = Action.new(name, options, block)
     end
 
-    # Define the default action of the application
+    # Define the default Action of the Application
+    #
+    # +options+:: A Hash of options to be used on the created Action
+    #             (default: <tt>{}</tt>)
+    # +block+::   A block containing the code that should be executed when this
+    #             Action is called, i.e. when no option is given to the
+    #             Application
     def default(options = {}, &block)
       @default = Action.new(:default, options, block)
     end
 
     # Prompts the user for input
-    # If +prompt+ is not empty this will display a prompt using +prompt.to_s+.
+    #
+    # If +prompt+ is not empty this will display a prompt using
+    # <tt>prompt.to_s</tt>.
+    #
+    # +prompt+:: A String or other Object responding to +to_s+ used for
+    #            displaying a prompt to the user (default: <tt>''</tt>)
     def input(prompt = '')
       unless prompt.to_s.empty?
         @settings[:ostream] << "#{prompt}: "
@@ -115,6 +158,9 @@ module Rubikon
     end
 
     # Parses the options used when starting the application
+    #
+    # +options+:: An Array of Strings that should be used as application
+    #             options. Usually +ARGV+ is used for this.
     def parse_options(options)
       actions_to_call = {}
       last_action     = nil
