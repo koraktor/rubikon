@@ -135,7 +135,7 @@ class RubikonTests < Test::Unit::TestCase
       RubikonTestApp.set :ostream, @ostream
 
       input_string = 'test'
-      @istream << input_string
+      @istream << input_string + "\n"
       @istream.rewind
       assert_equal [input_string], RubikonTestApp.run(%{--input})
       @ostream.rewind
