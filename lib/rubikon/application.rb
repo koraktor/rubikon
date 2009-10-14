@@ -73,8 +73,12 @@ module Rubikon
           end
         end
       rescue
-        raise $! if @settings[:raise_errors]
-        exit 1
+        if @settings[:raise_errors]
+          raise $!
+        else
+          puts "Error:\n    #{$!.message}"
+          exit 1
+        end
       end
 
       action_results
