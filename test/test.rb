@@ -106,7 +106,7 @@ class RubikonTests < Test::Unit::TestCase
       end
     end
 
-    should 'throw an exception when calling an action with the wrong number of
+    should 'raise an exception when calling an action with the wrong number of
             arguments' do
       assert_raise Rubikon::MissingArgumentError do
         RubikonTestApp.run(%{--string})
@@ -116,7 +116,7 @@ class RubikonTests < Test::Unit::TestCase
       end
     end
 
-    should 'throw an exception when using an unknown option' do
+    should 'raise an exception when using an unknown option' do
       assert_raise Rubikon::UnknownOptionError do
         RubikonTestApp.run(%{--unknown})
       end

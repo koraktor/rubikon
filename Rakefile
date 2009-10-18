@@ -5,7 +5,6 @@
 
 require 'rake/rdoctask'
 require 'rake/testtask'
-require 'jeweler'
 
 src_files = Dir.glob(File.join('lib', '**', '*.rb'))
 test_files = Dir.glob(File.join('test', '**', '*.rb'))
@@ -19,18 +18,23 @@ Rake::TestTask.new do |t|
   t.verbose = true
 end
 
-# Gem specification
-Jeweler::Tasks.new do |s|
-  s.authors = ['Sebastian Staudt']
-  s.email = 'koraktor@gmail.com'
-  s.description = 'A simple to use, yet powerful Ruby framework for building console-based applications.'
-  s.date = Time.now
-  s.homepage = 'http://koraktor.github.com/rubikon'
-  s.name = s.rubyforge_project = 'rubikon'
-  s.summary = 'Rubikon - A Ruby console app framework'
+begin
+  require 'jeweler'
+  # Gem specification
+  Jeweler::Tasks.new do |gem|
+    gem.authors = ['Sebastian Staudt']
+    gem.email = 'koraktor@gmail.com'
+    gem.description = 'A simple to use, yet powerful Ruby framework for building console-based applications.'
+    gem.date = Time.now
+    gem.homepage = 'http://koraktor.github.com/rubikon'
+    gem.name = gem.rubyforge_project = 'rubikon'
+    gem.summary = 'Rubikon - A Ruby console app framework'
 
-  s.files = %w(README.md Rakefile LICENSE VERSION.yml) + src_files + test_files
-  s.rdoc_options = ['--all', '--inline-source', '--line-numbers', '--charset=utf-8', '--webcvs=http://github.com/koraktor/rubikon/blob/master/ruby/%s']
+    gem.files = %w(README.md Rakefile LICENSE VERSION.yml) + src_files + test_files
+    gem.rdoc_options = ['--all', '--inline-source', '--line-numbers', '--charset=utf-8', '--webcvs=http://github.com/koraktor/rubikon/blob/master/%s']
+  end
+rescue LoadError
+  puts "You need Jeweler to build the gem. Install it using `gem install jeweler`."
 end
 
 # Create a rake task +:rdoc+ to build the documentation
@@ -39,8 +43,8 @@ Rake::RDocTask.new do |rdoc|
   rdoc.title = 'Rubikon - API documentation'
   rdoc.rdoc_files.include ['lib/**/*.rb', 'test/**/*.rb', 'LICENSE', 'README.md']
   rdoc.main = 'README.md'
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.options = ['--all', '--inline-source', '--line-numbers', '--charset=utf-8', '--webcvs=http://github.com/koraktor/rubikon/blob/master/ruby/%s']
+  rdoc.rdoc_dir = 'doc'
+  rdoc.options = ['--all', '--inline-source', '--line-numbers', '--charset=utf-8', '--webcvs=http://github.com/koraktor/rubikon/blob/master/%s']
 end
 
 # Task for cleaning documentation and package directories
