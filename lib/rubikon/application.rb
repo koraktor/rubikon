@@ -133,7 +133,7 @@ module Rubikon
       key = name
       key = "--#{key}" if @settings[:dashed_options]
 
-      @actions[key.to_sym] = Action.new(name, options, block)
+      @actions[key.to_sym] = Action.new(name, options, &block)
     end
 
     # Define the default Action of the Application
@@ -144,7 +144,7 @@ module Rubikon
     #             Action is called, i.e. when no option is given to the
     #             Application
     def default(options = {}, &block)
-      @default = Action.new(:default, options, block)
+      @default = Action.new(:default, options, &block)
     end
 
     # Prompts the user for input

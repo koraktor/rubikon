@@ -5,6 +5,9 @@
 
 module Rubikon
 
+  class BlockMissingError < ArgumentError
+  end
+
   class MissingArgumentError < ArgumentError
   end
 
