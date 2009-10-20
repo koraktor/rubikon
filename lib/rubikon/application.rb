@@ -184,6 +184,31 @@ module Rubikon
       actions_to_call
     end
 
+    # Displays a throbber while the given block is executed
+    #
+    # At the moment using output in the +block+ is not recommended as it will
+    # break the throbber
+    def throbber(&block)
+      spinner = '-\|/'
+
+      code_thread = Thread.new { block.call }
+
+      throbber_thread = Thread.new {
+        i = 0
+        putc 32
+        while code_thread.alive?
+          @settings[:ostream].putc 8
+          @settings[:ostream].putc spinner[i]
+          @settings[:ostream].flush
+          i = (i + 1) % 4
+          sleep 0.25
+        end
+      }
+
+      code_thread.join
+      throbber_thread.join
+    end
+
   end
 
 end
