@@ -195,7 +195,7 @@ module Rubikon
 
       throbber_thread = Thread.new {
         i = 0
-        putc 32
+        @settings[:ostream].putc 32
         while code_thread.alive?
           @settings[:ostream].putc 8
           @settings[:ostream].putc spinner[i]
