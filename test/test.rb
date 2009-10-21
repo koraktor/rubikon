@@ -95,13 +95,13 @@ class RubikonTests < Test::Unit::TestCase
     end
 
     should 'require an argument type if it has been defined' do
-      assert_raise TypeError do
+      assert_raise Rubikon::ArgumentTypeError do
         RubikonTestApp.run(['--string', 6])
       end
-      assert_raise TypeError do
-        RubikonTestApp.run(['--number_string', 6, 6])
+      assert_raise Rubikon::ArgumentTypeError do
+        RubikonTestApp.run(['--number_string', 6, 7])
       end
-      assert_raise TypeError do
+      assert_raise Rubikon::ArgumentTypeError do
         RubikonTestApp.run(['--number_string', 'test' , 6])
       end
     end

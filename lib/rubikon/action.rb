@@ -42,7 +42,7 @@ module Rubikon
       if (@block.arity >= 0 and args.size < @block.arity) or (@block.arity < 0 and args.size < -@block.arity - 1)
         raise MissingArgumentError
       end
-      raise TypeError unless check_argument_types(args)
+      raise Rubikon::ArgumentTypeError unless check_argument_types(args)
       @block[*args]
     end
 
