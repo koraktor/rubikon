@@ -1,7 +1,16 @@
 #!/usr/bin/env ruby
+#
+# This code is free software; you can redistribute it and/or modify it under the
+# terms of the new BSD License.
+#
+# Copyright (c) 2009, Sebastian Staudt
 
-require 'rubygems'
-require 'rubikon'
+if ENV['RUBIKON_DEV']
+  require File.join(File.dirname(__FILE__), '..', 'lib', 'rubikon')
+else
+  require 'rubygems'
+  require 'rubikon'
+end
 
 # A simple Hello World application
 class HelloWorld < Rubikon::Application
