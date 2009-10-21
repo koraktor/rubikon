@@ -84,6 +84,7 @@ module Rubikon
           raise $!
         else
           puts "Error:\n    #{$!.message}"
+          puts "    #{$!.backtrace.join("\n    ")}" if $DEBUG
           exit 1
         end
       end
