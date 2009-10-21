@@ -69,6 +69,8 @@ class RubikonTests < Test::Unit::TestCase
 
     setup do
       @app = RubikonTestApp
+      @ostream = Tempfile.new 'rubikon_test_ostream'
+      @app.set :ostream, @ostream
     end
 
     should 'be a singleton' do
@@ -131,9 +133,7 @@ class RubikonTests < Test::Unit::TestCase
 
     should 'be able to handle user input' do
       @istream = Tempfile.new 'rubikon_test_istream'
-      @ostream = Tempfile.new 'rubikon_test_ostream'
       RubikonTestApp.set :istream, @istream
-      RubikonTestApp.set :ostream, @ostream
 
       input_string = 'test'
       @istream << input_string + "\n"
@@ -142,17 +142,16 @@ class RubikonTests < Test::Unit::TestCase
       @ostream.rewind
       assert_equal 'input: ', @ostream.gets
       @istream.delete
-      @ostream.delete
     end
 
     should 'write output to the user given output stream' do
-      @ostream = Tempfile.new 'rubikon_test_ostream'
-      RubikonTestApp.set :ostream, @ostream
-
       input_string = 'test'
       RubikonTestApp.run(['--output', input_string])
       @ostream.rewind
       assert_equal "#{input_string}\n", @ostream.gets
+    end
+
+    teardown do
       @ostream.delete
     end
 
