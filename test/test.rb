@@ -50,6 +50,12 @@ class RubikonTestApp < Rubikon::Application
     "required argument was #{what}"
   end
 
+  action 'throbber' do
+    throbber do
+      sleep 1
+    end
+  end
+
 end
 
 class RubikonTests < Test::Unit::TestCase
@@ -149,6 +155,12 @@ class RubikonTests < Test::Unit::TestCase
       RubikonTestApp.run(['--output', input_string])
       @ostream.rewind
       assert_equal "#{input_string}\n", @ostream.gets
+    end
+
+    should 'provide a throbber' do
+      RubikonTestApp.run(%w{--throbber})
+      @ostream.rewind
+      assert_equal " \b-\b\\\b|\b/", @ostream.gets
     end
 
     teardown do
