@@ -46,9 +46,6 @@ class RubikonTestApp < Rubikon::Application
     puts s
   end
 
-  action 'string', :param_type => String do |s|
-  end
-
   action 'required' do |what|
     "required argument was #{what}"
   end
@@ -100,7 +97,7 @@ class RubikonTests < Test::Unit::TestCase
 
     should 'require an argument type if it has been defined' do
       assert_raise Rubikon::ArgumentTypeError do
-        RubikonTestApp.run(['--string', 6])
+        RubikonTestApp.run(['--output', 6])
       end
       assert_raise Rubikon::ArgumentTypeError do
         RubikonTestApp.run(['--number_string', 6, 7])
@@ -113,10 +110,10 @@ class RubikonTests < Test::Unit::TestCase
     should 'raise an exception when calling an action with the wrong number of
             arguments' do
       assert_raise Rubikon::MissingArgumentError do
-        RubikonTestApp.run(%w{--string})
+        RubikonTestApp.run(%w{--output})
       end
       assert_raise ArgumentError do
-        RubikonTestApp.run(%w{--string}, 'test', 3)
+        RubikonTestApp.run(%w{--output}, 'test', 3)
       end
     end
 
