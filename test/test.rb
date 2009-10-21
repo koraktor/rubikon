@@ -75,7 +75,7 @@ class RubikonTests < Test::Unit::TestCase
 
     setup do
       @app = RubikonTestApp
-      @ostream = Tempfile.new 'rubikon_test_ostream'
+      @ostream = StringIO.new
       @app.set :ostream, @ostream
     end
 
@@ -138,7 +138,7 @@ class RubikonTests < Test::Unit::TestCase
     end
 
     should 'be able to handle user input' do
-      @istream = Tempfile.new 'rubikon_test_istream'
+      @istream = StringIO.new
       RubikonTestApp.set :istream, @istream
 
       input_string = 'test'
@@ -147,7 +147,6 @@ class RubikonTests < Test::Unit::TestCase
       assert_equal [input_string], RubikonTestApp.run(%w{--input})
       @ostream.rewind
       assert_equal 'input: ', @ostream.gets
-      @istream.delete
     end
 
     should 'write output to the user given output stream' do
@@ -161,10 +160,6 @@ class RubikonTests < Test::Unit::TestCase
       RubikonTestApp.run(%w{--throbber})
       @ostream.rewind
       assert_equal " \b-\b\\\b|\b/", @ostream.gets
-    end
-
-    teardown do
-      @ostream.delete
     end
 
   end
