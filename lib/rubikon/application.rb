@@ -50,11 +50,18 @@ module Rubikon
       }
     end
 
+    # Output a character using +IO#putc+ of the output stream
+    #
+    # +char+:: The character to write into the output stream
+    def putc(char)
+      ostream.putc char
+    end
+
     # Output a line of text using +IO#puts+ of the output stream
     #
     # +text+:: The text to write into the output stream
     def puts(text)
-      @settings[:ostream].puts text
+      ostream.puts text
     end
 
     # Run this application
@@ -109,6 +116,16 @@ module Rubikon
       instance.send(method_name, *args, &block)
     end
 
+    # Relay putc to the instance method
+    #
+    # This is used to hide <tt>Kernel#putc</tt> so that the Application's output IO
+    # object is used for printing text
+    #
+    # +text+:: The text to write into the output stream
+    def self.putc(text)
+      instance.putc text
+    end
+
     # Relay puts to the instance method
     #
     # This is used to hide <tt>Kernel#puts</tt> so that the Application's output IO
@@ -156,7 +173,7 @@ module Rubikon
     #            displaying a prompt to the user (default: <tt>''</tt>)
     def input(prompt = '')
       unless prompt.to_s.empty?
-        @settings[:ostream] << "#{prompt}: "
+        ostream << "#{prompt}: "
       end
       @settings[:istream].gets[0..-2]
     end
@@ -184,10 +201,15 @@ module Rubikon
       actions_to_call
     end
 
+    # Convenience method for accessing the user-defined output stream
+    def ostream
+      @settings[:ostream]
+    end
+
     # Displays a throbber while the given block is executed
     #
-    # At the moment using output in the +block+ is not recommended as it will
-    # break the throbber
+    # <em>At the moment using output in the +block+ is not recommended as it
+    # will break the throbber</em>
     def throbber(&block)
       spinner = '-\|/'
 
@@ -195,11 +217,11 @@ module Rubikon
 
       throbber_thread = Thread.new {
         i = 0
-        @settings[:ostream].putc 32
+        putc 32
         while code_thread.alive?
-          @settings[:ostream].putc 8
-          @settings[:ostream].putc spinner[i]
-          @settings[:ostream].flush
+          putc 8
+          putc spinner[i]
+          ostream.flush
           i = (i + 1) % 4
           sleep 0.25
         end
