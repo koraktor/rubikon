@@ -109,22 +109,22 @@ class RubikonTests < Test::Unit::TestCase
     should 'raise an exception when calling an action with the wrong number of
             arguments' do
       assert_raise Rubikon::MissingArgumentError do
-        RubikonTestApp.run(%{--string})
+        RubikonTestApp.run(%w{--string})
       end
       assert_raise ArgumentError do
-        RubikonTestApp.run(%{--string}, 'test', 3)
+        RubikonTestApp.run(%w{--string}, 'test', 3)
       end
     end
 
     should 'raise an exception when using an unknown option' do
       assert_raise Rubikon::UnknownOptionError do
-        RubikonTestApp.run(%{--unknown})
+        RubikonTestApp.run(%w{--unknown})
       end
       assert_raise Rubikon::UnknownOptionError do
-        RubikonTestApp.run(%{--noarg --unknown})
+        RubikonTestApp.run(%w{--noarg --unknown})
       end
       assert_raise Rubikon::UnknownOptionError do
-        RubikonTestApp.run(%{--unknown --noarg})
+        RubikonTestApp.run(%w{--unknown --noarg})
       end
     end
 
@@ -137,7 +137,7 @@ class RubikonTests < Test::Unit::TestCase
       input_string = 'test'
       @istream << input_string + "\n"
       @istream.rewind
-      assert_equal [input_string], RubikonTestApp.run(%{--input})
+      assert_equal [input_string], RubikonTestApp.run(%w{--input})
       @ostream.rewind
       assert_equal 'input: ', @ostream.gets
       @istream.delete
