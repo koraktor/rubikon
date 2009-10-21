@@ -159,7 +159,7 @@ class RubikonTests < Test::Unit::TestCase
     should 'provide a throbber' do
       RubikonTestApp.run(%w{--throbber})
       @ostream.rewind
-      assert_equal " \b-\b\\\b|\b/", @ostream.gets
+      assert_equal " \b-\b\\\b|\b/\b", @ostream.gets
     end
 
   end

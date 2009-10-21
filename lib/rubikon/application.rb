@@ -226,6 +226,7 @@ module Rubikon
           i = (i + 1) % 4
           sleep 0.25
         end
+        putc 8
       }
 
       code_thread.join
