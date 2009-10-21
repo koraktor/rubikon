@@ -42,6 +42,10 @@ class RubikonTestApp < Rubikon::Application
   action 'number_string', :param_type => [Numeric, String] do |s,n|
   end
 
+  action 'output', :param_type => String do |s|
+    puts s
+  end
+
   action 'string', :param_type => String do |s|
   end
 
@@ -141,6 +145,17 @@ class RubikonTests < Test::Unit::TestCase
       @ostream.rewind
       assert_equal 'input: ', @ostream.gets
       @istream.delete
+      @ostream.delete
+    end
+
+    should 'write output to the user given output stream' do
+      @ostream = Tempfile.new 'rubikon_test_ostream'
+      RubikonTestApp.set :ostream, @ostream
+
+      input_string = 'test'
+      RubikonTestApp.run(['--output', input_string])
+      @ostream.rewind
+      assert_equal "#{input_string}\n", @ostream.gets
       @ostream.delete
     end
 
