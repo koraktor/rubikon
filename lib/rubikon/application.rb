@@ -174,7 +174,7 @@ module Rubikon
         if @actions.keys.include? option_sym
           actions_to_call[option_sym] = []
           last_action = option_sym
-        elsif last_action.nil?
+        elsif last_action.nil? || (@settings[:dashed_options] && option[0..1] == '--')
           raise UnknownOptionError.new(option)
         else
           actions_to_call[last_action] << option
