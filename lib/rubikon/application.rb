@@ -31,11 +31,22 @@ module Rubikon
     #
     # +setting+:: The name of the setting to change, will be symbolized first.
     # +value+::   The value the setting should be changed to
+    #
+    # Available settings
+    # +autorun+::        If true, let the application run as soon as its class
+    #                    is defined
+    # +dashed_options+:: If true, each option is prepended with a double-dash
+    #                    (<tt>-</tt><tt>-</tt>)
+    # +help_banner+::    Defines a banner for the help message (<em>unused</em>)
+    # +istream+::        Defines an input stream to use
+    # +name+::           Defines the name of the application
+    # +ostream+::        Defines an output stream to use
+    # +raise_errors+::   If true, raise errors, otherwise fail gracefully
     def set(setting, value)
       @settings[setting.to_sym] = value
     end
 
-    # Initialize with default settings
+    # Initialize with default settings (see set for more detail)
     def initialize
       @actions  = {}
       @default  = nil
@@ -172,6 +183,16 @@ module Rubikon
     #
     # +prompt+:: A String or other Object responding to +to_s+ used for
     #            displaying a prompt to the user (default: <tt>''</tt>)
+    #
+    # Example:
+    #
+    #  action 'interactive' do
+    #    # Display a prompt "Please type something: "
+    #    user_provided_value = input 'Please type something'
+    #
+    #    # Do something with the data
+    #    ...
+    #  end
     def input(prompt = '')
       unless prompt.to_s.empty?
         ostream << "#{prompt}: "
@@ -208,6 +229,15 @@ module Rubikon
     end
 
     # Displays a throbber while the given block is executed
+    #
+    # Example:
+    #
+    #  action 'slow' do
+    #    throbber do
+    #      # Add some long running code here
+    #      ...
+    #    end
+    #  end
     #
     # <em>At the moment using output in the +block+ is not recommended as it
     # will break the throbber</em>
