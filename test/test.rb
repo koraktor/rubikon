@@ -44,6 +44,8 @@ class RubikonTestApp < Rubikon::Application
 
   action 'output', :param_type => String do |s|
     puts s
+    put s
+    putc s[0]
   end
 
   action 'required' do |what|
@@ -154,6 +156,7 @@ class RubikonTests < Test::Unit::TestCase
       RubikonTestApp.run(['--output', input_string])
       @ostream.rewind
       assert_equal "#{input_string}\n", @ostream.gets
+      assert_equal "#{input_string}#{input_string[0].chr}", @ostream.gets
     end
 
     should 'provide a throbber' do
