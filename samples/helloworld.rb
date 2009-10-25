@@ -33,9 +33,11 @@ class HelloWorld < Rubikon::Application
 
   # Sleep for 5 seconds while displaying a throbber
   action '--throbber' do
+    put 'Greeting the whole world takes some time... '
     throbber do
       sleep 5
     end
+    puts 'done.'
   end
 
   # A standard Ruby class method for greeting
