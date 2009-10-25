@@ -61,6 +61,14 @@ module Rubikon
       }
     end
 
+    # Output text using +IO#<<+ of the output stream
+    #
+    # +text+:: The text to write into the output stream
+    def put(text)
+      ostream << text
+      ostream.flush
+    end
+
     # Output a character using +IO#putc+ of the output stream
     #
     # +char+:: The character to write into the output stream
