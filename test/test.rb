@@ -87,6 +87,21 @@ class RubikonTests < Test::Unit::TestCase
       end
     end
 
+    should 'exit gracefully' do
+      unknown = '--unknown'
+      RubikonTestApp.set :raise_errors, false
+      begin
+        RubikonTestApp.run([unknown])
+      rescue Exception => e
+      end
+      assert_instance_of SystemExit, e
+      assert_equal 1, e.status
+      @ostream.rewind
+      assert_equal "Error:\n", @ostream.gets
+      assert_equal "    Unknown argument: #{unknown}\n", @ostream.gets
+      RubikonTestApp.set :raise_errors, true
+    end
+
     should 'run it\'s default action without options' do
       result = RubikonTestApp.run
       assert_equal 1, result.size
