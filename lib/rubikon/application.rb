@@ -140,8 +140,8 @@ module Rubikon
 
     # Relay putc to the instance method
     #
-    # This is used to hide <tt>Kernel#putc</tt> so that the Application's output IO
-    # object is used for printing text
+    # This is used to hide <tt>Kernel#putc</tt> so that the Application's
+    # output IO object is used for printing text
     #
     # +text+:: The text to write into the output stream
     def self.putc(text)
@@ -150,8 +150,8 @@ module Rubikon
 
     # Relay puts to the instance method
     #
-    # This is used to hide <tt>Kernel#puts</tt> so that the Application's output IO
-    # object is used for printing text
+    # This is used to hide <tt>Kernel#puts</tt> so that the Application's
+    # output IO object is used for printing text
     #
     # +text+:: The text to write into the output stream
     def self.puts(text)
@@ -284,7 +284,7 @@ module Rubikon
 
       code_thread = Thread.new { block.call }
 
-      throbber_thread = Thread.new {
+      throbber_thread = Thread.new do
         i = 0
         putc 32
         while code_thread.alive?
@@ -295,7 +295,7 @@ module Rubikon
           sleep 0.25
         end
         putc 8
-      }
+      end
 
       code_thread.join
       throbber_thread.join

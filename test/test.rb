@@ -5,64 +5,13 @@
 
 require 'rubygems'
 require 'shoulda'
-require 'tempfile'
 
 begin require 'redgreen'; rescue LoadError; end
 
-require File.join(File.dirname(__FILE__), '..', 'lib', 'rubikon')
-
-class RubikonTestApp < Rubikon::Application
-
-  set :autorun, false
-  set :name, 'Rubikon test application'
-  set :raise_errors, true
-
-  default do
-    'default action'
-  end
-
-  action 'input' do
-    input 'input'
-  end
-
-  action_alias :alias_before, :object_id
-
-  action 'object_id' do
-    object_id
-  end
-
-  action 'noarg' do
-    'noarg action'
-  end
-
-  action 'realnoarg' do ||
-  end
-
-  action 'noarg2' do
-  end
-
-  action 'number_string', :param_type => [Numeric, String] do |s,n|
-  end
-
-  action 'output', :param_type => String do |s|
-    puts s
-    put s
-    putc s[0]
-  end
-
-  action 'required' do |what|
-    "required argument was #{what}"
-  end
-
-  action 'throbber' do
-    throbber do
-      sleep 1
-    end
-  end
-
-  action_alias :alias_after, :object_id
-
-end
+$: << File.join(File.dirname(__FILE__), '..', 'lib')
+$: << File.dirname(__FILE__)
+require 'rubikon'
+require 'testapp'
 
 class RubikonTests < Test::Unit::TestCase
 
@@ -87,15 +36,15 @@ class RubikonTests < Test::Unit::TestCase
 
     should 'be a singleton' do
       assert_raise NoMethodError do
-        RubikonTestApp.new.object_id
+        RubikonTestApp.new
       end
     end
 
     should 'exit gracefully' do
       unknown = '--unknown'
-      RubikonTestApp.set :raise_errors, false
+      @app.set :raise_errors, false
       begin
-        RubikonTestApp.run([unknown])
+        @app.run([unknown])
       rescue Exception => e
       end
       assert_instance_of SystemExit, e
@@ -103,90 +52,90 @@ class RubikonTests < Test::Unit::TestCase
       @ostream.rewind
       assert_equal "Error:\n", @ostream.gets
       assert_equal "    Unknown argument: #{unknown}\n", @ostream.gets
-      RubikonTestApp.set :raise_errors, true
+      @app.set :raise_errors, true
     end
 
     should 'run it\'s default action without options' do
-      result = RubikonTestApp.run
+      result = @app.run
       assert_equal 1, result.size
       assert_equal 'default action', result.first
     end
 
     should 'run with a mandatory option' do
-      result = RubikonTestApp.run(%w{--required arg})
+      result = @app.run(%w{--required arg})
       assert_equal 1, result.size
       assert_equal 'required argument was arg', result.first
     end
 
     should 'not run without a mandatory argument' do
       assert_raise Rubikon::MissingArgumentError do
-        RubikonTestApp.run(%w{--required})
+        @app.run(%w{--required})
       end
     end
 
     should 'require an argument type if it has been defined' do
       assert_raise Rubikon::ArgumentTypeError do
-        RubikonTestApp.run(['--output', 6])
+        @app.run(['--output', 6])
       end
       assert_raise Rubikon::ArgumentTypeError do
-        RubikonTestApp.run(['--number_string', 6, 7])
+        @app.run(['--number_string', 6, 7])
       end
       assert_raise Rubikon::ArgumentTypeError do
-        RubikonTestApp.run(['--number_string', 'test' , 6])
+        @app.run(['--number_string', 'test' , 6])
       end
     end
 
     should 'raise an exception when calling an action with the wrong number of
             arguments' do
       assert_raise Rubikon::MissingArgumentError do
-        RubikonTestApp.run(%w{--output})
+        @app.run(%w{--output})
       end
       assert_raise ArgumentError do
-        RubikonTestApp.run(%w{--output}, 'test', 3)
+        @app.run(%w{--output}, 'test', 3)
       end
     end
 
     should 'raise an exception when using an unknown option' do
       assert_raise Rubikon::UnknownOptionError do
-        RubikonTestApp.run(%w{--unknown})
+        @app.run(%w{--unknown})
       end
       assert_raise Rubikon::UnknownOptionError do
-        RubikonTestApp.run(%w{--noarg --unknown})
+        @app.run(%w{--noarg --unknown})
       end
       assert_raise Rubikon::UnknownOptionError do
-        RubikonTestApp.run(%w{--unknown --noarg})
+        @app.run(%w{--unknown --noarg})
       end
     end
 
     should 'be able to handle user input' do
       @istream = StringIO.new
-      RubikonTestApp.set :istream, @istream
+      @app.set :istream, @istream
 
       input_string = 'test'
-      @istream << input_string + "\n"
+      @istream.puts input_string
       @istream.rewind
-      assert_equal [input_string], RubikonTestApp.run(%w{--input})
+      assert_equal [input_string], @app.run(%w{--input})
       @ostream.rewind
       assert_equal 'input: ', @ostream.gets
     end
 
     should 'write output to the user given output stream' do
       input_string = 'test'
-      RubikonTestApp.run(['--output', input_string])
+      @app.run(['--output', input_string])
       @ostream.rewind
       assert_equal "#{input_string}\n", @ostream.gets
       assert_equal "#{input_string}#{input_string[0].chr}", @ostream.gets
     end
 
     should 'provide a throbber' do
-      RubikonTestApp.run(%w{--throbber})
+      @app.run(%w{--throbber})
       @ostream.rewind
       assert_equal " \b-\b\\\b|\b/\b", @ostream.gets
     end
 
     should 'have working action aliases' do
-      assert_equal RubikonTestApp.run(%w{--alias_before}), RubikonTestApp.run(%w{--object_id})
-      assert_equal RubikonTestApp.run(%w{--alias_after}), RubikonTestApp.run(%w{--object_id})
+      assert_equal @app.run(%w{--alias_before}), @app.run(%w{--object_id})
+      assert_equal @app.run(%w{--alias_after}), @app.run(%w{--object_id})
     end
 
   end
