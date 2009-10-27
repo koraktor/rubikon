@@ -49,6 +49,7 @@ module Rubikon
     # Initialize with default settings (see set for more detail)
     def initialize
       @actions  = {}
+      @aliases  = {}
       @default  = nil
       @settings = {
         :autorun        => true,
@@ -89,6 +90,7 @@ module Rubikon
     #          application as options
     def run(args = ARGV)
       begin
+        assign_aliases unless @aliases.empty?
         action_results = []
 
         if !@default.nil? and args.empty?
@@ -171,6 +173,34 @@ module Rubikon
       key = "--#{key}" if @settings[:dashed_options]
 
       @actions[key.to_sym] = Action.new(name, options, &block)
+    end
+
+    # Define an alias to an Action
+    #
+    # +name+::   The name of the alias
+    # +action+:: The name of the Action that should be aliased
+    def action_alias(name, action)
+      @aliases[name.to_sym] = action.to_sym
+    end
+
+    # Assigns aliases to the actions that have been defined using action_alias
+    #
+    # Clears the aliases Hash afterwards
+    def assign_aliases
+      @aliases.each do |key, action|
+        if @settings[:dashed_options]
+          action = "--#{action}".to_sym
+          key = "--#{key}".to_sym
+        end
+
+        unless @actions.key? key
+          @actions[key] = @actions[action]
+        else
+          warn "There's already an action called \"#{key}\"."
+        end
+      end
+
+      @aliases = {}
     end
 
     # Define the default Action of the Application

@@ -25,6 +25,8 @@ class RubikonTestApp < Rubikon::Application
     input 'input'
   end
 
+  action_alias :alias_before, :object_id
+
   action 'object_id' do
     object_id
   end
@@ -57,6 +59,8 @@ class RubikonTestApp < Rubikon::Application
       sleep 1
     end
   end
+
+  action_alias :alias_after, :object_id
 
 end
 
@@ -178,6 +182,11 @@ class RubikonTests < Test::Unit::TestCase
       RubikonTestApp.run(%w{--throbber})
       @ostream.rewind
       assert_equal " \b-\b\\\b|\b/\b", @ostream.gets
+    end
+
+    should 'have working action aliases' do
+      assert_equal RubikonTestApp.run(%w{--alias_before}), RubikonTestApp.run(%w{--object_id})
+      assert_equal RubikonTestApp.run(%w{--alias_after}), RubikonTestApp.run(%w{--object_id})
     end
 
   end
