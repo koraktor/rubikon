@@ -48,9 +48,16 @@ class RubikonTestApp < Rubikon::Application
     "required argument was #{what}"
   end
 
-  action 'throbber' do
+  action 'throbber' do |*output|
     throbber do
-      sleep 1
+      if output[0]
+        sleep 0.5
+        puts 'don\'t'
+        sleep 0.5
+        puts 'break'
+      else
+        sleep 1
+      end
     end
   end
 

@@ -281,24 +281,29 @@ module Rubikon
     # will break the throbber</em>
     def throbber(&block)
       spinner = '-\|/'
+      current_ostream = ostream
+      @settings[:ostream] = StringIO.new
 
       code_thread = Thread.new { block.call }
 
       throbber_thread = Thread.new do
         i = 0
-        putc 32
+        current_ostream.putc 32
         while code_thread.alive?
-          putc 8
-          putc spinner[i]
-          ostream.flush
+          current_ostream.putc 8
+          current_ostream.putc spinner[i]
+          current_ostream.flush
           i = (i + 1) % 4
           sleep 0.25
         end
-        putc 8
+        current_ostream.putc 8
       end
 
       code_thread.join
       throbber_thread.join
+
+      current_ostream << ostream.string
+      @settings[:ostream] = current_ostream
     end
 
   end

@@ -130,7 +130,10 @@ class RubikonTests < Test::Unit::TestCase
     should 'provide a throbber' do
       @app.run(%w{--throbber})
       @ostream.rewind
-      assert_equal " \b-\b\\\b|\b/\b", @ostream.gets
+      assert_equal " \b-\b\\\b|\b/\b", @ostream.string
+      @app.run(%w{--throbber true})
+      @ostream.rewind
+      assert_equal " \b-\b\\\b|\b/\bdon't\nbreak\n", @ostream.string
     end
 
     should 'have working action aliases' do
