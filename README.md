@@ -4,7 +4,7 @@ Rubikon
 Rubikon is a simple to use, yet powerful Ruby framework for building
 console-based applications.
 
-### Installation
+## Installation
 
 You can install Rubikon using RubyGem. This is the easiest way of installing
 and recommended for most users.
@@ -30,7 +30,7 @@ Creating a Rubikon application is as simple as creating a Ruby class:
 If you save this code in a file called `myapp.rb` you can run it using
 `ruby myapp.rb`. Or you could even add a *shebang* (`#!/usr/bin/env ruby`) to
 the top of the file and make it executable. You would then be able to run it
-even more easy by typing `./myapp.rb`.
+even more easily by typing `./myapp.rb`.
 
 Now go on and define what your application should do when the user runs it.
 This is done using `default`:
