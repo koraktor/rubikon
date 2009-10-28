@@ -27,25 +27,6 @@ module Rubikon
       instance.settings[:autorun] || false
     end
 
-    # Sets an application setting
-    #
-    # +setting+:: The name of the setting to change, will be symbolized first.
-    # +value+::   The value the setting should be changed to
-    #
-    # Available settings
-    # +autorun+::        If true, let the application run as soon as its class
-    #                    is defined
-    # +dashed_options+:: If true, each option is prepended with a double-dash
-    #                    (<tt>-</tt><tt>-</tt>)
-    # +help_banner+::    Defines a banner for the help message (<em>unused</em>)
-    # +istream+::        Defines an input stream to use
-    # +name+::           Defines the name of the application
-    # +ostream+::        Defines an output stream to use
-    # +raise_errors+::   If true, raise errors, otherwise fail gracefully
-    def set(setting, value)
-      @settings[setting.to_sym] = value
-    end
-
     # Initialize with default settings (see set for more detail)
     def initialize
       @actions  = {}
@@ -60,6 +41,75 @@ module Rubikon
         :ostream        => $stdout,
         :raise_errors   => false
       }
+    end
+
+    # Define an Application Action
+    #
+    # +name+::    The name of the action. Used as an option parameter.
+    # +options+:: A Hash of options to be used on the created Action
+    #             (default: <tt>{}</tt>)
+    # +block+::   A block containing the code that should be executed when this
+    #             Action is called, i.e. when the Application is called with
+    #             the associated option parameter
+    def action(name, options = {}, &block)
+      raise "No block given" unless block_given?
+
+      key = name
+      key = "--#{key}" if @settings[:dashed_options]
+
+      @actions[key.to_sym] = Action.new(name, options, &block)
+    end
+
+    # Define an alias to an Action
+    #
+    # +name+::   The name of the alias
+    # +action+:: The name of the Action that should be aliased
+    #
+    # Example:
+    #
+    #  action_alias :doit, :dosomething
+    def action_alias(name, action)
+      @aliases[name.to_sym] = action.to_sym
+    end
+
+    # Define the default Action of the Application
+    #
+    # +options+:: A Hash of options to be used on the created Action
+    #             (default: <tt>{}</tt>)
+    # +block+::   A block containing the code that should be executed when this
+    #             Action is called, i.e. when no option is given to the
+    #             Application
+    def default(options = {}, &block)
+      @default = Action.new(:default, options, &block)
+    end
+
+    # Prompts the user for input
+    #
+    # If +prompt+ is not empty this will display a prompt using
+    # <tt>prompt.to_s</tt>.
+    #
+    # +prompt+:: A String or other Object responding to +to_s+ used for
+    #            displaying a prompt to the user (default: <tt>''</tt>)
+    #
+    # Example:
+    #
+    #  action 'interactive' do
+    #    # Display a prompt "Please type something: "
+    #    user_provided_value = input 'Please type something'
+    #
+    #    # Do something with the data
+    #    ...
+    #  end
+    def input(prompt = '')
+      unless prompt.to_s.empty?
+        ostream << "#{prompt}: "
+      end
+      @settings[:istream].gets[0..-2]
+    end
+
+    # Convenience method for accessing the user-defined output stream
+    def ostream
+      @settings[:ostream]
     end
 
     # Output text using +IO#<<+ of the output stream
@@ -113,6 +163,67 @@ module Rubikon
       action_results
     end
 
+    # Sets an application setting
+    #
+    # +setting+:: The name of the setting to change, will be symbolized first.
+    # +value+::   The value the setting should be changed to
+    #
+    # Available settings
+    # +autorun+::        If true, let the application run as soon as its class
+    #                    is defined
+    # +dashed_options+:: If true, each option is prepended with a double-dash
+    #                    (<tt>-</tt><tt>-</tt>)
+    # +help_banner+::    Defines a banner for the help message (<em>unused</em>)
+    # +istream+::        Defines an input stream to use
+    # +name+::           Defines the name of the application
+    # +ostream+::        Defines an output stream to use
+    # +raise_errors+::   If true, raise errors, otherwise fail gracefully
+    #
+    # Example:
+    #
+    #  set :name, 'My App'
+    #  set :autorun, false
+    def set(setting, value)
+      @settings[setting.to_sym] = value
+    end
+
+    # Displays a throbber while the given block is executed
+    #
+    # Example:
+    #
+    #  action 'slow' do
+    #    throbber do
+    #      # Add some long running code here
+    #      ...
+    #    end
+    #  end
+    def throbber(&block)
+      spinner = '-\|/'
+      current_ostream = ostream
+      @settings[:ostream] = StringIO.new
+
+      code_thread = Thread.new { block.call }
+
+      throbber_thread = Thread.new do
+        i = 0
+        current_ostream.putc 32
+        while code_thread.alive?
+          current_ostream.putc 8
+          current_ostream.putc spinner[i]
+          current_ostream.flush
+          i = (i + 1) % 4
+          sleep 0.25
+        end
+        current_ostream.putc 8
+      end
+
+      code_thread.join
+      throbber_thread.join
+
+      current_ostream << ostream.string
+      @settings[:ostream] = current_ostream
+    end
+
     private
 
     # Enables autorun functionality using <tt>Kernel#at_exit</tt>
@@ -158,31 +269,6 @@ module Rubikon
       instance.puts text
     end
 
-    # Define an Application Action
-    #
-    # +name+::    The name of the action. Used as an option parameter.
-    # +options+:: A Hash of options to be used on the created Action
-    #             (default: <tt>{}</tt>)
-    # +block+::   A block containing the code that should be executed when this
-    #             Action is called, i.e. when the Application is called with
-    #             the associated option parameter
-    def action(name, options = {}, &block)
-      raise "No block given" unless block_given?
-
-      key = name
-      key = "--#{key}" if @settings[:dashed_options]
-
-      @actions[key.to_sym] = Action.new(name, options, &block)
-    end
-
-    # Define an alias to an Action
-    #
-    # +name+::   The name of the alias
-    # +action+:: The name of the Action that should be aliased
-    def action_alias(name, action)
-      @aliases[name.to_sym] = action.to_sym
-    end
-
     # Assigns aliases to the actions that have been defined using action_alias
     #
     # Clears the aliases Hash afterwards
@@ -201,41 +287,6 @@ module Rubikon
       end
 
       @aliases = {}
-    end
-
-    # Define the default Action of the Application
-    #
-    # +options+:: A Hash of options to be used on the created Action
-    #             (default: <tt>{}</tt>)
-    # +block+::   A block containing the code that should be executed when this
-    #             Action is called, i.e. when no option is given to the
-    #             Application
-    def default(options = {}, &block)
-      @default = Action.new(:default, options, &block)
-    end
-
-    # Prompts the user for input
-    #
-    # If +prompt+ is not empty this will display a prompt using
-    # <tt>prompt.to_s</tt>.
-    #
-    # +prompt+:: A String or other Object responding to +to_s+ used for
-    #            displaying a prompt to the user (default: <tt>''</tt>)
-    #
-    # Example:
-    #
-    #  action 'interactive' do
-    #    # Display a prompt "Please type something: "
-    #    user_provided_value = input 'Please type something'
-    #
-    #    # Do something with the data
-    #    ...
-    #  end
-    def input(prompt = '')
-      unless prompt.to_s.empty?
-        ostream << "#{prompt}: "
-      end
-      @settings[:istream].gets[0..-2]
     end
 
     # Parses the options used when starting the application
@@ -259,51 +310,6 @@ module Rubikon
       end
 
       actions_to_call
-    end
-
-    # Convenience method for accessing the user-defined output stream
-    def ostream
-      @settings[:ostream]
-    end
-
-    # Displays a throbber while the given block is executed
-    #
-    # Example:
-    #
-    #  action 'slow' do
-    #    throbber do
-    #      # Add some long running code here
-    #      ...
-    #    end
-    #  end
-    #
-    # <em>At the moment using output in the +block+ is not recommended as it
-    # will break the throbber</em>
-    def throbber(&block)
-      spinner = '-\|/'
-      current_ostream = ostream
-      @settings[:ostream] = StringIO.new
-
-      code_thread = Thread.new { block.call }
-
-      throbber_thread = Thread.new do
-        i = 0
-        current_ostream.putc 32
-        while code_thread.alive?
-          current_ostream.putc 8
-          current_ostream.putc spinner[i]
-          current_ostream.flush
-          i = (i + 1) % 4
-          sleep 0.25
-        end
-        current_ostream.putc 8
-      end
-
-      code_thread.join
-      throbber_thread.join
-
-      current_ostream << ostream.string
-      @settings[:ostream] = current_ostream
     end
 
   end
