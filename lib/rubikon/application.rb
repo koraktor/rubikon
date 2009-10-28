@@ -32,6 +32,7 @@ module Rubikon
       @default  = nil
       @settings = {
         :autorun        => true,
+        :auto_shortopts => true,
         :dashed_options => true,
         :help_banner    => "Usage: #{$0}",
         :istream        => $stdin,
@@ -52,10 +53,18 @@ module Rubikon
     def action(name, options = {}, &block)
       raise "No block given" unless block_given?
 
-      key = name
-      key = "--#{key}" if @settings[:dashed_options]
+      action = Action.new(name, options, &block)
 
-      @actions[key.to_sym] = Action.new(name, options, &block)
+      key = name.to_s
+      if @settings[:dashed_options]
+        if @settings[:auto_shortopts]
+          short_key = "-#{key[0..0]}"
+          @actions[short_key.to_sym] = action unless @actions.key? short_key
+        end
+        key = "--#{key}"
+      end
+
+      @actions[key.to_sym] = action
     end
 
     # Define an alias to an Action
