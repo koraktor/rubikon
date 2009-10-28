@@ -129,22 +129,22 @@ module Rubikon
     #
     # +text+:: The text to write into the output stream
     def put(text)
-      ostream << text
-      ostream.flush
+      @settings[:ostream] << text
+      @settings[:ostream].flush
     end
 
     # Output a character using +IO#putc+ of the output stream
     #
     # +char+:: The character to write into the output stream
     def putc(char)
-      ostream.putc char
+      @settings[:ostream].putc char
     end
 
     # Output a line of text using +IO#puts+ of the output stream
     #
     # +text+:: The text to write into the output stream
     def puts(text)
-      ostream.puts text
+      @settings[:ostream].puts text
     end
 
     # Run this application
@@ -217,7 +217,7 @@ module Rubikon
     #  end
     def throbber(&block)
       spinner = '-\|/'
-      current_ostream = ostream
+      current_ostream = @settings[:ostream]
       @settings[:ostream] = StringIO.new
 
       code_thread = Thread.new { block.call }
@@ -238,7 +238,7 @@ module Rubikon
       code_thread.join
       throbber_thread.join
 
-      current_ostream << ostream.string
+      current_ostream << @settings[:ostream].string
       @settings[:ostream] = current_ostream
     end
 
