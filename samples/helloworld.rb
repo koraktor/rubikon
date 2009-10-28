@@ -15,9 +15,6 @@ end
 # A simple Hello World application
 class HelloWorld < Rubikon::Application
 
-  # Don't add double-dashes to options automatically
-  set :dashed_options, false
-
   # Greet the whole world per default
   default do
     greet "World"
@@ -26,13 +23,13 @@ class HelloWorld < Rubikon::Application
   # Interactive mode
   #
   # Ask the user for his name and greet him
-  action '-i' do
+  action 'interactive' do
     name = input 'Please enter your name'
     greet name
   end
 
   # Sleep for 5 seconds while displaying a throbber
-  action '--throbber' do
+  action 'throbber' do
     put 'Greeting the whole world takes some time... '
     throbber do
       sleep 5
