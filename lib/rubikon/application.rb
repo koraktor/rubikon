@@ -22,12 +22,10 @@ module Rubikon
 
     attr_reader :settings
 
-    # Returns whether this application should be ran automatically
-    def self.autorun?
-      instance.settings[:autorun] || false
-    end
-
     # Initialize with default settings (see set for more detail)
+    #
+    # If you really need to override this in your application class, be sure to
+    # call +super+
     def initialize
       @actions  = {}
       @aliases  = {}
@@ -108,6 +106,12 @@ module Rubikon
     end
 
     # Convenience method for accessing the user-defined output stream
+    #
+    # Use this if you want to work directly with the output stream
+    #
+    # Example:
+    #
+    #  ostream.flush
     def ostream
       @settings[:ostream]
     end
@@ -138,6 +142,11 @@ module Rubikon
     #
     # +args+:: The command line arguments that should be given to the
     #          application as options
+    #
+    # Calling this method explicitly is not required when you want to create a
+    # simple application (having one main class inheriting from
+    # Rubikon::Application). But it's useful for testing or if you want to have
+    # some sort of sub-applications.
     def run(args = ARGV)
       begin
         assign_aliases unless @aliases.empty?
@@ -225,6 +234,11 @@ module Rubikon
     end
 
     private
+
+    # Returns whether this application should be ran automatically
+    def self.autorun?
+      instance.settings[:autorun] || false
+    end
 
     # Enables autorun functionality using <tt>Kernel#at_exit</tt>
     #
