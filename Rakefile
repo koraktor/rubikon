@@ -41,7 +41,7 @@ end
 desc 'Building docs'
 Rake::RDocTask.new do |rdoc|
   rdoc.title = 'Rubikon - API documentation'
-  rdoc.rdoc_files.include ['lib/**/*.rb', 'test/**/*.rb', 'LICENSE', 'README.md']
+  rdoc.rdoc_files.include ['lib/**/*.rb', 'LICENSE', 'README.md']
   rdoc.main = 'README.md'
   rdoc.rdoc_dir = 'doc'
   rdoc.options = ['--all', '--inline-source', '--line-numbers', '--charset=utf-8', '--webcvs=http://github.com/koraktor/rubikon/blob/master/%s']
