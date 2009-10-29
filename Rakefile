@@ -13,8 +13,8 @@ task :default => :test
 
 # Test task
 Rake::TestTask.new do |t|
-  t.libs << 'lib'
-  t.test_files = test_files
+  t.libs << 'lib' << 'test'
+  t.pattern = 'test/**/*_tests.rb'
   t.verbose = true
 end
 

@@ -3,22 +3,21 @@
 #
 # Copyright (c) 2009, Sebastian Staudt
 
-require 'rubygems'
-require 'shoulda'
-
-begin require 'redgreen'; rescue LoadError; end
-
-$: << File.join(File.dirname(__FILE__), '..', 'lib')
-$: << File.dirname(__FILE__)
-require 'rubikon'
+require 'test_helper'
 require 'testapp'
 
-class RubikonTests < Test::Unit::TestCase
+class ApplicationTests < Test::Unit::TestCase
 
   context 'A Rubikon application\'s class' do
 
     setup do
       @app = RubikonTestApp.instance
+    end
+
+    should 'be a singleton' do
+      assert_raise NoMethodError do
+        RubikonTestApp.new
+      end
     end
 
     should 'run it\'s instance for called methods' do
@@ -32,12 +31,6 @@ class RubikonTests < Test::Unit::TestCase
       @app = RubikonTestApp
       @ostream = StringIO.new
       @app.set :ostream, @ostream
-    end
-
-    should 'be a singleton' do
-      assert_raise NoMethodError do
-        RubikonTestApp.new
-      end
     end
 
     should 'exit gracefully' do
@@ -139,33 +132,6 @@ class RubikonTests < Test::Unit::TestCase
     should 'have working action aliases' do
       assert_equal @app.run(%w{--alias_before}), @app.run(%w{--object_id})
       assert_equal @app.run(%w{--alias_after}), @app.run(%w{--object_id})
-    end
-
-  end
-
-  context 'A Rubikon action' do
-
-    should 'throw an exception when no code block is given' do
-      assert_raise Rubikon::BlockMissingError do
-        Rubikon::Action.new 'name'
-      end
-      assert_raise Rubikon::BlockMissingError do
-        Rubikon::Action.new 'name', {}
-      end
-    end
-
-    should 'not raise an exception when created without options' do
-      action_name = 'someaction'
-      action_options = {
-        :description => 'this is an action',
-        :param_type  => String
-      }
-      assert_nothing_raised do
-        action = Rubikon::Action.new action_name, action_options do end
-        assert_equal action_name, action.name
-        assert_equal action_options[:description], action.description
-        assert_equal action_options[:param_type], action.param_type
-      end
     end
 
   end
