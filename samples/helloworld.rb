@@ -13,7 +13,7 @@ else
 end
 
 # A simple Hello World application
-class HelloWorld < Rubikon::Application
+class HelloWorld < Rubikon::Application::Base
 
   # Greet the whole world per default
   default do
@@ -35,6 +35,16 @@ class HelloWorld < Rubikon::Application
       sleep 5
     end
     puts 'done.'
+  end
+
+  action 'progress' do
+    progress_bar(3) do |progress|
+      progress += 1
+      sleep 0.5
+      progress += 1
+      sleep 0.5
+      progress += 1
+    end
   end
 
   # A standard Ruby class method for greeting
