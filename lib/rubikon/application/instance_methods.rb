@@ -292,7 +292,7 @@ module Rubikon
         last_action     = nil
 
         options.each do |option|
-          option_sym = option.to_sym
+          option_sym = option.to_s.to_sym
           if @actions.keys.include? option_sym
             actions_to_call[option_sym] = []
             last_action = option_sym
