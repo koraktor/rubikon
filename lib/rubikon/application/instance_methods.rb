@@ -3,6 +3,8 @@
 #
 # Copyright (c) 2009, Sebastian Staudt
 
+require 'rubikon/progress_bar'
+
 module Rubikon
 
   module Application
@@ -110,6 +112,36 @@ module Rubikon
       #  ostream.flush
       def ostream
         @settings[:ostream]
+      end
+
+      # Displays a progress bar while the given block is executed
+      #
+      # Inside the block you have access to a instance of ProgressBar. So you
+      # can update the progress using <tt>ProgressBar#+</tt>.
+      #
+      # +options+:: A Hash of options that should be passed to the ProgressBar
+      #             object. For available options see ProgressBar
+      # +block+::   The block to execute
+      #
+      # Example:
+      #
+      #  progress_bar(:maximum => 5) do |progress|
+      #    5.times do |file|
+      #      File.read("any#{file}.txt")
+      #      progress.+
+      #    end
+      #  end
+      def progress_bar(*options, &block)
+        current_ostream = @settings[:ostream]
+        @settings[:ostream] = StringIO.new
+
+        progress = ProgressBar.new(current_ostream, options[0])
+
+        block.call(progress)
+        putc 10
+
+        current_ostream << @settings[:ostream].string
+        @settings[:ostream] = current_ostream
       end
 
       # Output text using +IO#<<+ of the output stream

@@ -15,6 +15,8 @@ end
 # A simple Hello World application
 class HelloWorld < Rubikon::Application::Base
 
+  set :raise_errors, true
+
   # Greet the whole world per default
   default do
     greet "World"
@@ -37,13 +39,14 @@ class HelloWorld < Rubikon::Application::Base
     puts 'done.'
   end
 
+  # Show a progress bar while iterating through a loop
   action 'progress' do
-    progress_bar(3) do |progress|
-      progress += 1
-      sleep 0.5
-      progress += 1
-      sleep 0.5
-      progress += 1
+    put 'Watch my progress while I greet the world: '
+    x = 1000000
+    progress_bar(:char => '+', :maximum => x, :size => 30) do |progress|
+      x.times do
+        progress.+
+      end
     end
   end
 
