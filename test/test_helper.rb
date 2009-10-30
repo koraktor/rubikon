@@ -10,6 +10,6 @@ require 'rubikon'
 require 'rubygems'
 require 'shoulda'
 
-unless RUBY_VERSION.start_with? '1.9'
+unless RUBY_VERSION[0..2] == '1.9'
   begin require 'redgreen'; rescue LoadError; end
 end
