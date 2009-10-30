@@ -6,4 +6,4 @@
 libdir = File.dirname(__FILE__)
 $:.unshift(libdir) unless $:.include?(libdir)
 
-require 'rubikon/application'
+require 'rubikon/application/base'
