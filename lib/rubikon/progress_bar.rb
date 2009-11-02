@@ -19,7 +19,7 @@ module Rubikon
     # +maximum+:: The maximum value of this progress bar (default: +100+)
     # +size+::    The actual size of the progress bar (default: +20+)
     # +start+::   The start value of the progress bar (default: +0+)
-    def initialize(ostream, options = {})
+    def initialize(options = {})
       if options.is_a? Numeric
         @maximum = options
         options = {}
@@ -30,7 +30,7 @@ module Rubikon
       size  = options[:size] || 20
 
       @factor   = size.to_f / @maximum
-      @ostream  = ostream
+      @ostream  = options[:ostream] || $stdout
       @progress = 0
       @value    = 0
 

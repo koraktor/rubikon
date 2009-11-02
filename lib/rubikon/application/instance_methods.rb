@@ -135,7 +135,10 @@ module Rubikon
         current_ostream = @settings[:ostream]
         @settings[:ostream] = StringIO.new
 
-        progress = ProgressBar.new(current_ostream, options[0])
+        options = options[0]
+        options[:ostream] = current_ostream
+
+        progress = ProgressBar.new(options)
 
         block.call(progress)
         putc 10
