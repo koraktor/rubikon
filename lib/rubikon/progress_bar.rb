@@ -51,8 +51,10 @@ module Rubikon
       return if value <= 0
       old_progress = @progress.round
       @value += value
-      add_progress = (value * @factor)
+      add_progress = (value * @factor).round
       @progress += add_progress
+
+      @progress = 100 if @progress > 100
 
       difference = @progress.round - old_progress
       if difference > 0 && @progress.round <= @maximum
