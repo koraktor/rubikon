@@ -1,0 +1,95 @@
+html {
+    background: #333333;
+    padding:    0px;
+}
+
+body {
+    background:    #222222;
+    border-radius: 0px 0px 15px 15px;
+    color:         #ffffff;
+    font-family:   'Lucida Grande', 'Lucida Sans', sans-serif;
+    padding:       20px 20px 0px 20px;
+    margin:        0px auto;
+    width:         600px;
+    text-align:    justify;
+
+    -moz-border-radius:    0px 0px 15px 15px;
+    -webkit-border-radius: 0px 0px 15px 15px;
+}
+
+a {
+    color:           #3a7c0e;
+    font-weight:     bold;
+    text-decoration: none;
+}
+
+a:hover {
+    color:           #51af13;
+}
+
+div#footer {
+    background:    #444444;
+    border-radius: 0px 0px 15px 15px;
+    border-top:    2px dashed #3a7c0e;
+    color:         #3a7c0e;
+    font-size:     9pt;
+    line-height:   15pt;
+    margin:        0px -20px;
+    margin-top:    20px;
+    padding-right: 15px;
+
+    text-align: right;
+
+    -moz-border-radius:    0px 0px 15px 15px;
+    -webkit-border-radius: 0px 0px 15px 15px;
+}
+
+div.highlight {
+    background:    #000000;
+    border-radius: 10px;
+    margin:        5px 20px;
+    padding:       10px 3px;
+
+    -moz-border-radius:    10px;
+    -webkit-border-radius: 10px;
+}
+
+div.highlight pre {
+    font-family: 'Monaco', 'Lucida Console', monospace;
+    margin:  0px;
+}
+
+div#pledgie {
+  position: absolute;
+  top:      10px;
+  right:    50px;
+}
+
+h1 {
+    border-bottom: 2px dotted #a05555;
+    color:         #b01000;
+    display:       inline;
+    font-family:   'Georgia', serif;
+    font-size:     22pt;
+    font-weight:   bold;
+    line-height:   40pt;
+}
+
+img {
+    border: none;
+}
+
+ul#menu {
+    background:    #333333;
+    border-bottom: 2px dotted #b01000;
+    border-top:    2px dotted #b01000;
+}
+
+ul#menu li {
+    display: inline;
+    margin:  20px;
+}
+
+ul#menu span {
+    font-weight: bold;
+}
