@@ -8,6 +8,12 @@ About
 Rubikon is a simple to use, yet powerful Ruby framework for building
 console-based applications.
 
+<div class="note">
+<h1>Warning:</h1><br />
+Rubikon is still in an early development stage. If you want to use it be aware
+that you will probably run into problems and or restrictions.
+</div>
+
 Installation
 ============
 
