@@ -49,7 +49,7 @@ class ApplicationTests < Test::Unit::TestCase
     end
 
     should 'run it\'s default action without options' do
-      result = @app.run
+      result = @app.run([])
       assert_equal 1, result.size
       assert_equal 'default action', result.first
     end
