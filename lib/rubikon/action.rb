@@ -9,8 +9,6 @@ module Rubikon
   # be executed when running the application.
   class Action
 
-    @@action_count = 0
-
     attr_reader :block, :description, :name, :param_type
 
     # Create a new Action using the given name, options and code block.
@@ -33,20 +31,27 @@ module Rubikon
       @param_type = options[:param_type] || Object
 
       @block = block
+      @arg_count = block.arity
     end
 
     # Run this action's code block
     #
     # +args+:: The argument which should be relayed to the block of this Action
     def run(*args)
-      if (@block.arity >= 0 and args.size < @block.arity) or (@block.arity < 0 and args.size < -@block.arity - 1)
-        raise MissingArgumentError
-      end
+      raise MissingArgumentError unless check_argument_count(args.size)
       raise Rubikon::ArgumentTypeError unless check_argument_types(args)
       @block[*args]
     end
 
     private
+
+    # Checks if the number of arguments given fits the number of arguments of
+    # this Action
+    #
+    # +count+:: The number of arguments
+    def check_argument_count(count)
+      !((@arg_count >= 0 && count < @arg_count) || (@arg_count < 0 && count < -@arg_count - 1))
+    end
 
     # Checks the types of the given arguments using the Class or Array of
     # classes given in the +:param_type+ option of this action.
@@ -54,8 +59,8 @@ module Rubikon
     # +args+:: The arguments which should be checked
     def check_argument_types(args)
       if @param_type.is_a? Array
-        args.each_index do |i|
-          return false unless args[i].is_a? @param_type[i]
+        args.each_index do |arg_index|
+          return false unless args[arg_index].is_a? @param_type[arg_index]
         end
       else
         args.each do |arg|

@@ -4,6 +4,7 @@
 # Copyright (c) 2009, Sebastian Staudt
 
 require 'rubikon/progress_bar'
+require 'rubikon/throbber'
 
 module Rubikon
 
@@ -132,19 +133,14 @@ module Rubikon
       #    end
       #  end
       def progress_bar(*options, &block)
-        current_ostream = @settings[:ostream]
-        @settings[:ostream] = StringIO.new
+        hidden_output do |ostream|
+          options = options[0]
+          options[:ostream] = ostream
 
-        options = options[0]
-        options[:ostream] = current_ostream
+          progress = ProgressBar.new(options)
 
-        progress = ProgressBar.new(options)
-
-        block.call(progress)
-        putc 10
-
-        current_ostream << @settings[:ostream].string
-        @settings[:ostream] = current_ostream
+          block.call(progress)
+        end
       end
 
       # Output text using +IO#<<+ of the output stream
@@ -191,13 +187,11 @@ module Rubikon
             end
           end
         rescue
-          if @settings[:raise_errors]
-            raise $!
-          else
-            puts "Error:\n    #{$!.message}"
-            puts "    #{$!.backtrace.join("\n    ")}" if $DEBUG
-            exit 1
-          end
+          raise $! if @settings[:raise_errors]
+
+          puts "Error:\n    #{$!.message}"
+          puts "    #{$!.backtrace.join("\n    ")}" if $DEBUG
+          exit 1
         end
 
         action_results
@@ -238,30 +232,14 @@ module Rubikon
       #    end
       #  end
       def throbber(&block)
-        spinner = '-\|/'
-        current_ostream = @settings[:ostream]
-        @settings[:ostream] = StringIO.new
-
-        code_thread = Thread.new { block.call }
-
-        throbber_thread = Thread.new do
-          i = 0
-          current_ostream.putc 32
-          while code_thread.alive?
-            current_ostream.putc 8
-            current_ostream.putc spinner[i]
-            current_ostream.flush
-            i = (i + 1) % 4
-            sleep 0.25
+        hidden_output do |ostream|
+          code_thread = Thread.new { block.call }
+          throbber_thread = Thread.new do
+            Throbber.block.call(ostream, code_thread)
           end
-          current_ostream.putc 8
+          code_thread.join
+          throbber_thread.join
         end
-
-        code_thread.join
-        throbber_thread.join
-
-        current_ostream << @settings[:ostream].string
-        @settings[:ostream] = current_ostream
       end
 
       private
@@ -284,6 +262,23 @@ module Rubikon
         end
 
         @aliases = {}
+      end
+
+      # Hide output inside the given block and print it after the block has
+      # finished
+      #
+      # +block+:: The block that should not print output while it's running
+      #
+      # If the block needs to print to the real IO stream, it can access it
+      # using its first parameter.
+      def hidden_output(&block)
+        current_ostream = @settings[:ostream]
+        @settings[:ostream] = StringIO.new
+
+        block.call(current_ostream)
+
+        current_ostream << @settings[:ostream].string
+        @settings[:ostream] = current_ostream
       end
 
       # Parses the options used when starting the application
