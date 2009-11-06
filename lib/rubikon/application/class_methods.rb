@@ -23,6 +23,7 @@ module Rubikon
       #
       # <em>This is called automatically when subclassing Application.</em>
       def inherited(subclass)
+        super
         Singleton.__init__(subclass)
         at_exit { subclass.run if subclass.send(:autorun?) }
       end
