@@ -15,23 +15,21 @@ end
 # A simple Hello World application
 class HelloWorld < Rubikon::Application::Base
 
-  set :raise_errors, true
-
   # Greet the whole world per default
-  default do
+  default Hash.new(:description => 'Simple hello world') do
     greet "World"
   end
 
   # Interactive mode
   #
   # Ask the user for his name and greet him
-  action 'interactive' do
+  action 'interactive', {:description => 'Greet interactively'} do
     name = input 'Please enter your name'
     greet name
   end
 
   # Sleep for 5 seconds while displaying a throbber
-  action 'throbber' do
+  action 'throbber', {:description => 'Display a throbber'} do
     put 'Greeting the whole world takes some time... '
     throbber do
       sleep 5
@@ -40,7 +38,7 @@ class HelloWorld < Rubikon::Application::Base
   end
 
   # Show a progress bar while iterating through a loop
-  action 'progress' do
+  action 'progress', {:description => 'Display a progress bar'} do
     put 'Watch my progress while I greet the world: '
     x = 1000000
     progress_bar(:char => '+', :maximum => x, :size => 30) do |progress|

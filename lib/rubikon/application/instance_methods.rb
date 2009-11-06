@@ -263,6 +263,32 @@ module Rubikon
         end
       end
 
+      # Defines an action for displaying a help screen
+      #
+      # This takes any defined action and it's corresponding options and
+      # descriptions and displays them in a user-friendly manner.
+      def help_action
+        action 'help', { :description => 'Display this help screen' } do
+          help = {}
+          @actions.each do |option, action|
+            help[action] = [] if help[action].nil?
+            help[action] << option.to_s
+          end
+
+          put @settings[:help_banner]
+          puts " [options]" unless @default.nil?
+          puts ''
+
+          help.each do |action, options|
+            help[action] = options.sort.join(', ')
+          end
+          max_options_length = help.values.max { |a,b| a.size <=> b.size }.size
+          help.sort_by { |action, options| options }.each do |action, options|
+            puts options.ljust(max_options_length) << "    " << action.description
+          end
+        end
+      end
+
       # Hide output inside the given block and print it after the block has
       # finished
       #
@@ -285,6 +311,7 @@ module Rubikon
       # run, but <em>after</em> the application is setup, i.e. after the user
       # has defined the application class.
       def init
+        help_action
         assign_aliases
         @initialized = true
       end
