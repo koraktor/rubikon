@@ -43,7 +43,7 @@ module Rubikon
       def action(name, options = {}, &block)
         raise "No block given" unless block_given?
 
-        action = Action.new(name, options, &block)
+        action = Action.new(options, &block)
 
         key = name.to_s
         if @settings[:dashed_options]
@@ -77,7 +77,7 @@ module Rubikon
       #             Action is called, i.e. when no option is given to the
       #             Application
       def default(options = {}, &block)
-        @default = Action.new(:default, options, &block)
+        @default = Action.new(options, &block)
       end
 
       # Prompts the user for input

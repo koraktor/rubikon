@@ -22,10 +22,8 @@ module Rubikon
     #                 moment.
     # +param_type+::  A single Class or a Array of classes that represent the
     #                 type(s) of argument(s) this action expects
-    def initialize(name, options = {}, &block)
+    def initialize(options = {}, &block)
       raise BlockMissingError unless block_given?
-
-      @name = name
 
       @description = options[:description] || ''
       @param_type = options[:param_type] || Object
