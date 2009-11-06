@@ -17,10 +17,11 @@ module Rubikon
       # If you really need to override this in your application class, be sure to
       # call +super+
       def initialize
-        @actions  = {}
-        @aliases  = {}
-        @default  = nil
-        @settings = {
+        @actions     = {}
+        @aliases     = {}
+        @default     = nil
+        @initialized = false
+        @settings    = {
           :autorun        => true,
           :auto_shortopts => true,
           :dashed_options => true,
@@ -175,10 +176,10 @@ module Rubikon
       # Rubikon::Application). But it's useful for testing or if you want to have
       # some sort of sub-applications.
       def run(args = ARGV)
-        begin
-          assign_aliases unless @aliases.empty?
-          action_results = []
+        init unless @initialized
+        action_results = []
 
+        begin
           if !@default.nil? and args.empty?
             action_results << @default.run
           else
@@ -260,8 +261,6 @@ module Rubikon
             warn "There's already an action called \"#{key}\"."
           end
         end
-
-        @aliases = {}
       end
 
       # Hide output inside the given block and print it after the block has
@@ -279,6 +278,15 @@ module Rubikon
 
         current_ostream << @settings[:ostream].string
         @settings[:ostream] = current_ostream
+      end
+
+      # This method is called once for each application and is used to
+      # initialize anything that needs to be ready before the application is
+      # run, but <em>after</em> the application is setup, i.e. after the user
+      # has defined the application class.
+      def init
+        assign_aliases
+        @initialized = true
       end
 
       # Parses the options used when starting the application
