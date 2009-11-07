@@ -14,7 +14,12 @@ class ThrobberTests < Test::Unit::TestCase
     end
 
     should 'have default throbber strings' do
-      assert_equal %w{SPINNER}, Throbber.constants
+      unless RUBY_VERSION[0..2] == '1.9'
+        consts = %w{SPINNER}
+      else
+        consts = [:SPINNER, :MUTEX_FOR_THREAD_EXCLUSIVE]
+      end
+      assert_equal consts, Rubikon::Throbber.constants
       assert_equal '-\|/', Rubikon::Throbber.const_get(:SPINNER)
     end
 
