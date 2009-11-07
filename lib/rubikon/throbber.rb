@@ -6,29 +6,29 @@
 module Rubikon
 
   # A class for displaying and managing throbbers
-  class Throbber
+  class Throbber < Thread
 
-    THROBBER_SPINNER = '-\|/'
+    SPINNER = '-\|/'
 
-    # Returns a block that outputs to the given IO while the given thread is
-    # alive
+    # Creates and runs a Throbber that outputs to the given IO stream while the
+    # given thread is alive
     #
-    # The returned Proc has the following parameters:
-    #
-    # +ostream+:: The IO stream the throbber should be written to
+    # # +ostream+:: The IO stream the throbber should be written to
     # +thread+::  The thread that should be watched
-    def self.block
-      return Proc.new do |ostream, thread|
+    def initialize(ostream, thread)
+      proc = Proc.new do |ostream, thread|
           step = 0
           ostream.putc 32
           while thread.alive?
-            ostream << "\b#{THROBBER_SPINNER[step].chr}"
+            ostream << "\b#{SPINNER[step].chr}"
             ostream.flush
             step = (step + 1) % 4
             sleep 0.25
           end
         ostream.putc 8
       end
+
+      super { proc.call(ostream, thread) }
     end
 
   end

@@ -235,9 +235,8 @@ module Rubikon
       def throbber(&block)
         hidden_output do |ostream|
           code_thread = Thread.new { block.call }
-          throbber_thread = Thread.new do
-            Throbber.block.call(ostream, code_thread)
-          end
+          throbber_thread = Throbber.new(ostream, code_thread)
+
           code_thread.join
           throbber_thread.join
         end
