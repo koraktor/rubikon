@@ -29,9 +29,10 @@ module Rubikon
       @maximum.round
 
       @progress_char = options[:char] || '#'
-      @factor   = (options[:size] || 20).round.to_f / @maximum
       @ostream  = options[:ostream] || $stdout
       @progress = 0
+      @size     = options[:size] || 20
+      @factor   = @size.round.to_f / @maximum
       @value    = 0
 
       self + (options[:start] || 0)
@@ -48,19 +49,21 @@ module Rubikon
     #  progress_bar + 5 # (will add 5)
     #  progress_bar.+   # (will add 1)
     def +(value = 1)
-      return if value <= 0
-      value = value.round
-      old_progress = @progress
+      return if (value <= 0) || (@value == @maximum)
       @value += value
-      add_progress = (value * @factor).round
+      old_progress = @progress
+      add_progress = ((@value - @progress / @factor) * @factor).round
       @progress += add_progress
 
-      @progress = 100 if @progress > 100
+      if @progress > @size
+        @progress = @size
+        add_progress = @size - old_progress
+      end
 
-      difference = @progress - old_progress
-      if difference > 0 && @progress <= @maximum
-        @ostream << @progress_char * difference
+      if add_progress > 0
+        @ostream << @progress_char * add_progress
         @ostream.flush
+        @ostream.puts '' if @progress == @size
       end
     end
 

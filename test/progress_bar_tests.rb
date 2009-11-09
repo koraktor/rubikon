@@ -43,7 +43,7 @@ class ProgressBarTests < Test::Unit::TestCase
       @bar = Rubikon::ProgressBar.new(options)
       assert_equal "#" * 10, ostream.string
       @bar + 50
-      assert_equal "#" * 20, ostream.string
+      assert_equal ("#" * 20) << "\n", ostream.string
 
       ostream.string = ''
       options[:size] = 10
@@ -68,7 +68,7 @@ class ProgressBarTests < Test::Unit::TestCase
 
       @bar = Rubikon::ProgressBar.new options
       @bar + 101
-      assert_equal "#" * 100, ostream.string
+      assert_equal ("#" * 100) << "\n", ostream.string
       assert_equal 100, @bar.instance_variable_get(:@progress)
       assert_equal 101, @bar.instance_variable_get(:@value)
 
@@ -77,15 +77,15 @@ class ProgressBarTests < Test::Unit::TestCase
 
       @bar = Rubikon::ProgressBar.new options
       @bar + 51
-      assert_equal "#" * 100, ostream.string
+      assert_equal ("#" * 100) << "\n", ostream.string
       assert_equal 100, @bar.instance_variable_get(:@progress)
       assert_equal 101, @bar.instance_variable_get(:@value)
 
       ostream.string = ''
       options[:start] = 101
-      
+
       @bar = Rubikon::ProgressBar.new options
-      assert_equal "#" * 100, ostream.string
+      assert_equal ("#" * 100) << "\n", ostream.string
       assert_equal 100, @bar.instance_variable_get(:@progress)
       assert_equal 101, @bar.instance_variable_get(:@value)
     end
