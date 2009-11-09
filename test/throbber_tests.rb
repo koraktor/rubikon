@@ -10,7 +10,7 @@ class ThrobberTests < Test::Unit::TestCase
   context 'A throbber' do
 
     should 'be a subclass of Thread' do
-      assert_equal Thread, Rubikon::Throbber.superclass
+      assert_equal Thread, Throbber.superclass
     end
 
     should 'have default throbber strings' do
@@ -19,8 +19,8 @@ class ThrobberTests < Test::Unit::TestCase
       else
         consts = [:SPINNER, :MUTEX_FOR_THREAD_EXCLUSIVE]
       end
-      assert_equal consts, Rubikon::Throbber.constants
-      assert_equal '-\|/', Rubikon::Throbber.const_get(:SPINNER)
+      assert_equal consts, Throbber.constants
+      assert_equal '-\|/', Throbber.const_get(:SPINNER)
     end
 
   end

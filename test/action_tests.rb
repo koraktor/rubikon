@@ -10,12 +10,12 @@ class ActionTests < Test::Unit::TestCase
   context 'A Rubikon action' do
 
     should 'throw an exception when no code block is given' do
-      assert_raise Rubikon::BlockMissingError do
-        Rubikon::Action.new
+      assert_raise BlockMissingError do
+        Action.new
       end
-      assert_raise Rubikon::BlockMissingError do
+      assert_raise BlockMissingError do
         options = {}
-        Rubikon::Action.new options
+        Action.new options
       end
     end
 
@@ -25,7 +25,7 @@ class ActionTests < Test::Unit::TestCase
         :param_type  => String
       }
       assert_nothing_raised do
-        action = Rubikon::Action.new action_options do end
+        action = Action.new action_options do end
         assert_equal action_options[:description], action.description
         assert_equal action_options[:param_type], action.param_type
       end

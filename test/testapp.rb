@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2009, Sebastian Staudt
 
-class RubikonTestApp < Rubikon::Application::Base
+class RubikonTestApp < Application::Base
 
   set :autorun, false
   set :name, 'Rubikon test application'

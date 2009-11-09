@@ -6,6 +6,7 @@
 $: << File.join(File.dirname(__FILE__), '..', 'lib')
 $: << File.dirname(__FILE__)
 require 'rubikon'
+include Rubikon
 
 require 'rubygems'
 require 'shoulda'

@@ -61,26 +61,26 @@ class ApplicationTests < Test::Unit::TestCase
     end
 
     should 'not run without a mandatory argument' do
-      assert_raise Rubikon::MissingArgumentError do
+      assert_raise MissingArgumentError do
         @app.run(%w{--required})
       end
     end
 
     should 'require an argument type if it has been defined' do
-      assert_raise Rubikon::ArgumentTypeError do
+      assert_raise ArgumentTypeError do
         @app.run(['--output', 6])
       end
-      assert_raise Rubikon::ArgumentTypeError do
+      assert_raise ArgumentTypeError do
         @app.run(['--number_string', 6, 7])
       end
-      assert_raise Rubikon::ArgumentTypeError do
+      assert_raise ArgumentTypeError do
         @app.run(['--number_string', 'test' , 6])
       end
     end
 
     should 'raise an exception when calling an action with the wrong number of
             arguments' do
-      assert_raise Rubikon::MissingArgumentError do
+      assert_raise MissingArgumentError do
         @app.run(%w{--output})
       end
       assert_raise ArgumentError do
@@ -89,13 +89,13 @@ class ApplicationTests < Test::Unit::TestCase
     end
 
     should 'raise an exception when using an unknown option' do
-      assert_raise Rubikon::UnknownOptionError do
+      assert_raise UnknownOptionError do
         @app.run(%w{--unknown})
       end
-      assert_raise Rubikon::UnknownOptionError do
+      assert_raise UnknownOptionError do
         @app.run(%w{--noarg --unknown})
       end
-      assert_raise Rubikon::UnknownOptionError do
+      assert_raise UnknownOptionError do
         @app.run(%w{--unknown --noarg})
       end
     end
