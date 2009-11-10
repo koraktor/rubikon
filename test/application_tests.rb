@@ -120,13 +120,13 @@ class ApplicationTests < Test::Unit::TestCase
       assert_equal "#{input_string}#{input_string[0].chr}", @ostream.gets
     end
 
-    should 'provide a throbber' do
+    should "don't break output while displaying a throbber" do
       @app.run(%w{--throbber})
-      @ostream.rewind
-      assert_equal " \b-\b\\\b|\b/\b", @ostream.string
-      @app.run(%w{--throbber true})
-      @ostream.rewind
       assert_equal " \b-\b\\\b|\b/\bdon't\nbreak\n", @ostream.string
+      @ostream.rewind
+
+      @app.run(%w{--progressbar})
+      assert_equal "#" * 20 << "\n" << "test\n" * 4, @ostream.string
     end
 
     should 'have working action aliases' do

@@ -23,6 +23,15 @@ class ThrobberTests < Test::Unit::TestCase
       assert_equal '-\|/', Throbber.const_get(:SPINNER)
     end
 
+    should 'work correctly' do
+      ostream = StringIO.new
+      thread = Thread.new { sleep 1 }
+      throbber = Throbber.new(ostream, thread)
+      thread.join
+      throbber.join
+      assert_equal " \b-\b\\\b|\b/\b", ostream.string
+    end
+
   end
 
 end

@@ -44,20 +44,22 @@ class RubikonTestApp < Application::Base
     putc s[0]
   end
 
+  action 'progressbar' do
+    progress_bar(:maximum => 4) do |progress|
+      4.times { progress.+; puts 'test' }
+    end
+  end
+
   action 'required' do |what|
     "required argument was #{what}"
   end
 
-  action 'throbber' do |*output|
+  action 'throbber' do
     throbber do
-      if output[0]
-        sleep 0.5
-        puts 'don\'t'
-        sleep 0.5
-        puts 'break'
-      else
-        sleep 1
-      end
+      sleep 0.5
+      puts 'don\'t'
+      sleep 0.5
+      puts 'break'
     end
   end
 
