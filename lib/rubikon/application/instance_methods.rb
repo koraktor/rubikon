@@ -262,6 +262,13 @@ module Rubikon
         end
       end
 
+      # Defines an action for enabling debug mode
+      def debug_action
+        action 'debug', { :description => 'Enable debug mode' } do
+          $DEBUG = true
+        end
+      end
+
       # Defines an action for displaying a help screen
       #
       # This takes any defined action and it's corresponding options and
@@ -310,7 +317,9 @@ module Rubikon
       # run, but <em>after</em> the application is setup, i.e. after the user
       # has defined the application class.
       def init
+        debug_action
         help_action
+        verbose_action
         assign_aliases
         @initialized = true
       end
@@ -336,6 +345,13 @@ module Rubikon
         end
 
         actions_to_call
+      end
+
+      # Defines an action for enabling verbose output
+      def verbose_action
+        action 'verbose', { :description => 'Enable verbose output' } do
+          $VERBOSE = true
+        end
       end
 
     end
