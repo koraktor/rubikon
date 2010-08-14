@@ -1,7 +1,7 @@
-# This code is free software; you can redistribute it and/or modify it under the
-# terms of the new BSD License.
+# This code is free software; you can redistribute it and/or modify it under
+# the terms of the new BSD License.
 #
-# Copyright (c) 2009, Sebastian Staudt
+# Copyright (c) 2009-2010, Sebastian Staudt
 
 require 'rubikon/progress_bar'
 require 'rubikon/throbber'
@@ -12,16 +12,21 @@ module Rubikon
 
     module InstanceMethods
 
+      #def self.included(mod)
+      #  mod.class_variable_set(:@@current, {})
+      #end
+
       # Initialize with default settings (see set for more detail)
       #
       # If you really need to override this in your application class, be sure to
       # call +super+
       def initialize
-        @actions     = {}
-        @aliases     = {}
-        @default     = nil
-        @initialized = false
-        @settings    = {
+        @actions            = {}
+        @aliases            = {}
+        @current_definition = {}
+        @default            = nil
+        @initialized        = false
+        @settings           = {
           :autorun        => true,
           :auto_shortopts => true,
           :dashed_options => true,
@@ -42,7 +47,7 @@ module Rubikon
       #             Action is called, i.e. when the Application is called with
       #             the associated option parameter
       def action(name, options = {}, &block)
-        raise "No block given" unless block_given?
+        raise 'No block given' unless block_given?
 
         action = Action.new(options, &block)
 
