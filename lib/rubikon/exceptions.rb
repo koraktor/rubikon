@@ -5,22 +5,29 @@
 
 module Rubikon
 
-  class ArgumentTypeError < ArgumentError
-  end
-
   class BlockMissingError < ArgumentError
   end
 
-  class MissingArgumentError < ArgumentError
+  class NoDefaultCommandError < ArgumentError
+
+    def initialize
+      super 'You did not specify a command and there is no default command.'
+    end
+
   end
 
-  class MissingOptionError < ArgumentError
+  class UnknownCommandError < ArgumentError
+
+    def initialize(name)
+      super "Unknown command: #{name}"
+    end
+
   end
 
-  class UnknownOptionError < ArgumentError
+  class UnknownParameterError < ArgumentError
 
-    def initialize(arg)
-      super "Unknown argument: #{arg}"
+    def initialize(name)
+      super "Unknown parameter: #{name}"
     end
 
   end

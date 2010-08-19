@@ -6,10 +6,8 @@
 require 'singleton'
 require 'yaml'
 
-require 'rubikon/action'
 require 'rubikon/application/class_methods'
 require 'rubikon/application/instance_methods'
-require 'rubikon/exceptions'
 
 module Rubikon
 

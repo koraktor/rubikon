@@ -10,51 +10,28 @@ class RubikonTestApp < Application::Base
   set :raise_errors, true
 
   default do
-    'default action'
+    'default command'
   end
 
-  action 'input' do
+  command :input do
     input 'input'
   end
 
-  action_alias :alias_before, :object_id
+  command :alias_before => :object_id
 
-  action 'object_id' do
+  command :object_id do
     object_id
   end
 
-  action_alias :alias_after, :object_id
+  command :alias_after => :object_id
 
-  action 'noarg' do
-    'noarg action'
-  end
-
-  action 'realnoarg' do ||
-  end
-
-  action 'noarg2' do
-  end
-
-  action 'number_string', :param_type => [Numeric, String] do |s,n|
-  end
-
-  action 'output', :param_type => String do |s|
-    puts s
-    put s
-    putc s[0]
-  end
-
-  action 'progressbar' do
+  command :progressbar do
     progress_bar(:maximum => 4) do |progress|
       4.times { progress.+; puts 'test' }
     end
   end
 
-  action 'required' do |what|
-    "required argument was #{what}"
-  end
-
-  action 'throbber' do
+  command :throbber do
     throbber do
       sleep 0.5
       puts 'don\'t'

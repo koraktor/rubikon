@@ -3,6 +3,8 @@
 #
 # Copyright (c) 2009-2010, Sebastian Staudt
 
+require 'rubikon/command'
+require 'rubikon/exceptions'
 require 'rubikon/progress_bar'
 require 'rubikon/throbber'
 
@@ -12,78 +14,22 @@ module Rubikon
 
     module InstanceMethods
 
-      #def self.included(mod)
-      #  mod.class_variable_set(:@@current, {})
-      #end
 
       # Initialize with default settings (see set for more detail)
       #
-      # If you really need to override this in your application class, be sure to
-      # call +super+
+      # If you really need to override this in your application class, be sure
+      # to call +super+
       def initialize
-        @actions            = {}
-        @aliases            = {}
-        @current_definition = {}
-        @default            = nil
-        @initialized        = false
-        @settings           = {
+        @commands    = {}
+        @initialized = false
+        @settings    = {
           :autorun        => true,
-          :auto_shortopts => true,
-          :dashed_options => true,
           :help_banner    => "Usage: #{$0}",
           :istream        => $stdin,
           :name           => self.class.to_s,
           :ostream        => $stdout,
           :raise_errors   => false
         }
-      end
-
-      # Define an Application Action
-      #
-      # +name+::    The name of the action. Used as an option parameter.
-      # +options+:: A Hash of options to be used on the created Action
-      #             (default: <tt>{}</tt>)
-      # +block+::   A block containing the code that should be executed when this
-      #             Action is called, i.e. when the Application is called with
-      #             the associated option parameter
-      def action(name, options = {}, &block)
-        raise 'No block given' unless block_given?
-
-        action = Action.new(options, &block)
-
-        key = name.to_s
-        if @settings[:dashed_options]
-          if @settings[:auto_shortopts]
-            short_key = "-#{key[0..0]}"
-            @actions[short_key.to_sym] = action unless @actions.key? short_key
-          end
-          key = "--#{key}"
-        end
-
-        @actions[key.to_sym] = action
-      end
-
-      # Define an alias to an Action
-      #
-      # +name+::   The name of the alias
-      # +action+:: The name of the Action that should be aliased
-      #
-      # Example:
-      #
-      #  action_alias :doit, :dosomething
-      def action_alias(name, action)
-        @aliases[name.to_sym] = action.to_sym
-      end
-
-      # Define the default Action of the Application
-      #
-      # +options+:: A Hash of options to be used on the created Action
-      #             (default: <tt>{}</tt>)
-      # +block+::   A block containing the code that should be executed when this
-      #             Action is called, i.e. when no option is given to the
-      #             Application
-      def default(options = {}, &block)
-        @default = Action.new(options, &block)
       end
 
       # Prompts the user for input
@@ -176,22 +122,24 @@ module Rubikon
       # +args+:: The command line arguments that should be given to the
       #          application as options
       #
-      # Calling this method explicitly is not required when you want to create a
-      # simple application (having one main class inheriting from
-      # Rubikon::Application). But it's useful for testing or if you want to have
-      # some sort of sub-applications.
+      # Calling this method explicitly is not required when you want to create
+      # a simple application (having one main class inheriting from
+      # Rubikon::Application). But it's useful for testing or if you want to
+      # havesome sort of sub-applications.
       def run(args = ARGV)
-        init unless @initialized
-        action_results = []
-
         begin
-          if !@default.nil? and args.empty?
-            action_results << @default.run
+          init unless @initialized
+
+          command_arg = args.shift
+          if command_arg.nil?
+            command = @commands[:__default]
+            raise NoDefaultCommandError if command.nil?
           else
-            parse_options(args).each do |action, args|
-              action_results << @actions[action].run(*args)
-            end
+            command = @commands[command_arg.to_sym]
+            raise UnknownCommandError.new(command_arg) if command.nil?
           end
+
+          result = command.run
         rescue
           raise $! if @settings[:raise_errors]
 
@@ -200,20 +148,20 @@ module Rubikon
           exit 1
         end
 
-        action_results
+        result
       end
 
       # Sets an application setting
       #
-      # +setting+:: The name of the setting to change, will be symbolized first.
+      # +setting+:: The name of the setting to change, will be symbolized
+      #             first.
       # +value+::   The value the setting should be changed to
       #
       # Available settings
-      # +autorun+::        If true, let the application run as soon as its class
-      #                    is defined
-      # +dashed_options+:: If true, each option is prepended with a double-dash
-      #                    (<tt>-</tt><tt>-</tt>)
-      # +help_banner+::    Defines a banner for the help message (<em>unused</em>)
+      # +autorun+::        If true, let the application run as soon as its
+      #                    class is defined
+      # +help_banner+::    Defines a banner for the help message
+      #                    (<em>unused</em>)
       # +istream+::        Defines an input stream to use
       # +name+::           Defines the name of the application
       # +ostream+::        Defines an output stream to use
@@ -231,7 +179,7 @@ module Rubikon
       #
       # Example:
       #
-      #  action 'slow' do
+      #  command :slow do
       #    throbber do
       #      # Add some long running code here
       #      ...
@@ -249,55 +197,45 @@ module Rubikon
 
       private
 
-      # Assigns aliases to the actions that have been defined using action_alias
+      # Define a new application Command or an alias to an existing one
       #
-      # Clears the aliases Hash afterwards
-      def assign_aliases
-        @aliases.each do |key, action|
-          if @settings[:dashed_options]
-            action = "--#{action}".to_sym
-            key = "--#{key}".to_sym
+      # +name+::        The name of the Command as used in application
+      #                 parameters. This might also be a Hash where every key
+      #                 will be an alias to the corresponding value, e.g.
+      #                 <tt>{ :alias => :command }</tt>.
+      # +description+:: A description for this Command for use in the
+      #                 application's help screen (default: +nil+)
+      # +block+::       A block that contains the code that should be executed
+      #                 when this Command is called, i.e. when the application
+      #                 is called with the associated parameter
+      def command(name, description = nil, &block)
+        if name.is_a? Hash
+          name.each do |alias_name, command_name|
+            command = @commands[command_name]
+            if command.nil?
+              @commands[alias_name] = command_name
+            else
+              command.aliases << alias_name
+              @commands[alias_name] = command
+            end
           end
-
-          unless @actions.key? key
-            @actions[key] = @actions[action]
-          else
-            warn "There's already an action called \"#{key}\"."
-          end
+        else
+          command = Command.new(self, name, &block)
+          command.description = description unless description.nil?
+          @commands[name] = command
         end
       end
 
-      # Defines an action for enabling debug mode
-      def debug_action
-        action 'debug', { :description => 'Enable debug mode' } do
-          $DEBUG = true
-        end
-      end
-
-      # Defines an action for displaying a help screen
+      # Define the default Command of the application, i.e. the Command that is
+      # called if no matching Command parameter can be found
       #
-      # This takes any defined action and it's corresponding options and
-      # descriptions and displays them in a user-friendly manner.
-      def help_action
-        action 'help', { :description => 'Display this help screen' } do
-          help = {}
-          @actions.each do |option, action|
-            help[action] = [] if help[action].nil?
-            help[action] << option.to_s
-          end
-
-          put @settings[:help_banner]
-          puts " [options]" unless @default.nil?
-          puts ''
-
-          help.each do |action, options|
-            help[action] = options.sort.join(', ')
-          end
-          max_options_length = help.values.max { |a,b| a.size <=> b.size }.size
-          help.sort_by { |action, options| options }.each do |action, options|
-            puts options.ljust(max_options_length) << "    " << action.description
-          end
-        end
+      # +description+:: A description for this Command for use in the
+      #                 application's help screen (default: +nil+)
+      # +block+::       A block that contains the code that should be executed
+      #                 when this Command is called, i.e. when no Command
+      #                 parameter is given to the application
+      def default(description = nil, &block)
+        command(:__default, description, &block)
       end
 
       # Hide output inside the given block and print it after the block has
@@ -322,42 +260,18 @@ module Rubikon
       # run, but <em>after</em> the application is setup, i.e. after the user
       # has defined the application class.
       def init
-        debug_action
-        help_action
-        verbose_action
-        assign_aliases
-        @initialized = true
-      end
-
-      # Parses the options used when starting the application
-      #
-      # +options+:: An Array of Strings that should be used as application
-      #             options. Usually +ARGV+ is used for this.
-      def parse_options(options)
-        actions_to_call = {}
-        last_action     = nil
-
-        options.each do |option|
-          option_sym = option.to_s.to_sym
-          if @actions.keys.include? option_sym
-            actions_to_call[option_sym] = []
-            last_action = option_sym
-          elsif last_action.nil? || (option.is_a?(String) && @settings[:dashed_options] && option[0..1] == '--')
-            raise UnknownOptionError.new(option)
-          else
-            actions_to_call[last_action] << option
+        @commands.each do |name, command|
+          if command.is_a? Symbol
+            command = @commands[command]
+            if command.is_a? Command
+              @commands[name] = command
+            end
           end
         end
 
-        actions_to_call
+        @initialized = true
       end
 
-      # Defines an action for enabling verbose output
-      def verbose_action
-        action 'verbose', { :description => 'Enable verbose output' } do
-          $VERBOSE = true
-        end
-      end
 
     end
 
