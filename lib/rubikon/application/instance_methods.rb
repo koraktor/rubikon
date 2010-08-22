@@ -5,6 +5,7 @@
 
 require 'rubikon/command'
 require 'rubikon/exceptions'
+require 'rubikon/flag'
 require 'rubikon/progress_bar'
 require 'rubikon/throbber'
 
@@ -22,6 +23,7 @@ module Rubikon
       def initialize
         @commands    = {}
         @initialized = false
+        @parameters  = []
         @settings    = {
           :autorun        => true,
           :help_banner    => "Usage: #{$0}",
@@ -131,15 +133,19 @@ module Rubikon
           init unless @initialized
 
           command_arg = args.shift
-          if command_arg.nil?
+          if command_arg.nil? || command_arg.start_with?('-')
             command = @commands[:__default]
+            args.unshift(command_arg) unless command_arg.nil?
             raise NoDefaultCommandError if command.nil?
           else
             command = @commands[command_arg.to_sym]
             raise UnknownCommandError.new(command_arg) if command.nil?
           end
 
-          result = command.run
+          @current_command = command
+          result = command.run(*args)
+          @current_command = nil
+          result
         rescue
           raise $! if @settings[:raise_errors]
 
@@ -147,8 +153,6 @@ module Rubikon
           puts "    #{$!.backtrace.join("\n    ")}" if $DEBUG
           exit 1
         end
-
-        result
       end
 
       # Sets an application setting
@@ -224,6 +228,13 @@ module Rubikon
           command.description = description unless description.nil?
           @commands[name] = command
         end
+
+        unless @parameters.empty?
+          @parameters.each do |parameter|
+            command << parameter
+          end
+          @parameters.clear
+        end
       end
 
       # Define the default Command of the application, i.e. the Command that is
@@ -236,6 +247,45 @@ module Rubikon
       #                 parameter is given to the application
       def default(description = nil, &block)
         command(:__default, description, &block)
+      end
+
+      # Create a new Flag with the given name for the next Command
+      #
+      # +name+:: The name of the Flag (without dashes). Dashes will be
+      #          automatically added (+-+ for single-character flags, +--+ for
+      #          other flags). This might also be a Hash where every key will
+      #          be an alias to the corresponding value, e.g.
+      #          <tt>{ :alias => :flag }</tt>.
+      #
+      # Example:
+      #
+      #   flag :status
+      #   flag :st => :status
+      #   command :something do
+      #     ...
+      #   end
+      #
+      def flag(name)
+        if name.is_a? Hash
+          @parameters << name
+        else
+          @parameters << Flag.new(name.to_s)
+        end
+      end
+
+      # Checks whether parameter with the given name has been supplied by the
+      # user on the command-line.
+      #
+      # Example:
+      #
+      #  flag :status
+      #  command :something do
+      #    print_status if given? :status
+      #  end
+      def given?(name)
+        parameter = @current_command.parameters[name]
+        return false if parameter.nil?
+        parameter.active?
       end
 
       # Hide output inside the given block and print it after the block has
@@ -271,7 +321,6 @@ module Rubikon
 
         @initialized = true
       end
-
 
     end
 

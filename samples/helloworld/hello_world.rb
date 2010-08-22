@@ -16,8 +16,10 @@ end
 class ComplexSample < Rubikon::Application::Base
 
   # Greet the whole world per default
+  flag :more
   default 'Simple hello world' do
     greet 'World'
+    puts 'Nice to see you.' if given? :more
   end
 
   # Interactive mode
