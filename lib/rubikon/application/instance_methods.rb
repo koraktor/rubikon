@@ -15,6 +15,7 @@ module Rubikon
 
     module InstanceMethods
 
+      attr_reader :path
 
       # Initialize with default settings (see set for more detail)
       #
@@ -24,6 +25,7 @@ module Rubikon
         @commands    = {}
         @initialized = false
         @parameters  = []
+        @path        = File.dirname($0)
         @settings    = {
           :autorun        => true,
           :help_banner    => "Usage: #{$0}",

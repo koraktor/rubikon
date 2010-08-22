@@ -28,14 +28,20 @@ module Rubikon
       super(name)
 
       raise ArgumentError unless app.is_a? Application::Base
-      raise BlockMissingError unless block_given?
 
       @aliases          = []
       @app              = app
-      @block            = block
       @long_parameters  = {}
       @parameters       = {}
       @short_parameters = {}
+
+      if block_given?
+        @block = block
+      else
+        @file_name = "#{@app.path}/commands/#{name}.rb"
+        raise BlockMissingError unless File.exists?(@file_name)
+        @block = Proc.new { @app.instance_eval(open(@file_name).read) }
+      end
     end
 
     # Add a new Parameter for this command
