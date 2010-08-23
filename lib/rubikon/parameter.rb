@@ -9,14 +9,15 @@ module Rubikon
   # not a Command. Instead parameters are relayed to commands.
   module Parameter
 
-    attr_reader :name
+    attr_reader :aliases, :name
 
     # Creates a new parameter with the given name
     #
     # +name+:: The name of the parameter
     def initialize(name)
-      @active = false
-      @name   = name.to_sym
+      @active  = false
+      @aliases = []
+      @name    = name.to_sym
     end
 
     # Marks this parameter as active when it has been supplied by the user on

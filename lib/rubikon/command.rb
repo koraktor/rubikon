@@ -16,7 +16,7 @@ module Rubikon
     include Parameter
 
     attr_accessor :description
-    attr_reader   :aliases, :parameters
+    attr_reader   :parameters
 
     # Create a new application command with the given name with a reference to
     # the app it belongs to
@@ -29,7 +29,6 @@ module Rubikon
 
       raise ArgumentError unless app.is_a? Application::Base
 
-      @aliases          = []
       @app              = app
       @long_parameters  = {}
       @parameters       = {}
