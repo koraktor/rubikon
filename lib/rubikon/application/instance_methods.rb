@@ -253,11 +253,13 @@ module Rubikon
 
       # Create a new Flag with the given name for the next Command
       #
-      # +name+:: The name of the Flag (without dashes). Dashes will be
-      #          automatically added (+-+ for single-character flags, +--+ for
-      #          other flags). This might also be a Hash where every key will
-      #          be an alias to the corresponding value, e.g.
-      #          <tt>{ :alias => :flag }</tt>.
+      # +name+::  The name of the Flag (without dashes). Dashes will be
+      #           automatically added (+-+ for single-character flags, +--+ for
+      #           other flags). This might also be a Hash where every key will
+      #           be an alias to the corresponding value, e.g.
+      #           <tt>{ :alias => :flag }</tt>.
+      # +block+:: An optional code block that should be executed if this Flag
+      #           is used
       #
       # Example:
       #
@@ -267,11 +269,11 @@ module Rubikon
       #     ...
       #   end
       #
-      def flag(name)
+      def flag(name, &block)
         if name.is_a? Hash
           @parameters << name
         else
-          @parameters << Flag.new(name.to_s)
+          @parameters << Flag.new(name.to_s, &block)
         end
       end
 
