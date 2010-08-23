@@ -45,23 +45,20 @@ This is done using `default`:
 
 If you run this application it will just print `Hello World!`.
 
-You can also add command-line options to your appication using `action`:
+You can also add command-line options to your appication using `command`:
 
     class MyApplication < Rubikon::Application
 
-      action 'hello' do
+      command :hello do
         puts 'Hello World!'
       end
 
     end
 
 This way your application would do nothing when called without options, but it
-would print `Hello World!` when called using `ruby myapp.rb --hello`.
-Please note that Rubikon will add dashes to options by default. If you don't
-like this behaviour and want options like RubyGem's `install` or `update` just
-use the following inside your application class:
-
-    set :dashed_options, false
+would print `Hello World!` when called using `ruby myapp.rb hello`. A command
+is code that is executed when the application is called with the command's name
+as the first argument - just like RubyGem's `install` or Git's `commit`.
 
 Please see the `samples` directory for more in detail sample applications.
 
@@ -77,14 +74,15 @@ Contribute section if you want to help making Rubikon better.
 * A simple to use DSL
 * Automatic checks for option arguments
 * User defined type safety of option arguments
-* Built-in methods to capture user input and display throbbers
+* Built-in methods to capture user input
+* Built-in methods to display progress bars and throbbers
 
 ## Future plans
 
 * Automatic generation of help screens
 * Improved error handling
 * Built-in support for configuration files
-* Built-in support for colored output and progress bars
+* Built-in support for colored output
 
 ## Requirements
 
@@ -107,7 +105,8 @@ relevance in ancient Rome when Julius Caesar crossed that river with his army
 and thereby declared war to the Roman senate. The phrase "to cross the Rubicon"
 originates from this event.
 
-You may also see Rubikon as a morphed composition of *"Ruby"* and *"console"*.
+You may also see Rubikon as a portmanteau word consisting of *"Ruby"* and
+*"console"*.
 
 ## License
 
