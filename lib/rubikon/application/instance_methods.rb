@@ -22,11 +22,12 @@ module Rubikon
       # If you really need to override this in your application class, be sure
       # to call +super+
       def initialize
-        @commands    = {}
-        @initialized = false
-        @parameters  = []
-        @path        = File.dirname($0)
-        @settings    = {
+        @commands          = {}
+        @global_parameters = {}
+        @initialized       = false
+        @parameters        = []
+        @path              = File.dirname($0)
+        @settings          = {
           :autorun        => true,
           :help_banner    => "Usage: #{$0}",
           :istream        => $stdin,
@@ -134,14 +135,10 @@ module Rubikon
         begin
           init unless @initialized
 
-          command_arg = args.shift
-          if command_arg.nil? || command_arg.start_with?('-')
-            command = @commands[:__default]
-            args.unshift(command_arg) unless command_arg.nil?
-            raise NoDefaultCommandError if command.nil?
-          else
-            command = @commands[command_arg.to_sym]
-            raise UnknownCommandError.new(command_arg) if command.nil?
+          command, parameters, args = parse_arguments(args)
+
+          parameters.each do |parameter|
+            @global_parameters[parameter].active!
           end
 
           @current_command = command
@@ -268,7 +265,6 @@ module Rubikon
       #   command :something do
       #     ...
       #   end
-      #
       def flag(name, &block)
         if name.is_a? Hash
           @parameters << name
@@ -287,9 +283,40 @@ module Rubikon
       #    print_status if given? :status
       #  end
       def given?(name)
-        parameter = @current_command.parameters[name]
+        parameter = @global_parameters[name.to_sym]
+        parameter = @current_command.parameters[name.to_sym] if parameter.nil?
         return false if parameter.nil?
         parameter.active?
+      end
+
+      # Create a new Flag with the given name to be used globally
+      #
+      # +name+::  The name of the Flag (without dashes). Dashes will be
+      #           automatically added (+-+ for single-character flags, +--+ for
+      #           other flags). This might also be a Hash where every key will
+      #           be an alias to the corresponding value, e.g.
+      #           <tt>{ :alias => :flag }</tt>.
+      # +block+:: An optional code block that should be executed if this Flag
+      #           is used
+      #
+      # Example:
+      #
+      #   global_flag :quiet
+      #   global_flag :q => :quiet
+      def global_flag(name, &block)
+        if name.is_a? Hash
+          name.each do |alias_name, flag_name|
+            flag = @global_parameters[flag_name]
+            if flag.nil?
+              @global_parameters[alias_name] = flag_name
+            else
+              flag.aliases << alias_name
+              @global_parameters[alias_name] = flag
+            end
+          end
+        else
+          @global_parameters[name.to_sym] = Flag.new(name.to_s, &block)
+        end
       end
 
       # Hide output inside the given block and print it after the block has
@@ -323,7 +350,51 @@ module Rubikon
           end
         end
 
+        @global_parameters.each do |name, parameter|
+          if parameter.is_a? Symbol
+            parameter = @global_parameters[parameter]
+            if parameter.is_a? Parameter
+              @global_parameters[name] = parameter
+            end
+          end
+        end
+
         @initialized = true
+      end
+
+      # Parses the command-line arguments given to the application by the
+      # user. This distinguishes between commands, global flags and command
+      # flags
+      #
+      # +args+:: An Array of Strings containing th command-line arguments
+      def parse_arguments(args)
+        command_arg = args.shift
+        if command_arg.nil? || command_arg.start_with?('-')
+          command = @commands[:__default]
+          args.unshift(command_arg) unless command_arg.nil?
+          raise NoDefaultCommandError if command.nil?
+        else
+          command = @commands[command_arg.to_sym]
+          raise UnknownCommandError.new(command_arg) if command.nil?
+        end
+
+        parameters = []
+        args.each do |arg|
+          if arg.start_with?('--')
+            parameter = arg[2..-1].to_sym
+          elsif arg.start_with?('-')
+            parameter = arg[1..-1].to_sym
+          else
+            next
+          end
+
+          if @global_parameters.keys.include? parameter
+            parameters << parameter
+            args.delete(arg)
+          end
+        end
+
+        return command, parameters, args
       end
 
     end
