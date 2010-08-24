@@ -85,6 +85,18 @@ class ApplicationTests < Test::Unit::TestCase
       assert_equal @app.run(%w{alias_after}), @app.run(%w{object_id})
     end
 
+    should 'have a global debug flag' do
+      @app.run(%w{--debug})
+      assert $DEBUG
+      $DEBUG = false
+    end
+
+    should 'have a global verbose flag' do
+      @app.run(%w{--verbose})
+      assert $VERBOSE
+      $VERBOSE = false
+    end
+
   end
 
 end

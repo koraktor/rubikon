@@ -236,6 +236,17 @@ module Rubikon
         end
       end
 
+      # Defines a global Flag for enabling debug output
+      #
+      # This will define a Flag +--debug+ and +-d+ to enable verbose output.
+      # Using it sets Ruby's global variable $DEBUG to +true+
+      def debug_flag
+        global_flag :debug do
+          $DEBUG = true
+        end
+        global_flag :d => :debug
+      end
+
       # Define the default Command of the application, i.e. the Command that is
       # called if no matching Command parameter can be found
       #
@@ -341,6 +352,9 @@ module Rubikon
       # run, but <em>after</em> the application is setup, i.e. after the user
       # has defined the application class.
       def init
+        debug_flag
+        verbose_flag
+
         @commands.each do |name, command|
           if command.is_a? Symbol
             command = @commands[command]
@@ -395,6 +409,17 @@ module Rubikon
         end
 
         return command, parameters, args
+      end
+
+      # Defines a global Flag for enabling verbose output
+      #
+      # This will define a Flag +--verbose+ and +-v+ to enable verbose output.
+      # Using it sets Ruby's global variable $VERBOSE to +true+
+      def verbose_flag
+        global_flag :verbose do
+          $VERBOSE = true
+        end
+        global_flag :v => :verbose
       end
 
     end

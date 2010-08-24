@@ -18,6 +18,7 @@ class ComplexSample < Rubikon::Application::Base
   # Greet the whole world per default
   flag :more
   default 'Simple hello world' do
+    puts 'Starting to greet the world...' if $DEBUG
     greet 'World'
     puts 'Nice to see you.' if given? :more
   end
