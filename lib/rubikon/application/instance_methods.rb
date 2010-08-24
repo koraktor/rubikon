@@ -228,7 +228,7 @@ module Rubikon
         else
           command = Command.new(self, name, &block)
           command.description = description unless description.nil?
-          @commands[name] = command
+          @commands[name.to_sym] = command
         end
 
         unless @parameters.empty?
