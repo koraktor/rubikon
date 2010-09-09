@@ -11,10 +11,6 @@ module Rubikon
 
     include Parameter
 
-    def initialize(name)
-      super(name)
-    end
-
   end
 
 end

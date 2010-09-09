@@ -25,7 +25,7 @@ module Rubikon
     # +name+::  The name of this command, used in Application options
     # +block+:: The code block which should be executed by this command
     def initialize(app, name, &block)
-      super(name)
+      super(name, nil)
 
       raise ArgumentError unless app.is_a? Application::Base
 

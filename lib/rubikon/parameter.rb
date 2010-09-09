@@ -13,17 +13,21 @@ module Rubikon
 
     # Creates a new parameter with the given name
     #
-    # +name+:: The name of the parameter
-    def initialize(name)
+    # +name+::  The name of the parameter
+    # +block+:: An optional code block to be executed if this parameter is used
+    def initialize(name, &block)
       @active  = false
       @aliases = []
+      @block   = block
       @name    = name.to_sym
     end
 
     # Marks this parameter as active when it has been supplied by the user on
-    # the command-line
+    # the command-line. This also calls the code block of the parameter if it
+    # exists
     def active!
       @active = true
+      @block.call unless @block.nil?
     end
 
     # Returns whether this parameter has is active, i.e. it has been supplied
