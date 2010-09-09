@@ -9,6 +9,8 @@ module Rubikon
 
   class Option
 
+    attr_reader :arg_count, :args
+
     include Parameter
 
   end

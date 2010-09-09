@@ -70,7 +70,8 @@ module Rubikon
     end
 
     # Parses the arguments of this command and sets each Parameter as active
-    # if it has been supplied by the user on the command-line
+    # if it has been supplied by the user on the command-line. Additional
+    # arguments are passed to the individual parameters.
     #
     # +args+:: The arguments that have been passed to this command
     def parse_arguments(args)
@@ -80,10 +81,18 @@ module Rubikon
           parameter = @parameters[@long_parameters[arg[2..-1].to_sym]]
         elsif arg.start_with?('-')
           parameter = @parameters[@short_parameters[arg[1..-1].to_sym]]
+        else
+          parameter << arg
         end
 
         raise UnknownParameterError.new(arg) if parameter.nil?
         parameter.active!
+      end
+
+      @parameters.values.each do |param|
+        if parameter.active? && parameter.args.size < parameter.arg_count
+          raise MissingArgumentError.new(parameter.name)
+        end
       end
     end
 

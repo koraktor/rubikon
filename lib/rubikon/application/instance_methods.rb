@@ -6,6 +6,7 @@
 require 'rubikon/command'
 require 'rubikon/exceptions'
 require 'rubikon/flag'
+require 'rubikon/option'
 require 'rubikon/progress_bar'
 require 'rubikon/throbber'
 
@@ -376,11 +377,51 @@ module Rubikon
         @initialized = true
       end
 
+      # Create a new Option with the given name for the next Command
+      #
+      # +name+::      The name of the Option (without dashes). Dashes will be
+      #               automatically added (+-+ for single-character options,
+      #               +--+ for other options). This might also be a Hash where
+      #               every key will be an alias to the corresponding value,
+      #               e.g. <tt>{ :alias => :option }</tt>.
+      # +arg_count+:: The number of arguments this Option takes. Use +0+ for no
+      #               arguments or a negative value for an arbitrary number of
+      #               arguments
+      # +block+::     An optional code block that should be executed if this
+      #               Option is used
+      #
+      # Example:
+      #
+      #   option :message,1
+      #   option :m => :message
+      #   command :something do
+      #     ...
+      #   end
+      def option(name, arg_count = 0, &block)
+        if name.is_a? Hash
+          @parameters << name
+        else
+          @parameters << Option.new(name.to_s, arg_count, &block)
+        end
+      end
+
+      # Returns the parameters for the currently executed Command
+      #
+      # Example:
+      #
+      #  option :message, 1
+      #  command :something do
+      #    puts parameters[:message].args[0] if given? :message
+      #  end
+      def parameters
+        @current_command.parameters
+      end
+
       # Parses the command-line arguments given to the application by the
       # user. This distinguishes between commands, global flags and command
       # flags
       #
-      # +args+:: An Array of Strings containing th command-line arguments
+      # +args+:: An Array of Strings containing the command-line arguments
       def parse_arguments(args)
         command_arg = args.shift
         if command_arg.nil? || command_arg.start_with?('-')

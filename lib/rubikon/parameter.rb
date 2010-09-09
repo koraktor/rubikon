@@ -13,13 +13,28 @@ module Rubikon
 
     # Creates a new parameter with the given name
     #
-    # +name+::  The name of the parameter
-    # +block+:: An optional code block to be executed if this parameter is used
-    def initialize(name, &block)
-      @active  = false
-      @aliases = []
-      @block   = block
-      @name    = name.to_sym
+    # +name+::      The name of the parameter
+    # +arg_count+:: The number of arguments this parameter takes if any for
+    #               this parameter if any
+    # +block+::     An optional code block to be executed if this parameter is
+    #               used
+    def initialize(name, arg_count = 0, &block)
+      @active    = false
+      @aliases   = []
+      @arg_count = arg_count
+      @args      = []
+      @block     = block
+      @name      = name.to_sym
+    end
+
+    # Adds an argument to this parameter. Parameter arguments can be accessed
+    # inside the Application code using the parameter's args method.
+    def <<(arg)
+      if @args.size < @arg_count || @arg_count < 0
+        @args << arg
+      else
+        raise ExtraArgumentError.new(@name)
+      end
     end
 
     # Marks this parameter as active when it has been supplied by the user on

@@ -8,6 +8,22 @@ module Rubikon
   class BlockMissingError < ArgumentError
   end
 
+  class ExtraArgumentError < ArgumentError
+
+    def initialize(parameter)
+      super "Parameter #{parameter} has one or more extra arguments."
+    end
+
+  end
+
+  class MissingArgumentError < ArgumentError
+
+    def initialize(parameter)
+      super "Parameter #{parameter} is missing one or more arguments."
+    end
+
+  end
+
   class NoDefaultCommandError < ArgumentError
 
     def initialize
