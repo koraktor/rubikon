@@ -237,16 +237,17 @@ module Rubikon
         end
       end
 
-      # Prints a debug message if +$DEBUG+ is +true+, i.e. if the user supplied
-      # the +--debug+ (+-d+) flag.
+      # Prints a debug message if <tt>$DEBUG</tt> is +true+, e.g. if the user
+      # supplied the <tt>--debug</tt> (<tt>-d</tt>) flag.
       def debug(message)
         puts message if $DEBUG
       end
 
       # Defines a global Flag for enabling debug output
       #
-      # This will define a Flag +--debug+ and +-d+ to enable verbose output.
-      # Using it sets Ruby's global variable $DEBUG to +true+
+      # This will define a Flag <tt>--debug</tt> and <tt>-d</tt> to enable
+      # debug output.
+      # Using it sets Ruby's global variable <tt>$DEBUG</tt> to +true+.
       def debug_flag
         global_flag :debug do
           $DEBUG = true
@@ -269,9 +270,9 @@ module Rubikon
       # Create a new Flag with the given name for the next Command
       #
       # +name+::  The name of the Flag (without dashes). Dashes will be
-      #           automatically added (+-+ for single-character flags, +--+ for
-      #           other flags). This might also be a Hash where every key will
-      #           be an alias to the corresponding value, e.g.
+      #           automatically added (<tt>-</tt> for single-character flags,
+      #           <tt>--</tt> for other flags). This might also be a Hash where
+      #           every key will be an alias to the corresponding value, e.g.
       #           <tt>{ :alias => :flag }</tt>.
       # +block+:: An optional code block that should be executed if this Flag
       #           is used
@@ -310,9 +311,9 @@ module Rubikon
       # Create a new Flag with the given name to be used globally
       #
       # +name+::  The name of the Flag (without dashes). Dashes will be
-      #           automatically added (+-+ for single-character flags, +--+ for
-      #           other flags). This might also be a Hash where every key will
-      #           be an alias to the corresponding value, e.g.
+      #           automatically added (<tt>-</tt> for single-character flags,
+      #           <tt>--</tt> for other flags). This might also be a Hash where
+      #           every key will be an alias to the corresponding value, e.g.
       #           <tt>{ :alias => :flag }</tt>.
       # +block+:: An optional code block that should be executed if this Flag
       #           is used
@@ -460,8 +461,9 @@ module Rubikon
 
       # Defines a global Flag for enabling verbose output
       #
-      # This will define a Flag +--verbose+ and +-v+ to enable verbose output.
-      # Using it sets Ruby's global variable $VERBOSE to +true+
+      # This will define a Flag <tt>--verbose</tt> and <tt>-v</tt> to enable
+      # verbose output.
+      # Using it sets Ruby's global variable <tt>$VERBOSE</tt> to +true+.
       def verbose_flag
         global_flag :verbose do
           $VERBOSE = true

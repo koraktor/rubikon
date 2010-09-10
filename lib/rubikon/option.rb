@@ -7,6 +7,8 @@ require 'rubikon/parameter'
 
 module Rubikon
 
+  # An option is an Application Parameter that may have one or more additional
+  # arguments.
   class Option
 
     attr_reader :arg_count, :args

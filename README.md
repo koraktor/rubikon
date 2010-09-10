@@ -3,6 +3,10 @@ Rubikon
 
 Rubikon is a simple to use, yet powerful Ruby framework for building
 console-based applications.
+Rubikon aims to provide an easy to write and easy to read domain-specific
+language (DSL) to speed up development of command-line applications. With
+Rubikon it's a breeze to implement applications with only few options as well
+as more complex programs like RubyGems, Homebrew or even Git.
 
 ## Installation
 
@@ -60,8 +64,22 @@ would print `Hello World!` when called using `ruby myapp.rb hello`. A command
 is code that is executed when the application is called with the command's name
 as the first argument - just like RubyGem's `install` or Git's `commit`.
 
-Please see the `samples` directory for more in detail sample applications.
+Another part of Rubikon's DSL are flags and options. Both are parameter types
+that change the behaviour of the application. While a flag is a parameter
+without arguments, an option may take one or more additional arguments. Typical
+examples for flags are `--debug` or `--verbose` (or short `-d` and `-v`).
+RubyGem's `--version` is an example for an option that requires additional
+arguments.
+Flags and options are easily added to your application's commands using
+Rubikon's DSL:
 
+    flag :more
+    option :name, 2
+    command :hello do
+      ...
+    end
+
+Please see the `samples` directory for more in detail sample applications.
 
 **Warning**:
 
@@ -93,10 +111,11 @@ Contribute section if you want to help making Rubikon better.
 
 There are several ways of contributing to Rubikon's development:
 
-* Build apps using it and spread the word.<br />
+* Build apps using it and spread the word.
 * Report problems and request features using the [issue tracker][2].
 * Write patches yourself to fix bugs and implement new functionality.
-* Create a Rubikon fork on [GitHub][1] and start hacking.
+* Create a Rubikon fork on [GitHub][1] and start hacking. Extra points for
+  using GitHubs pull requests and feature branches.
 
 ## About the name
 
@@ -120,9 +139,11 @@ file.
 
 ## See Also
 
+* [Rubikon's homepage][3]
 * [API documentation](http://www.rdoc.info/projects/koraktor/rubikon)
 * [GitHub project page][1]
 * [GitHub issue tracker][2]
 
  [1]: http://github.com/koraktor/rubikon
  [2]: http://github.com/koraktor/rubikon/issues
+ [3]: http://koraktor.github.com/rubikon

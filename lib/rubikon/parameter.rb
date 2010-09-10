@@ -6,7 +6,8 @@
 module Rubikon
 
   # A parameter is any command-line argument given to the application that is
-  # not a Command. Instead parameters are relayed to commands.
+  # not prefixed with one or two dashes. Once a parameter is supplied by the
+  # user, it is relayed to the Command it belongs to.
   module Parameter
 
     attr_reader :aliases, :name
