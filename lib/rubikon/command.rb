@@ -90,8 +90,8 @@ module Rubikon
       end
 
       @parameters.values.each do |param|
-        if parameter.active? && parameter.args.size < parameter.arg_count
-          raise MissingArgumentError.new(parameter.name)
+        if param.is_a?(Option) && param.active? && param.args.size < param.arg_count
+          raise MissingArgumentError.new(param.name)
         end
       end
     end
