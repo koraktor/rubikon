@@ -19,7 +19,7 @@ class ComplexSample < Rubikon::Application::Base
   flag :more
   option :name, 1
   default 'Simple hello world' do
-    puts 'Starting to greet the world...' if $DEBUG
+    debug 'Starting to greet the world...'
     unless given? :name
       greet 'World'
     else

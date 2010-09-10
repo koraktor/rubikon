@@ -237,6 +237,12 @@ module Rubikon
         end
       end
 
+      # Prints a debug message if +$DEBUG+ is +true+, i.e. if the user supplied
+      # the +--debug+ (+-d+) flag.
+      def debug(message)
+        puts message if $DEBUG
+      end
+
       # Defines a global Flag for enabling debug output
       #
       # This will define a Flag +--debug+ and +-d+ to enable verbose output.
