@@ -342,6 +342,35 @@ module Rubikon
         end
       end
 
+      # Defines a command for displaying a help screen
+      #
+      # This takes any defined commands and it's corresponding options and
+      # descriptions and displays them in a user-friendly manner.
+      def help_command
+        command :help, 'Display this help screen' do
+          put @settings[:help_banner]
+
+          help = {}
+          @commands.each_value do |command|
+            help[command.name.to_s] = command.description
+          end
+
+          default_description = help.delete('__default')
+          if default_description.nil?
+            puts " command [args]\n\n"
+          else
+            puts " [command] [args]\n\n"
+            puts "Without command: #{default_description}\n\n"
+          end
+
+          puts "Commands:"
+          max_command_length = help.keys.max { |a, b| a.size <=> b.size }.size
+          help.sort_by { |name, description| name }.each do |name, description|
+            puts "  #{name.ljust(max_command_length)}    #{description}"
+          end
+        end
+      end
+
       # Hide output inside the given block and print it after the block has
       # finished
       #
@@ -365,7 +394,12 @@ module Rubikon
       # has defined the application class.
       def init
         debug_flag
+        help_command
         verbose_flag
+
+        unless @commands.keys.include? :__default
+          default :help
+        end
 
         @commands.each do |name, command|
           if command.is_a? Symbol
