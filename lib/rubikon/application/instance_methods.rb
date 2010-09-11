@@ -264,7 +264,11 @@ module Rubikon
       #                 when this Command is called, i.e. when no Command
       #                 parameter is given to the application
       def default(description = nil, &block)
-        command(:__default, description, &block)
+        if description.is_a? Symbol
+          command({ :__default => description })
+        else
+          command(:__default, description, &block)
+        end
       end
 
       # Create a new Flag with the given name for the next Command
