@@ -211,6 +211,8 @@ module Rubikon
       def arguments
         @current_command.arguments
       end
+      alias_method :args, :arguments
+
       # Define a new application Command or an alias to an existing one
       #
       # +name+::        The name of the Command as used in application
@@ -471,6 +473,7 @@ module Rubikon
       def parameters
         @current_command.parameters
       end
+      alias_method :params, :parameters
 
       # Parses the command-line arguments given to the application by the
       # user. This distinguishes between commands, global flags and command
