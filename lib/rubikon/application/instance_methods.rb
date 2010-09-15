@@ -201,6 +201,16 @@ module Rubikon
 
       private
 
+      # Returns the arguments for the currently executed Command
+      #
+      # Example:
+      #
+      #  command :something do
+      #    puts arguments[0]
+      #  end
+      def arguments
+        @current_command.arguments
+      end
       # Define a new application Command or an alias to an existing one
       #
       # +name+::        The name of the Command as used in application

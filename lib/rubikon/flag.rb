@@ -20,6 +20,13 @@ module Rubikon
       super(name, 0, &block)
     end
 
+    # Checks whether this flag has all required arguments supplied
+    #
+    # This is always true because flags never take any arguments.
+    def args_full?
+      true
+    end
+
   end
 
 end

@@ -18,12 +18,17 @@ class ComplexSample < Rubikon::Application::Base
   # Greet the whole world per default
   flag :more
   option :name, 1
+  option :names, -1
   default 'Simple hello world' do
     debug 'Starting to greet the world...'
-    unless given? :name
-      greet 'World'
-    else
+    if given? :name
       greet parameters[:name].args[0]
+    elsif given? :names
+      parameters[:names].args.each do |name|
+        greet name
+      end
+    else
+      greet 'World'
     end
     puts 'Nice to see you.' if given? :more
   end

@@ -16,7 +16,7 @@ module Rubikon
     include Parameter
 
     attr_accessor :description
-    attr_reader   :parameters
+    attr_reader   :arguments, :parameters
 
     # Create a new application command with the given name with a reference to
     # the app it belongs to
@@ -75,24 +75,34 @@ module Rubikon
     #
     # +args+:: The arguments that have been passed to this command
     def parse_arguments(args)
+      @arguments = []
       parameter = nil
       args.each do |arg|
         if arg.start_with?('--')
-          parameter = @parameters[@long_parameters[arg[2..-1].to_sym]]
+          parameter_name = @long_parameters[arg[2..-1].to_sym]
+          raise UnknownParameterError.new(arg) if parameter_name.nil?
         elsif arg.start_with?('-')
-          parameter = @parameters[@short_parameters[arg[1..-1].to_sym]]
+          parameter_name = @short_parameters[arg[1..-1].to_sym]
+          raise UnknownParameterError.new(arg) if parameter_name.nil?
+        else
+          parameter_name = nil
+        end
+
+        unless parameter_name.nil?
+          parameter = @parameters[parameter_name]
+          parameter.active!
+          next
+        end
+
+        if parameter.nil? || parameter.args_full?
+          @arguments << arg
         else
           parameter << arg
         end
-
-        raise UnknownParameterError.new(arg) if parameter.nil?
-        parameter.active!
       end
 
       @parameters.values.each do |param|
-        if param.is_a?(Option) && param.active? && param.args.size < param.arg_count
-          raise MissingArgumentError.new(param.name)
-        end
+        param.check_args if param.is_a?(Option) && param.active?
       end
     end
 
