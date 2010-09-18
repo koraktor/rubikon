@@ -38,11 +38,8 @@ module Rubikon
     # Adds an argument to this parameter. Parameter arguments can be accessed
     # inside the Application code using the parameter's args method.
     def <<(arg)
-      if @args.size < @arg_count || @arg_count <= 0
-        @args << arg
-      else
-        raise ExtraArgumentError.new(@name)
-      end
+      raise ExtraArgumentError.new(@name) if args_full? && @arg_count > 0
+      @args << arg
     end
 
     # Marks this parameter as active when it has been supplied by the user on

@@ -20,6 +20,14 @@ module Rubikon
       super(name, 0, &block)
     end
 
+    # Adds an argument to this flag
+    #
+    # This always raises an ExtraArgumentError because flags never take any
+    # arguments.
+    def <<(arg)
+      raise ExtraArgumentError.new(@name)
+    end
+
     # Checks whether this flag has all required arguments supplied
     #
     # This is always true because flags never take any arguments.
