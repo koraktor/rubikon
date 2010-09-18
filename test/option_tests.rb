@@ -30,16 +30,39 @@ class FlagTests < Test::Unit::TestCase
       assert option.respond_to?(:args)
     end
 
-    should 'allow the specified number of arguments' do
+    should 'only have required arguments if argument count is > 0' do
       option = Option.new :test, 2
+      assert !option.args_full?
       option << 'argument'
-      assert_equal ['argument'], option.args
+      assert_equal %w{argument}, option.args
+      assert_raise MissingArgumentError do
+        option.check_args
+      end
       option << 'argument'
-      assert_equal ['argument', 'argument'], option.args
+      assert option.args_full?
+      assert_equal %w{argument argument}, option.args
       assert_raise ExtraArgumentError do
         option << 'argument'
       end
-      assert_equal ['argument', 'argument'], option.args
+      assert_equal %w{argument argument}, option.args
+    end
+
+    should 'have required and optional arguments if argument count is < 0' do
+      option = Option.new :test, -1
+      assert !option.args_full?
+      assert_raise MissingArgumentError do
+        option.check_args
+      end
+      option << 'argument'
+      assert option.args_full?
+      assert_equal %w{argument}, option.args
+    end
+
+    should 'only have optional arguments if argument count is 0' do
+      option = Option.new :test, 0
+      assert option.args_full?
+      option << 'argument'
+      assert_equal %w{argument}, option.args
     end
 
   end
