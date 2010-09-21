@@ -39,7 +39,8 @@ module Rubikon
       else
         @file_name = "#{@app.path}/commands/#{name}.rb"
         raise BlockMissingError unless File.exists?(@file_name)
-        @block = Proc.new { @app.instance_eval(open(@file_name).read) }
+        code = open(@file_name).read
+        @block = Proc.new { instance_eval(code) }
       end
     end
 
@@ -106,25 +107,12 @@ module Rubikon
       end
     end
 
-    # This is used for convinience. Relay any missing methods to this command's
-    # Application instance.
-    #
-    # +method_name+:: The name of the method being called
-    # +args+::        Any arguments that are given to the method
-    # +block+::       A block that may be given to the method
-    #
-    # <em>This is called automatically when calling undefined methods inside
-    # the command's block.</em>
-    def method_missing(method_name, *args, &block)
-      @app.send(method_name, *args, &block)
-    end
-
     # Run this command's code block
     #
     # +args+:: The arguments that have been passed to this command
     def run(*args)
       parse_arguments(args)
-      @block.call
+      @app.instance_eval &@block
     end
 
   end

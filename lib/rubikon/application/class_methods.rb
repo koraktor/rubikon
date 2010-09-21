@@ -40,26 +40,6 @@ module Rubikon
         instance.send(method_name, *args, &block)
       end
 
-      # Relay putc to the instance method
-      #
-      # This is used to hide <tt>Kernel#putc</tt> so that the Application's
-      # output IO object is used for printing text
-      #
-      # +text+:: The text to write into the output stream
-      def putc(text)
-        instance.putc text
-      end
-
-      # Relay puts to the instance method
-      #
-      # This is used to hide <tt>Kernel#puts</tt> so that the Application's
-      # output IO object is used for printing text
-      #
-      # +text+:: The text to write into the output stream
-      def puts(text)
-        instance.puts text
-      end
-
     end
 
   end
