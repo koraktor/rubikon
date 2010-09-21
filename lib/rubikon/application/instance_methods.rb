@@ -252,7 +252,7 @@ module Rubikon
       # Prints a debug message if <tt>$DEBUG</tt> is +true+, e.g. if the user
       # supplied the <tt>--debug</tt> (<tt>-d</tt>) flag.
       def debug(message)
-        puts message if $DEBUG
+        ostream.puts message if $DEBUG
       end
 
       # Defines a global Flag for enabling debug output
