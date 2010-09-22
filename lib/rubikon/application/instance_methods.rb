@@ -238,7 +238,13 @@ module Rubikon
         else
           command = Command.new(self, name, &block)
           command.description = description unless description.nil?
-          @commands[name.to_sym] = command
+          @commands.each do |command_alias, command_name|
+            if command_name == command.name
+              @commands[command_alias] = command
+              command.aliases << command_alias
+            end
+          end
+          @commands[command.name] = command
         end
 
         unless @parameters.empty?
@@ -304,7 +310,7 @@ module Rubikon
         if name.is_a? Hash
           @parameters << name
         else
-          @parameters << Flag.new(name.to_s, &block)
+          @parameters << Flag.new(name, &block)
         end
       end
 
@@ -318,8 +324,9 @@ module Rubikon
       #    print_status if given? :status
       #  end
       def given?(name)
-        parameter = @global_parameters[name.to_sym]
-        parameter = @current_command.parameters[name.to_sym] if parameter.nil?
+        name = name.to_sym
+        parameter = @global_parameters[name]
+        parameter = @current_command.parameters[name] if parameter.nil?
         return false if parameter.nil?
         parameter.active?
       end
@@ -350,7 +357,14 @@ module Rubikon
             end
           end
         else
-          @global_parameters[name.to_sym] = Flag.new(name.to_s, &block)
+          flag = Flag.new(name, &block)
+          @global_parameters.each do |flag_alias, flag_name|
+            if flag_name == flag.name
+              @global_parameters[flag_alias] = flag
+              flag.aliases << flag_alias
+            end
+          end
+          @global_parameters[flag.name] = flag
         end
       end
 
@@ -411,24 +425,6 @@ module Rubikon
 
         unless @commands.keys.include? :__default
           default :help
-        end
-
-        @commands.each do |name, command|
-          if command.is_a? Symbol
-            command = @commands[command]
-            if command.is_a? Command
-              @commands[name] = command
-            end
-          end
-        end
-
-        @global_parameters.each do |name, parameter|
-          if parameter.is_a? Symbol
-            parameter = @global_parameters[parameter]
-            if parameter.is_a? Parameter
-              @global_parameters[name] = parameter
-            end
-          end
         end
 
         @initialized = true

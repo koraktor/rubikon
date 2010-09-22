@@ -25,14 +25,11 @@ module Rubikon
     # +name+::  The name of this command, used in Application options
     # +block+:: The code block which should be executed by this command
     def initialize(app, name, &block)
+      raise ArgumentError unless app.is_a? Application::Base
       super(name, nil)
 
-      raise ArgumentError unless app.is_a? Application::Base
-
-      @app              = app
-      @long_parameters  = {}
-      @parameters       = {}
-      @short_parameters = {}
+      @app        = app
+      @parameters = {}
 
       if block_given?
         @block = block
@@ -52,21 +49,24 @@ module Rubikon
     def <<(parameter)
       if parameter.is_a? Hash
         parameter.each do |alias_name, name|
-          if alias_name.size == 1
-            @short_parameters[alias_name.to_sym] = name.to_sym
+          alias_name = alias_name.to_sym
+          name = name.to_sym
+          parameter = @parameters[name]
+          if parameter.nil?
+            @parameters[alias_name] = name
           else
-            @long_parameters[alias_name.to_sym] = name.to_sym
+            parameter.aliases << alias_name
+            @parameters[alias_name] = parameter
           end
         end
       else
         raise ArgumentError unless parameter.is_a? Parameter
-        @parameters[parameter.name] = parameter
-
-        if parameter.name.to_s.size == 1
-          @short_parameters[parameter.name] = parameter.name
-        else
-          @long_parameters[parameter.name] = parameter.name
+        @parameters.each do |name, param|
+          if param == parameter.name
+            parameter.aliases << name
+          end
         end
+        @parameters[parameter.name] = parameter
       end
     end
 
@@ -79,18 +79,13 @@ module Rubikon
       @arguments = []
       parameter = nil
       args.each do |arg|
-        if arg.start_with?('--')
-          parameter_name = @long_parameters[arg[2..-1].to_sym]
-          raise UnknownParameterError.new(arg) if parameter_name.nil?
-        elsif arg.start_with?('-')
-          parameter_name = @short_parameters[arg[1..-1].to_sym]
-          raise UnknownParameterError.new(arg) if parameter_name.nil?
-        else
-          parameter_name = nil
+        if arg.start_with?('-')
+          parameter_name = arg.start_with?('--') ? arg[2..-1] : arg[1..-1]
+          parameter = @parameters[parameter_name.to_sym]
+          raise UnknownParameterError.new(arg) if parameter.nil?
         end
 
-        unless parameter_name.nil?
-          parameter = @parameters[parameter_name]
+        unless parameter.active?
           parameter.active!
           next
         end
