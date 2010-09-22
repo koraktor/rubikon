@@ -72,6 +72,11 @@ module Rubikon
       raise MissingArgumentError.new(@name) unless args_full?
     end
 
+    # Checks whether this parameter can take more arguments
+    def more_args?
+      arg_count <= 0 || @args.size < arg_count
+    end
+
   end
 
 end

@@ -35,6 +35,12 @@ module Rubikon
       true
     end
 
+    # Checks whether this flag can take more arguments
+    #
+    def more_args?
+      false
+    end
+
   end
 
 end

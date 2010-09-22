@@ -33,6 +33,7 @@ class FlagTests < Test::Unit::TestCase
     should 'only have required arguments if argument count is > 0' do
       option = Option.new :test, 2
       assert !option.args_full?
+      assert option.more_args?
       option << 'argument'
       assert_equal %w{argument}, option.args
       assert_raise MissingArgumentError do
@@ -40,6 +41,7 @@ class FlagTests < Test::Unit::TestCase
       end
       option << 'argument'
       assert option.args_full?
+      assert !option.more_args?
       assert_equal %w{argument argument}, option.args
       assert_raise ExtraArgumentError do
         option << 'argument'
@@ -50,17 +52,20 @@ class FlagTests < Test::Unit::TestCase
     should 'have required and optional arguments if argument count is < 0' do
       option = Option.new :test, -1
       assert !option.args_full?
+      assert option.more_args?
       assert_raise MissingArgumentError do
         option.check_args
       end
       option << 'argument'
       assert option.args_full?
+      assert option.more_args?
       assert_equal %w{argument}, option.args
     end
 
     should 'only have optional arguments if argument count is 0' do
       option = Option.new :test, 0
       assert option.args_full?
+      assert option.more_args?
       option << 'argument'
       assert_equal %w{argument}, option.args
     end

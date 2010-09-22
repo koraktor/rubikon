@@ -30,6 +30,8 @@ class FlagTests < Test::Unit::TestCase
         flag << 'argument'
       end
 
+      assert flag.args_full?
+      assert !flag.more_args?
       assert !flag.respond_to?(:args)
     end
 

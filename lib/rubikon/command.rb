@@ -90,7 +90,7 @@ module Rubikon
           next
         end
 
-        if parameter.nil? || parameter.args_full?
+        if parameter.nil? || !parameter.more_args?
           @arguments << arg
         else
           parameter << arg
