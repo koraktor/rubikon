@@ -4,24 +4,24 @@
 # Copyright (c) 2009-2010, Sebastian Staudt
 
 require 'test_helper'
-require 'testapp'
+require 'testapps'
 
 class ApplicationTests < Test::Unit::TestCase
 
   context 'A Rubikon application\'s class' do
 
     setup do
-      @app = RubikonTestApp.instance
+      @app = TestApp.instance
     end
 
     should 'be a singleton' do
       assert_raise NoMethodError do
-        RubikonTestApp.new
+        TestApp.new
       end
     end
 
     should 'run it\'s instance for called methods' do
-      assert_equal @app.run(%w{object_id}), RubikonTestApp.run(%w{object_id})
+      assert_equal @app.run(%w{object_id}), TestApp.run(%w{object_id})
     end
 
   end
@@ -29,33 +29,38 @@ class ApplicationTests < Test::Unit::TestCase
   context 'A Rubikon application' do
 
     setup do
-      @app = RubikonTestApp
+      @app = TestApp
       @ostream = StringIO.new
       @app.set :ostream, @ostream
     end
 
     should 'exit gracefully' do
-      unknown = 'unknown'
       @app.set :raise_errors, false
       begin
-        @app.run([unknown])
+        @app.run(%w{unknown})
       rescue Exception => e
+        assert_instance_of SystemExit, e
+        assert_equal 1, e.status
       end
-      assert_instance_of SystemExit, e
-      assert_equal 1, e.status
       @ostream.rewind
       assert_equal "Error:\n", @ostream.gets
-      assert_equal "    Unknown command: #{unknown}\n", @ostream.gets
+      assert_equal "    Unknown command: unknown\n", @ostream.gets
       @app.set :raise_errors, true
     end
 
-    should 'run it\'s default action without options' do
+    should 'run its default command without arguments' do
       assert_equal 'default command', @app.run([])
     end
 
     should 'raise an exception when using an unknown command' do
       assert_raise UnknownCommandError do
         @app.run(%w{unknown})
+      end
+    end
+
+    should 'raise an exception when run without arguments without default' do
+      assert_raise NoDefaultCommandError do
+        TestAppWithoutDefault.run([])
       end
     end
 
@@ -71,7 +76,7 @@ class ApplicationTests < Test::Unit::TestCase
       assert_equal 'input: ', @ostream.gets
     end
 
-    should "don't break output while displaying a throbber or progress bar" do
+    should "not break output while displaying a throbber or progress bar" do
       @app.run(%w{throbber})
       assert_equal " \b-\b\\\b|\b/\bdon't\nbreak\n", @ostream.string
       @ostream.rewind
@@ -89,17 +94,31 @@ class ApplicationTests < Test::Unit::TestCase
       @app.run(%w{--debug})
       assert $DEBUG
       $DEBUG = false
+      @app.run(%w{-d})
+      assert $DEBUG
+      $DEBUG = false
     end
 
     should 'have a global verbose flag' do
       @app.run(%w{--verbose})
       assert $VERBOSE
       $VERBOSE = false
+      @app.run(%w{-v})
+      assert $VERBOSE
+      $VERBOSE = false
     end
 
     should 'have a working help command' do
       @app.run(%w{help})
-      assert_match /Usage: .* command \[args\]\n\nCommands:\n  help           Display this help screen\n  input          \n  object_id      \n  progressbar    \n  throbber       \n/, @ostream.string
+      assert_match /Usage: .* command \[args\]\n\nCommands:\n  help           Display this help screen\n  input          \n  object_id      \n  parameters     \n  progressbar    \n  throbber       \n/, @ostream.string
+    end
+
+    should 'have a working DSL for command parameters' do
+      params = @app.run(%w{parameters}).values.uniq
+      assert :flag, params[0].name
+      assert [:f], params[0].aliases
+      assert :option, params[1].name
+      assert [:o], params[1].aliases
     end
 
   end

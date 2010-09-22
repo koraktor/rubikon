@@ -54,12 +54,31 @@ class CommandTests < Test::Unit::TestCase
 
     should 'correctly parse given parameters' do
       command = Command.new @app, :command do end
-      flag = Flag.new(:test)
+      option = Option.new(:test, 1)
+      command << option
+      flag = Flag.new(:t)
       command << flag
-      assert_raise UnknownParameterError do
-        command.run(*%w{--test --unknown})
-      end
+      command.run(*%w{--test arg -t test})
+      assert option.active?
       assert flag.active?
+      assert %w{test}, command.arguments
+      assert %w{arg}, command.parameters[:test].args
+
+      assert_raise UnknownParameterError do
+        command.run(*%w{--unknown})
+      end
+    end
+
+    should 'allow parameter aliases' do
+      command = Command.new @app, :command do end
+      flag1 = Flag.new(:test)
+      command << flag1
+      flag2 = Flag.new(:test2)
+      command << flag2
+      command << { :t => :test, :t2 => :test2 }
+      command.run(*%w{-t --t2})
+      assert flag1.active?
+      assert flag2.active?
     end
 
     should 'run the code supplied inside its block' do

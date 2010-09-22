@@ -19,6 +19,16 @@ class ProgressBarTests < Test::Unit::TestCase
       assert_equal 0,       @bar.instance_variable_get(:@value)
     end
 
+    should 'have an easily changeable maximum' do
+      @bar = ProgressBar.new(10)
+      assert_equal 2,     @bar.instance_variable_get(:@factor)
+      assert_equal 10,     @bar.instance_variable_get(:@maximum)
+      assert_equal $stdout, @bar.instance_variable_get(:@ostream)
+      assert_equal 0,       @bar.instance_variable_get(:@progress)
+      assert_equal '#',     @bar.instance_variable_get(:@progress_char)
+      assert_equal 0,       @bar.instance_variable_get(:@value)
+    end
+
     should 'be customizable' do
       options = {
         :char    => '+',
