@@ -21,6 +21,7 @@ module Rubikon
 
     # @return [Array<String>] The arguments given to this parameter
     attr_reader :args
+    alias_method :arguments, :args
 
     include Parameter
 

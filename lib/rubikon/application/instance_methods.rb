@@ -32,12 +32,13 @@ module Rubikon
       #
       # @see #set
       def initialize
-        @commands          = {}
-        @global_parameters = {}
-        @initialized       = false
-        @parameters        = []
-        @path              = File.dirname($0)
-        @settings          = {
+        @commands              = {}
+        @current_global_option = nil
+        @global_parameters     = {}
+        @initialized           = false
+        @parameters            = []
+        @path                  = File.dirname($0)
+        @settings              = {
           :autorun         => true,
           :help_as_default => true,
           :help_banner     => "Usage: #{$0}",
@@ -64,7 +65,12 @@ module Rubikon
           command, parameters, args = parse_arguments(args)
 
           parameters.each do |parameter|
-            @global_parameters[parameter].active!
+            if parameter.is_a? Option
+              parameter.check_args
+              @current_global_option = parameter
+            end
+            parameter.active!
+            @current_global_option = nil
           end
 
           @current_command = command
@@ -91,7 +97,11 @@ module Rubikon
       #    puts arguments[0]
       #  end
       def arguments
-        @current_command.arguments
+        unless @current_command.nil?
+          @current_command.arguments
+        else
+          @current_global_option.arguments
+        end
       end
       alias_method :args, :arguments
 
@@ -258,6 +268,46 @@ module Rubikon
             end
           end
           @global_parameters[flag.name] = flag
+        end
+      end
+
+      # Create a new option with the given name to be used globally
+      #
+      # Global options are not bound to any command and can therefore be used
+      # throughout the application with the same result.
+      #
+      # @param (see #option)
+      # @see #option
+      # @see Option
+      #
+      # @example Define a global option
+      #  global_option :user, 1
+      # @example Define a global option with a block to execute
+      #  global_option :user, 1 do
+      #    @user = args[0]
+      #  end
+      # @example Define an alias to a global option
+      #  global_option :u => :user
+      def global_option(name, arg_count = 0, &block)
+        if name.is_a? Hash
+          name.each do |alias_name, option_name|
+            option = @global_parameters[option_name]
+            if option.nil?
+              @global_parameters[option_name] = option_name
+            else
+              option.aliases << alias_name
+              @global_parameters[alias_name] = option
+            end
+          end
+        else
+          option = Option.new(name, arg_count, &block)
+          @global_parameters.each do |option_alias, option_name|
+            if option_name == option.name
+              @global_parameters[option_alias] = option
+              option.aliases << option_alias
+            end
+          end
+          @global_parameters[option.name] = option
         end
       end
 
@@ -439,17 +489,23 @@ module Rubikon
           raise UnknownCommandError.new(command_arg) if command.nil?
         end
 
+        parameter  = nil
         parameters = []
-        args.each do |arg|
+        args.dup.each do |arg|
           if arg.start_with?('--')
-            parameter = arg[2..-1].to_sym
+            parameter = @global_parameters[arg[2..-1].to_sym]
           elsif arg.start_with?('-')
-            parameter = arg[1..-1].to_sym
+            parameter = @global_parameters[arg[1..-1].to_sym]
           else
+            if !parameter.nil? && parameter.more_args?
+              parameter.args << args.delete(arg)
+            else
+              parameter = nil
+            end
             next
           end
 
-          if @global_parameters.keys.include? parameter
+          unless parameter.nil?
             parameters << parameter
             args.delete(arg)
           end
