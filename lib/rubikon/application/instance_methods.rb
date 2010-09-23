@@ -33,6 +33,7 @@ module Rubikon
       # @see #set
       def initialize
         @commands              = {}
+        @current_command       = nil
         @current_global_option = nil
         @global_parameters     = {}
         @initialized           = false

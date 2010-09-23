@@ -100,7 +100,7 @@ module Rubikon
           raise UnknownParameterError.new(arg) if parameter.nil?
         end
 
-        unless parameter.active?
+        unless parameter.nil? || parameter.active?
           parameter.active!
           next
         end
@@ -123,7 +123,7 @@ module Rubikon
     #        command
     def run(*args)
       parse_arguments(args)
-      @app.instance_eval &@block
+      @app.instance_eval(&@block)
     end
 
   end
