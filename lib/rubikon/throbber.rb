@@ -6,6 +6,10 @@
 module Rubikon
 
   # A class for displaying and managing throbbers
+  #
+  # @author Sebastian Staudt
+  # @see Application::InstanceMethods#throbber
+  # @since 0.2.0
   class Throbber < Thread
 
     SPINNER = '-\|/'
@@ -13,8 +17,9 @@ module Rubikon
     # Creates and runs a Throbber that outputs to the given IO stream while the
     # given thread is alive
     #
-    # # +ostream+:: The IO stream the throbber should be written to
-    # +thread+::  The thread that should be watched
+    # @param [IO] ostream the IO stream the throbber should be written to
+    # @param [Thread] thread The thread that should be watched
+    # @see Application::InstanceMethods#throbber
     def initialize(ostream, thread)
       proc = Proc.new do |ostream, thread|
           step = 0

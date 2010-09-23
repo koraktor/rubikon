@@ -16,8 +16,11 @@ module Rubikon
 
   module Application
 
-    # The main class of Rubikon. Let your own application class inherit from this
-    # one.
+    # The main class of Rubikon. Let your own application class inherit from
+    # this one.
+    #
+    # @author Sebastian Staudt
+    # @since 0.2.0
     class Base
 
       class << self

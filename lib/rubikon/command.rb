@@ -9,8 +9,11 @@ require 'rubikon/parameter'
 
 module Rubikon
 
-  # Instances of the Command class are used to define the real code that
-  # should be executed when running the Application.
+  # Instances of the Command class are used to define the real code that should
+  # be executed when running the Application.
+  #
+  # @author Sebastian Staudt
+  # @since 0.3.0
   class Command
 
     include Parameter
@@ -21,9 +24,16 @@ module Rubikon
     # Create a new application command with the given name with a reference to
     # the app it belongs to
     #
-    # +app+::   A reference to the Application instance this command belongs to
-    # +name+::  The name of this command, used in Application options
-    # +block+:: The code block which should be executed by this command
+    # @param [Application::Base] app A reference to the application 
+    #        instance this command belongs to
+    # @param [#to_sym] name The name of this command, used in application
+    #        arguments
+    # @param [Proc] block The code block which should be executed by this
+    #        command
+    # @raise [ArgumentError] if the given application object isn't a Rubikon
+    #        application
+    # @raise [BlockMissingError] if no command code block is given and a
+    #        command file does not exist
     def initialize(app, name, &block)
       raise ArgumentError unless app.is_a? Application::Base
       super(name, nil)
@@ -43,9 +53,11 @@ module Rubikon
 
     # Add a new Parameter for this command
     #
-    # +parameter+:: The parameter to add to this command. This might also be a
-    #               Hash where every key will be an alias to the corresponding
-    #               value, e.g. <tt>{ :alias => :parameter }</tt>.
+    # @param [Parameter, Hash] parameter The parameter to add to this 
+    #        command. This might also be a Hash where every key will be an
+    #        alias to the corresponding value, e.g. <tt>{ :alias => :parameter
+    #        }</tt>.
+    # @see Parameter
     def <<(parameter)
       if parameter.is_a? Hash
         parameter.each do |alias_name, name|
@@ -74,7 +86,10 @@ module Rubikon
     # if it has been supplied by the user on the command-line. Additional
     # arguments are passed to the individual parameters.
     #
-    # +args+:: The arguments that have been passed to this command
+    # @param [Array<String>] args The arguments that have been passed to this
+    #        command
+    # @raise [UnknownParameterError] if an undefined parameter is passed to the
+    #        command @see Flag @see Option
     def parse_arguments(args)
       @arguments = []
       parameter = nil
@@ -104,7 +119,8 @@ module Rubikon
 
     # Run this command's code block
     #
-    # +args+:: The arguments that have been passed to this command
+    # @param [Array<String>] args The arguments that have been passed to this
+    #        command
     def run(*args)
       parse_arguments(args)
       @app.instance_eval &@block

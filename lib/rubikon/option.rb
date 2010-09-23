@@ -7,11 +7,20 @@ require 'rubikon/parameter'
 
 module Rubikon
 
-  # An option is an Application Parameter that may have one or more additional
+  # An option is an application parameter that may have one or more additional
   # arguments.
+  #
+  # @author Sebastian Staudt
+  # @see Application::InstanceMethods#option
+  # @see Parameter
+  # @since 0.3.0
   class Option
 
-    attr_reader :arg_count, :args
+    # @return [Numeric] The number of arguments this parameter takes
+    attr_reader :arg_count
+
+    # @return [Array<String>] The arguments given to this parameter
+    attr_reader :args
 
     include Parameter
 

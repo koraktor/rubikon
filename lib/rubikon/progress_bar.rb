@@ -6,19 +6,26 @@
 module Rubikon
 
   # A class for displaying and managing progress bars
+  #
+  # @author Sebastian Staudt
+  # @see Application::InstanceMethods#throbber
+  # @since 0.2.0
   class ProgressBar
 
     # Create a new ProgressBar using the given options.
     #
-    # +ostream+:: The output stream where the progress bar should be displayed
-    # +options+:: An Hash of options to customize the progress bar
+    # @param [Hash, Numeric] options A Hash of options to customize the
+    #        progress bar or the maximum value of the progress bar
+    # @see Application::InstanceMethods#progress_bar
     #
-    # Options:
-    #
-    # +char+::    The character used for progress bar display (default: +#+)
-    # +maximum+:: The maximum value of this progress bar (default: +100+)
-    # +size+::    The actual size of the progress bar (default: +20+)
-    # +start+::   The start value of the progress bar (default: +0+)
+    # @option options [String] :char ('#') The character used for progress bar
+    #         display
+    # @option options [Numeric] :maximum (100) The maximum value of this
+    #         progress bar
+    # @option options [IO] :ostream ($stdout) The output stream where the
+    #         progress bar should be displayed
+    # @option options [Numeric] :size (20) The actual size of the progress bar
+    # @option options [Numeric] :start (0) The start value of the progress bar
     def initialize(options = {})
       if options.is_a? Numeric
         @maximum = options
@@ -43,8 +50,10 @@ module Rubikon
     # This triggers a refresh of the progress bar, if the added value actually
     # changes the displayed bar.
     #
-    # Example:
+    # @param [Numeric] value The amount to add to the progress bar
+    # @return [ProgressBar] The progress bar itself
     #
+    # @example Different alternatives to increase the progress
     #  progress_bar + 1 # (will add 1)
     #  progress_bar + 5 # (will add 5)
     #  progress_bar.+   # (will add 1)
@@ -65,6 +74,8 @@ module Rubikon
         @ostream.flush
         @ostream.puts '' if @progress == @size
       end
+
+      self
     end
 
   end

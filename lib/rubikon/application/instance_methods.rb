@@ -14,14 +14,23 @@ module Rubikon
 
   module Application
 
+    # This module contains all instance methods of +Application::Base+ and its
+    # subclasses.
+    #
+    # @author Sebastian Staudt
+    # @see Application::Base
+    # @since 0.2.0
     module InstanceMethods
 
+      # @return [String] The absolute path of the application
       attr_reader :path
 
-      # Initialize with default settings (see set for more detail)
+      # Initialize with default settings
       #
       # If you really need to override this in your application class, be sure
       # to call +super+
+      #
+      # @see #set
       def initialize
         @commands          = {}
         @global_parameters = {}
@@ -29,109 +38,25 @@ module Rubikon
         @parameters        = []
         @path              = File.dirname($0)
         @settings          = {
-          :autorun        => true,
-          :help_banner    => "Usage: #{$0}",
-          :istream        => $stdin,
-          :name           => self.class.to_s,
-          :ostream        => $stdout,
-          :raise_errors   => false
+          :autorun         => true,
+          :help_as_default => true,
+          :help_banner     => "Usage: #{$0}",
+          :istream         => $stdin,
+          :name            => self.class.to_s,
+          :ostream         => $stdout,
+          :raise_errors    => false
         }
-      end
-
-      # Prompts the user for input
-      #
-      # If +prompt+ is not empty this will display a prompt using
-      # <tt>prompt.to_s</tt>.
-      #
-      # +prompt+:: A String or other Object responding to +to_s+ used for
-      #            displaying a prompt to the user (default: <tt>''</tt>)
-      #
-      # Example:
-      #
-      #  action 'interactive' do
-      #    # Display a prompt "Please type something: "
-      #    user_provided_value = input 'Please type something'
-      #
-      #    # Do something with the data
-      #    ...
-      #  end
-      def input(prompt = '')
-        unless prompt.to_s.empty?
-          ostream << "#{prompt}: "
-        end
-        @settings[:istream].gets[0..-2]
-      end
-
-      # Convenience method for accessing the user-defined output stream
-      #
-      # Use this if you want to work directly with the output stream
-      #
-      # Example:
-      #
-      #  ostream.flush
-      def ostream
-        @settings[:ostream]
-      end
-
-      # Displays a progress bar while the given block is executed
-      #
-      # Inside the block you have access to a instance of ProgressBar. So you
-      # can update the progress using <tt>ProgressBar#+</tt>.
-      #
-      # +options+:: A Hash of options that should be passed to the ProgressBar
-      #             object. For available options see ProgressBar
-      # +block+::   The block to execute
-      #
-      # Example:
-      #
-      #  progress_bar(:maximum => 5) do |progress|
-      #    5.times do |file|
-      #      File.read("any#{file}.txt")
-      #      progress.+
-      #    end
-      #  end
-      def progress_bar(*options, &block)
-        hidden_output do |ostream|
-          options = options[0]
-          options[:ostream] = ostream
-
-          progress = ProgressBar.new(options)
-
-          block.call(progress)
-        end
-      end
-
-      # Output text using +IO#<<+ of the output stream
-      #
-      # +text+:: The text to write into the output stream
-      def put(text)
-        @settings[:ostream] << text
-        @settings[:ostream].flush
-      end
-
-      # Output a character using +IO#putc+ of the output stream
-      #
-      # +char+:: The character to write into the output stream
-      def putc(char)
-        @settings[:ostream].putc char
-      end
-
-      # Output a line of text using +IO#puts+ of the output stream
-      #
-      # +text+:: The text to write into the output stream
-      def puts(text)
-        @settings[:ostream].puts text
       end
 
       # Run this application
       #
-      # +args+:: The command line arguments that should be given to the
-      #          application as options
-      #
       # Calling this method explicitly is not required when you want to create
       # a simple application (having one main class inheriting from
       # Rubikon::Application). But it's useful for testing or if you want to
-      # havesome sort of sub-applications.
+      # have some sort of sub-applications.
+      #
+      # @param [Array<String>] args The command line arguments that should be
+      #        given to the application as options
       def run(args = ARGV)
         begin
           init unless @initialized
@@ -155,56 +80,13 @@ module Rubikon
         end
       end
 
-      # Sets an application setting
-      #
-      # +setting+:: The name of the setting to change, will be symbolized
-      #             first.
-      # +value+::   The value the setting should be changed to
-      #
-      # Available settings
-      # +autorun+::        If true, let the application run as soon as its
-      #                    class is defined
-      # +help_banner+::    Defines a banner for the help message
-      #                    (<em>unused</em>)
-      # +istream+::        Defines an input stream to use
-      # +name+::           Defines the name of the application
-      # +ostream+::        Defines an output stream to use
-      # +raise_errors+::   If true, raise errors, otherwise fail gracefully
-      #
-      # Example:
-      #
-      #  set :name, 'My App'
-      #  set :autorun, false
-      def set(setting, value)
-        @settings[setting.to_sym] = value
-      end
-
-      # Displays a throbber while the given block is executed
-      #
-      # Example:
-      #
-      #  command :slow do
-      #    throbber do
-      #      # Add some long running code here
-      #      ...
-      #    end
-      #  end
-      def throbber(&block)
-        hidden_output do |ostream|
-          code_thread = Thread.new { block.call }
-          throbber_thread = Throbber.new(ostream, code_thread)
-
-          code_thread.join
-          throbber_thread.join
-        end
-      end
-
       private
 
       # Returns the arguments for the currently executed Command
       #
-      # Example:
+      # @return [Array]
       #
+      # @example
       #  command :something do
       #    puts arguments[0]
       #  end
@@ -215,15 +97,17 @@ module Rubikon
 
       # Define a new application Command or an alias to an existing one
       #
-      # +name+::        The name of the Command as used in application
-      #                 parameters. This might also be a Hash where every key
-      #                 will be an alias to the corresponding value, e.g.
-      #                 <tt>{ :alias => :command }</tt>.
-      # +description+:: A description for this Command for use in the
-      #                 application's help screen (default: +nil+)
-      # +block+::       A block that contains the code that should be executed
-      #                 when this Command is called, i.e. when the application
-      #                 is called with the associated parameter
+      # @param [String, Hash] name The name of the Command as used in
+      #        application parameters. This might also be a Hash where every
+      #        key will be an alias to the corresponding value, e.g. <tt>{
+      #        :alias => :command }</tt>.
+      # @param [String] description A description for this Command for use in
+      #        the application's help screen
+      # @param [Proc] block A block that contains the code that should be
+      #        executed when this Command is called, i.e. when the application
+      #        is called with the associated parameter
+      #
+      # @return [Command]
       def command(name, description = nil, &block)
         if name.is_a? Hash
           name.each do |alias_name, command_name|
@@ -247,12 +131,14 @@ module Rubikon
           @commands[command.name] = command
         end
 
-        unless @parameters.empty?
+        unless command.nil? || @parameters.empty?
           @parameters.each do |parameter|
             command << parameter
           end
           @parameters.clear
         end
+
+        command
       end
 
       # Prints a debug message if <tt>$DEBUG</tt> is +true+, e.g. if the user
@@ -263,9 +149,11 @@ module Rubikon
 
       # Defines a global Flag for enabling debug output
       #
-      # This will define a Flag <tt>--debug</tt> and <tt>-d</tt> to enable
-      # debug output.
+      # This will define a Flag <tt>--debug</tt> (with alias <tt>-d</tt>) to
+      # enable debug output.
       # Using it sets Ruby's global variable <tt>$DEBUG</tt> to +true+.
+      #
+      # @return [Flag]
       def debug_flag
         global_flag :debug do
           $DEBUG = true
@@ -276,11 +164,13 @@ module Rubikon
       # Define the default Command of the application, i.e. the Command that is
       # called if no matching Command parameter can be found
       #
-      # +description+:: A description for this Command for use in the
-      #                 application's help screen (default: +nil+)
-      # +block+::       A block that contains the code that should be executed
-      #                 when this Command is called, i.e. when no Command
-      #                 parameter is given to the application
+      # @param [String] description A description for this Command for use in
+      #        the application's help screen
+      # @param [Proc] block A block that contains the code that should be
+      #        executed when this Command is called, i.e. when no command
+      #        parameter is given to the application
+      #
+      # @return [Command] The default Command object
       def default(description = nil, &block)
         if description.is_a? Symbol
           command({ :__default => description })
@@ -291,21 +181,20 @@ module Rubikon
 
       # Create a new Flag with the given name for the next Command
       #
-      # +name+::  The name of the Flag (without dashes). Dashes will be
-      #           automatically added (<tt>-</tt> for single-character flags,
-      #           <tt>--</tt> for other flags). This might also be a Hash where
-      #           every key will be an alias to the corresponding value, e.g.
-      #           <tt>{ :alias => :flag }</tt>.
-      # +block+:: An optional code block that should be executed if this Flag
-      #           is used
+      # @param [Symbol, #to_sym] name The name of the flag (without dashes).
+      #        Dashes will be automatically added (<tt>-</tt> for
+      #        single-character flags, <tt>--</tt> for other flags). This might
+      #        also be a Hash where every key will be an alias to the
+      #        corresponding value, e.g. <tt>{ :alias => :flag }</tt>.
+      # @param [Proc] block An optional code block that should be executed if
+      #        this flag is used
       #
-      # Example:
-      #
-      #   flag :status
-      #   flag :st => :status
-      #   command :something do
-      #     ...
-      #   end
+      # @example
+      #  flag :status
+      #  flag :st => :status
+      #  command :something do
+      #    ...
+      #  end
       def flag(name, &block)
         if name.is_a? Hash
           @parameters << name
@@ -317,8 +206,9 @@ module Rubikon
       # Checks whether parameter with the given name has been supplied by the
       # user on the command-line.
       #
-      # Example:
+      # @param [#to_sym] name The name of the parameter to check
       #
+      # @example
       #  flag :status
       #  command :something do
       #    print_status if given? :status
@@ -331,20 +221,23 @@ module Rubikon
         parameter.active?
       end
 
-      # Create a new Flag with the given name to be used globally
+      # Create a new flag with the given name to be used globally
       #
-      # +name+::  The name of the Flag (without dashes). Dashes will be
-      #           automatically added (<tt>-</tt> for single-character flags,
-      #           <tt>--</tt> for other flags). This might also be a Hash where
-      #           every key will be an alias to the corresponding value, e.g.
-      #           <tt>{ :alias => :flag }</tt>.
-      # +block+:: An optional code block that should be executed if this Flag
-      #           is used
+      # Global flags are not bound to any command and can therefore be used
+      # throughout the application with the same result.
       #
-      # Example:
+      # @param (see #flag)
+      # @see #flag
+      # @see Flag
       #
-      #   global_flag :quiet
-      #   global_flag :q => :quiet
+      # @example Define a global flag
+      #  global_flag :quiet
+      # @example Define a global flag with a block to execute
+      #  global_flag :quiet do
+      #    @quiet = true
+      #  end
+      # @example Define an alias to a global flag
+      #  global_flag :q => :quiet
       def global_flag(name, &block)
         if name.is_a? Hash
           name.each do |alias_name, flag_name|
@@ -400,7 +293,8 @@ module Rubikon
       # Hide output inside the given block and print it after the block has
       # finished
       #
-      # +block+:: The block that should not print output while it's running
+      # @param [Proc] block The block that should not print output while it's
+      #        running
       #
       # If the block needs to print to the real IO stream, it can access it
       # using its first parameter.
@@ -423,28 +317,69 @@ module Rubikon
         help_command
         verbose_flag
 
-        unless @commands.keys.include? :__default
+        if @settings[:help_as_default] && !@commands.keys.include?(:__default)
           default :help
         end
 
         @initialized = true
       end
 
+      # Prompts the user for input
+      #
+      # @param [String, #to_s] prompt A String or other Object responding to
+      #        +to_s+ used for displaying a prompt to the user
+      #
+      # @example Display a prompt "Please type something: "
+      #  action 'interactive' do
+      #    user_provided_value = input 'Please type something'
+      #
+      #    # Do something with the data
+      #    ...
+      #  end
+      def input(prompt = '')
+        unless prompt.to_s.empty?
+          ostream << "#{prompt}: "
+        end
+        @settings[:istream].gets[0..-2]
+      end
+
+      # Output text using +IO#<<+ of the output stream
+      #
+      # @param [String] text The text to write into the output stream
+      def put(text)
+        @settings[:ostream] << text
+        @settings[:ostream].flush
+      end
+
+      # Output a character using +IO#putc+ of the output stream
+      #
+      # @param [String, Numeric] char The character to write into the output
+      #        stream
+      def putc(char)
+        @settings[:ostream].putc char
+      end
+
+      # Output a line of text using +IO#puts+ of the output stream
+      #
+      # @param [String] text The text to write into the output stream
+      def puts(text)
+        @settings[:ostream].puts text
+      end
+
       # Create a new Option with the given name for the next Command
       #
-      # +name+::      The name of the Option (without dashes). Dashes will be
-      #               automatically added (+-+ for single-character options,
-      #               +--+ for other options). This might also be a Hash where
-      #               every key will be an alias to the corresponding value,
-      #               e.g. <tt>{ :alias => :option }</tt>.
-      # +arg_count+:: The number of arguments this Option takes. Use +0+ for no
-      #               arguments or a negative value for an arbitrary number of
-      #               arguments
-      # +block+::     An optional code block that should be executed if this
-      #               Option is used
+      # @param [Symbol, #to_sym] name The name of the Option (without dashes).
+      #        Dashes will be automatically added (+-+ for single-character
+      #        options, +--+ for other options). This might also be a Hash
+      #        where every key will be an alias to the corresponding value,
+      #        e.g. <tt>{ :alias => :option }</tt>.
+      # @param [Numeric] arg_count The number of arguments this option takes.
+      #        Use +0+ for no required arguments or a negative value for an
+      #        arbitrary number of arguments
+      # @param [Proc] block An optional code block that should be executed if
+      #        this option is used
       #
-      # Example:
-      #
+      # @example
       #   option :message,1
       #   option :m => :message
       #   command :something do
@@ -458,10 +393,24 @@ module Rubikon
         end
       end
 
-      # Returns the parameters for the currently executed Command
+      # Convenience method for accessing the user-defined output stream
       #
-      # Example:
+      # Use this if you want to work directly with the output stream
       #
+      # @return [IO] The output stream object - usually +$stdout+
+      #
+      # @example
+      #  ostream.flush
+      def ostream
+        @settings[:ostream]
+      end
+
+      # Returns the parameters for the currently executed command
+      #
+      # @return [Array] The parameters of the currently executed command
+      # @see Command
+      #
+      # @example
       #  option :message, 1
       #  command :something do
       #    puts parameters[:message].args[0] if given? :message
@@ -475,7 +424,10 @@ module Rubikon
       # user. This distinguishes between commands, global flags and command
       # flags
       #
-      # +args+:: An Array of Strings containing the command-line arguments
+      # @param [Array] args The command-line arguments
+      # @return [Command, Array<Symbol>, Array] The command to execute, the
+      #         parameters of this command that have been supplied and any
+      #         additional command-line arguments supplied
       def parse_arguments(args)
         command_arg = args.shift
         if command_arg.nil? || command_arg.start_with?('-')
@@ -506,11 +458,91 @@ module Rubikon
         return command, parameters, args
       end
 
+      # Displays a progress bar while the given block is executed
+      #
+      # Inside the block you have access to a instance of ProgressBar. So you
+      # can update the progress using <tt>ProgressBar#+</tt>.
+      #
+      # @param [Hash] options A Hash of options that should be passed to the
+      #        ProgressBar object.
+      # @param [Proc] block The block to execute
+      # @yield [ProgressBar] The given block may be used to change the values
+      #        of the progress bar
+      # @yieldparam [ProgressBar] progress The progress bar indicating the
+      #             progress of the block
+      #
+      # @example
+      #  progress_bar(:maximum => 5) do |progress|
+      #    5.times do |file|
+      #      File.read("any#{file}.txt")
+      #      progress.+
+      #    end
+      #  end
+      #
+      # @see ProgressBar
+      def progress_bar(*options, &block)
+        hidden_output do |ostream|
+          options = options[0]
+          options[:ostream] = ostream
+
+          progress = ProgressBar.new(options)
+
+          block.call(progress)
+        end
+      end
+
+      # Sets an application setting
+      #
+      # @param [Symbol, #to_sym] setting The name of the setting to change
+      # @param [Object] value The value the setting should be changed to
+      #
+      # Available settings
+      # +autorun+::        If true, let the application run as soon as its
+      #                    class is defined
+      # +help_banner+::    Defines a banner for the help message
+      #                    (<em>unused</em>)
+      # +istream+::        Defines an input stream to use
+      # +name+::           Defines the name of the application
+      # +ostream+::        Defines an output stream to use
+      # +raise_errors+::   If true, raise errors, otherwise fail gracefully
+      #
+      # @example
+      #  set :name, 'My App'
+      #  set :autorun, false
+      def set(setting, value)
+        @settings[setting.to_sym] = value
+      end
+
+      # Displays a throbber while the given block is executed
+      #
+      # @param [Proc] block The block to execute while the throbber is
+      #        displayed
+      # @yield While the block is executed a throbber is displayed
+      #
+      # @example Using the throbber helper
+      #  command :slow do
+      #    throbber do
+      #      # Add some long running code here
+      #      ...
+      #    end
+      #  end
+      def throbber(&block)
+        hidden_output do |ostream|
+          code_thread = Thread.new { block.call }
+          throbber_thread = Throbber.new(ostream, code_thread)
+
+          code_thread.join
+          throbber_thread.join
+        end
+      end
+
       # Defines a global Flag for enabling verbose output
       #
       # This will define a Flag <tt>--verbose</tt> and <tt>-v</tt> to enable
       # verbose output.
       # Using it sets Ruby's global variable <tt>$VERBOSE</tt> to +true+.
+      #
+      # @return [Flag] The debug Flag object
       def verbose_flag
         global_flag :verbose do
           $VERBOSE = true

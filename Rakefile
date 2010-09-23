@@ -1,9 +1,8 @@
-# This code is free software; you can redistribute it and/or modify it under the
-# terms of the new BSD License.
+# This code is free software; you can redistribute it and/or modify it under
+# the terms of the new BSD License.
 #
-# Copyright (c) 2009, Sebastian Staudt
+# Copyright (c) 2009-2010, Sebastian Staudt
 
-require 'rake/rdoctask'
 require 'rake/testtask'
 
 src_files = Dir.glob(File.join('lib', '**', '*.rb'))
@@ -26,25 +25,30 @@ begin
     gem.email = 'koraktor@gmail.com'
     gem.description = 'A simple to use, yet powerful Ruby framework for building console-based applications.'
     gem.date = Time.now
+    gem.files = %w(README.md Rakefile LICENSE VERSION.yml) + src_files + test_files
+    gem.has_rdoc = false
     gem.homepage = 'http://koraktor.github.com/rubikon'
     gem.name = gem.rubyforge_project = 'rubikon'
     gem.summary = 'Rubikon - A Ruby console app framework'
 
-    gem.files = %w(README.md Rakefile LICENSE VERSION.yml) + src_files + test_files
-    gem.rdoc_options = ['--all', '--inline-source', '--line-numbers', '--charset=utf-8', '--webcvs=http://github.com/koraktor/rubikon/blob/master/%s']
+    gem.add_development_dependency('jewler')
+    gem.add_development_dependency('yard')
   end
 rescue LoadError
-  puts "You need Jeweler to build the gem. Install it using `gem install jeweler`."
+  puts 'You need Jeweler to build the gem. Install it using `gem install jeweler`.'
 end
 
-# Create a rake task +:rdoc+ to build the documentation
-desc 'Building docs'
-Rake::RDocTask.new do |rdoc|
-  rdoc.title = 'Rubikon - API documentation'
-  rdoc.rdoc_files.include ['lib/**/*.rb', 'LICENSE', 'README.md']
-  rdoc.main = 'README.md'
-  rdoc.rdoc_dir = 'doc'
-  rdoc.options = ['--all', '--inline-source', '--line-numbers', '--charset=utf-8', '--webcvs=http://github.com/koraktor/rubikon/blob/master/%s']
+begin
+  require 'yard'
+  # Create a rake task +:doc+ to build the documentation using YARD
+  desc 'Building docs'
+  YARD::Rake::YardocTask.new do |yardoc|
+    yardoc.name    = 'doc'
+    yardoc.files   = ['lib/**/*.rb', 'LICENSE', 'README.md']
+    yardoc.options = ['--private', '--title', 'Rubikon &mdash; API Documentation']
+  end
+rescue LoadError
+  puts 'You need YARD to build the documentation. Install it using `gem install yard`.'
 end
 
 # Task for cleaning documentation and package directories

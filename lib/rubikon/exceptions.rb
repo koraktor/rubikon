@@ -5,9 +5,21 @@
 
 module Rubikon
 
+  # Raised by commands if no block is given and no corresponding command file
+  # exists
+  #
+  # @author Sebastian Staudt
+  # @see Command
+  # @since 0.1.0
   class BlockMissingError < ArgumentError
   end
 
+  # Raised by parameters that have been supplied with more arguments than they
+  # take
+  #
+  # @author Sebastian Staudt
+  # @see Parameter
+  # @see 0.3.0
   class ExtraArgumentError < ArgumentError
 
     def initialize(parameter)
@@ -16,6 +28,12 @@ module Rubikon
 
   end
 
+  # Raised by parameters that have been supplied with not all required
+  # arguments
+  #
+  # @author Sebastian Staudt
+  # @see Parameter
+  # @since 0.1.0
   class MissingArgumentError < ArgumentError
 
     def initialize(parameter)
@@ -24,6 +42,10 @@ module Rubikon
 
   end
 
+  # Raised if the user did not specify a command and no default command exists
+  #
+  # @author Sebastian Staudt
+  # @since 0.3.0
   class NoDefaultCommandError < ArgumentError
 
     def initialize
@@ -32,6 +54,10 @@ module Rubikon
 
   end
 
+  # Raised if a command has been supplied that does not exist
+  #
+  # @author Sebastian Staudt
+  # @since 0.3.0
   class UnknownCommandError < ArgumentError
 
     def initialize(name)
@@ -40,6 +66,10 @@ module Rubikon
 
   end
 
+  # Raised if a parameter has been supplied that does not exist
+  #
+  # @author Sebastian Staudt
+  # @since 0.3.0
   class UnknownParameterError < ArgumentError
 
     def initialize(name)
