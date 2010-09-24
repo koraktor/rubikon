@@ -115,10 +115,10 @@ class ApplicationTests < Test::Unit::TestCase
 
     should 'have a working DSL for command parameters' do
       params = @app.run(%w{parameters}).values.uniq
-      assert :flag, params[0].name
-      assert [:f], params[0].aliases
-      assert :option, params[1].name
-      assert [:o], params[1].aliases
+      assert_equal :flag, params[0].name
+      assert_equal [:f], params[0].aliases
+      assert_equal :option, params[1].name
+      assert_equal [:o], params[1].aliases
     end
 
   end

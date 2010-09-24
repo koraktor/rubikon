@@ -61,8 +61,8 @@ class CommandTests < Test::Unit::TestCase
       command.run(*%w{--test arg -t test})
       assert option.active?
       assert flag.active?
-      assert %w{test}, command.arguments
-      assert %w{arg}, command.parameters[:test].args
+      assert_equal %w{test}, command.arguments
+      assert_equal %w{arg}, command.parameters[:test].args
 
       assert_raise UnknownParameterError do
         command.run(*%w{--unknown})
