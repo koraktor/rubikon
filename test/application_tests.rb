@@ -114,7 +114,7 @@ class ApplicationTests < Test::Unit::TestCase
     end
 
     should 'have a working DSL for command parameters' do
-      params = @app.run(%w{parameters}).values.uniq
+      params = @app.run(%w{parameters}).values.uniq.sort { |a,b| a.name.to_s <=> b.name.to_s }
       assert_equal :flag, params[0].name
       assert_equal [:f], params[0].aliases
       assert_equal :option, params[1].name
