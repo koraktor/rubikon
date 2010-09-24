@@ -46,15 +46,18 @@ end
 
 begin
   require 'yard'
+
   # Create a rake task +:doc+ to build the documentation using YARD
-  desc 'Building docs'
   YARD::Rake::YardocTask.new do |yardoc|
     yardoc.name    = 'doc'
     yardoc.files   = ['lib/**/*.rb', 'LICENSE', 'README.md']
     yardoc.options = ['--private', '--title', 'Rubikon &mdash; API Documentation']
   end
 rescue LoadError
-  puts 'You need YARD to build the documentation. Install it using `gem install yard`.'
+  desc 'Generate YARD Documentation (not available)'
+  task :doc do
+    puts 'You need YARD to build the documentation. Install it using `gem install yard`.'
+  end
 end
 
 # Task for cleaning documentation and package directories
