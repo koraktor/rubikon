@@ -19,13 +19,19 @@ end
 
 begin
   require 'jeweler'
+
+  gemspec = Gem::Specification.new do |gem|
+    line = File.read('lib/rubikon.rb')[/^\s*VERSION\s*=\s*.*/]
+    gem.version = line.match(/.*VERSION\s*=\s*['"](.*)['"]/)[1]
+  end
+
   # Gem specification
-  Jeweler::Tasks.new do |gem|
+  Jeweler::Tasks.new(gemspec) do |gem|
     gem.authors = ['Sebastian Staudt']
     gem.email = 'koraktor@gmail.com'
     gem.description = 'A simple to use, yet powerful Ruby framework for building console-based applications.'
     gem.date = Time.now
-    gem.files = %w(README.md Rakefile LICENSE VERSION.yml) + src_files + test_files
+    gem.files = %w(README.md Rakefile LICENSE) + src_files + test_files
     gem.has_rdoc = false
     gem.homepage = 'http://koraktor.github.com/rubikon'
     gem.name = gem.rubyforge_project = 'rubikon'

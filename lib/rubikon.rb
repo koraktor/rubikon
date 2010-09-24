@@ -7,3 +7,9 @@ libdir = File.dirname(__FILE__)
 $:.unshift(libdir) unless $:.include?(libdir)
 
 require 'rubikon/application/base'
+
+module Rubikon
+
+  VERSION = '0.2.1'
+
+end

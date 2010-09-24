@@ -11,9 +11,6 @@ require 'rubikon/application/instance_methods'
 
 module Rubikon
 
-  version = YAML.load_file(File.join(File.dirname(__FILE__), '..', '..', '..', 'VERSION.yml'))
-  VERSION = "#{version[:major]}.#{version[:minor]}.#{version[:patch]}"
-
   module Application
 
     # The main class of Rubikon. Let your own application class inherit from
