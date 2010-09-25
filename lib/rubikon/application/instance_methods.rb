@@ -294,7 +294,7 @@ module Rubikon
           name.each do |alias_name, option_name|
             option = @global_parameters[option_name]
             if option.nil?
-              @global_parameters[option_name] = option_name
+              @global_parameters[alias_name] = option_name
             else
               option.aliases << alias_name
               @global_parameters[alias_name] = option
