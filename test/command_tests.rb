@@ -25,8 +25,8 @@ class CommandTests < Test::Unit::TestCase
     end
 
     should 'be a Parameter' do
-      assert Command.included_modules.include? Parameter
-      assert Command.new(@app, :command){}.is_a? Parameter
+      assert Command.included_modules.include?(Parameter)
+      assert Command.new(@app, :command){}.is_a?(Parameter)
     end
 
     should 'raise an exception when no appliation is given' do

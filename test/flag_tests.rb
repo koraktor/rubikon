@@ -10,8 +10,8 @@ class FlagTests < Test::Unit::TestCase
   context 'A Rubikon flag' do
 
     should 'be a Parameter' do
-      assert Flag.included_modules.include? Parameter
-      assert Flag.new(:test).is_a? Parameter
+      assert Flag.included_modules.include?(Parameter)
+      assert Flag.new(:test).is_a?(Parameter)
     end
 
     should 'call its code block if it is activated' do
