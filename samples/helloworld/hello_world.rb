@@ -6,14 +6,14 @@
 # Copyright (c) 2010, Sebastian Staudt
 
 if ENV['RUBIKON_DEV']
-  require File.join(File.dirname(__FILE__), '..', '..', 'lib', 'rubikon')
+  require File.join(File.expand_path(File.dirname(__FILE__)), '..', '..', 'lib', 'rubikon')
 else
   require 'rubygems'
   require 'rubikon'
 end
 
-# A more complex Rubikon application
-class ComplexSample < Rubikon::Application::Base
+# A relatively simple Hello World application using Rubikon
+class HelloWorld < Rubikon::Application::Base
 
   # Greet the whole world per default
   flag :more
