@@ -325,11 +325,24 @@ module Rubikon
             help[command.name.to_s] = command.description
           end
 
+          global_params = ''
+          @global_parameters.values.uniq.sort {|a,b| a.name.to_s <=> b.name.to_s }.each do |param|
+            global_params << ' ['
+            ([param.name] + param.aliases).each_with_index do |name, index|
+              name = name.to_s
+              global_params << '|' if index > 0
+              global_params << '-' if name.size > 1
+              global_params << "-#{name}"
+            end
+            global_params << ' ...' if param.is_a?(Option)
+            global_params << ']'
+          end
+
           default_description = help.delete('__default')
           if default_description.nil?
-            puts " command [args]\n\n"
+            puts "#{global_params} command [args]\n\n"
           else
-            puts " [command] [args]\n\n"
+            puts "#{global_params} [command] [args]\n\n"
             puts "Without command: #{default_description}\n\n"
           end
 

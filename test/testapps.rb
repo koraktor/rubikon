@@ -9,6 +9,11 @@ class TestApp < Application::Base
   set :name, 'Rubikon test application'
   set :raise_errors, true
 
+  global_option :go => :gopt
+  global_option :gopt, 1 do
+    @global = args[0]
+  end
+
   default do
     'default command'
   end

@@ -110,7 +110,7 @@ class ApplicationTests < Test::Unit::TestCase
 
     should 'have a working help command' do
       @app.run(%w{help})
-      assert_match /Usage: .* command \[args\]\n\nCommands:\n  help           Display this help screen\n  input          \n  object_id      \n  parameters     \n  progressbar    \n  throbber       \n/, @ostream.string
+      assert_match /Usage: [^ ]* \[--debug\|-d\] \[--gopt\|--go \.\.\.\] \[--verbose\|-v\] command \[args\]\n\nCommands:\n  help           Display this help screen\n  input          \n  object_id      \n  parameters     \n  progressbar    \n  throbber       \n/, @ostream.string
     end
 
     should 'have a working DSL for command parameters' do
