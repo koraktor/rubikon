@@ -7,6 +7,7 @@ require 'singleton'
 require 'yaml'
 
 require 'rubikon/application/class_methods'
+require 'rubikon/application/dsl_methods'
 require 'rubikon/application/instance_methods'
 
 module Rubikon
@@ -24,6 +25,7 @@ module Rubikon
         include Rubikon::Application::ClassMethods
       end
 
+      include Rubikon::Application::DSLMethods
       include Rubikon::Application::InstanceMethods
       include Singleton
 
