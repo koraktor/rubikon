@@ -19,7 +19,9 @@ module Rubikon
     include Parameter
 
     attr_accessor :description
-    attr_reader   :arguments, :parameters
+    attr_reader   :args, :params
+    alias_method  :arguments, :args
+    alias_method  :parameters, :params
 
     # Create a new application command with the given name with a reference to
     # the app it belongs to
@@ -38,8 +40,8 @@ module Rubikon
       raise ArgumentError unless app.is_a? Application::Base
       super(name, nil)
 
-      @app        = app
-      @parameters = {}
+      @app    = app
+      @params = {}
 
       if block_given?
         @block = block
@@ -63,22 +65,22 @@ module Rubikon
         parameter.each do |alias_name, name|
           alias_name = alias_name.to_sym
           name = name.to_sym
-          parameter = @parameters[name]
+          parameter = @params[name]
           if parameter.nil?
-            @parameters[alias_name] = name
+            @params[alias_name] = name
           else
             parameter.aliases << alias_name
-            @parameters[alias_name] = parameter
+            @params[alias_name] = parameter
           end
         end
       else
         raise ArgumentError unless parameter.is_a? Parameter
-        @parameters.each do |name, param|
+        @params.each do |name, param|
           if param == parameter.name
             parameter.aliases << name
           end
         end
-        @parameters[parameter.name] = parameter
+        @params[parameter.name] = parameter
       end
     end
 
@@ -89,14 +91,16 @@ module Rubikon
     # @param [Array<String>] args The arguments that have been passed to this
     #        command
     # @raise [UnknownParameterError] if an undefined parameter is passed to the
-    #        command @see Flag @see Option
+    #        command
+    # @see Flag
+    # @see Option
     def parse_arguments(args)
-      @arguments = []
+      @args = []
       parameter = nil
       args.each do |arg|
         if arg.start_with?('-')
           parameter_name = arg.start_with?('--') ? arg[2..-1] : arg[1..-1]
-          parameter = @parameters[parameter_name.to_sym]
+          parameter = @params[parameter_name.to_sym]
           raise UnknownParameterError.new(arg) if parameter.nil?
         end
 
@@ -106,13 +110,13 @@ module Rubikon
         end
 
         if parameter.nil? || !parameter.more_args?
-          @arguments << arg
+          @args << arg
         else
           parameter << arg
         end
       end
 
-      @parameters.values.each do |param|
+      @params.values.each do |param|
         param.check_args if param.is_a?(Option) && param.active?
       end
     end

@@ -9,6 +9,10 @@ $:.unshift(libdir) unless $:.include?(libdir)
 require 'core_ext/string'
 require 'rubikon/application/base'
 
+# A namespace module for all Rubikon related code
+#
+# @author Sebastian Staudt
+# @since 0.1.0
 module Rubikon
 
   VERSION = '0.2.1'

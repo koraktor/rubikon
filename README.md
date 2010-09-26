@@ -10,7 +10,7 @@ as more complex programs like RubyGems, Homebrew or even Git.
 
 ## Installation
 
-You can install Rubikon using RubyGem. This is the easiest way of installing
+You can install Rubikon using RubyGems. This is the easiest way of installing
 and recommended for most users.
 
     $ gem install rubikon
@@ -79,6 +79,7 @@ Rubikon's DSL:
       ...
     end
 
+
 Please see the `samples` directory for more in detail sample applications.
 
 **Warning**:
@@ -91,12 +92,12 @@ Contribute section if you want to help making Rubikon better.
 
 * A simple to use DSL
 * Automatic checks for option arguments
-* User defined type safety of option arguments
 * Built-in methods to capture user input
 * Built-in methods to display progress bars and throbbers
 
 ## Future plans
 
+* User defined type safety of option arguments
 * Automatic generation of help screens
 * Improved error handling
 * Built-in support for configuration files
@@ -105,10 +106,11 @@ Contribute section if you want to help making Rubikon better.
 ## Requirements
 
 * Linux, MacOS X or Windows
-* Ruby 1.8.6 or newer
+* Ruby 1.8.6 or newer (see the [compatibility page][4] in Rubikon's wiki)
 
 ## Contribute
 
+Rubikon is a open-source project. Therefore you are free to help improving it.
 There are several ways of contributing to Rubikon's development:
 
 * Build apps using it and spread the word.
@@ -147,3 +149,4 @@ file.
  [1]: http://github.com/koraktor/rubikon
  [2]: http://github.com/koraktor/rubikon/issues
  [3]: http://koraktor.github.com/rubikon
+ [4]: http://github.com/koraktor/rubikon/wiki/Compatibility

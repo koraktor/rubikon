@@ -32,7 +32,7 @@ module Rubikon
     # required arguments, but allows additional, optional arguments. A argument
     # count of 0 means there are no required arguments, but it allows optional
     # arguments. If you need a parameter that does not allow arguments at all
-    # you should use a Flag instead.
+    # you should use a flag instead.
     def initialize(name, arg_count = 0, &block)
       @active    = false
       @aliases   = []
@@ -84,7 +84,7 @@ module Rubikon
     # Checks the arguments for this parameter
     #
     # @raise [MissingArgumentError] if there are not enough arguments for
-    #                               this parameter.
+    #                               this parameter
     def check_args
       raise MissingArgumentError.new(@name) unless args_full?
     end
