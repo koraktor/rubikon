@@ -33,7 +33,7 @@ code {
     font-size:  12pt;
 }
 
-a code {
+a code, pre code {
     background: transparent;
 }
 
@@ -89,6 +89,12 @@ div#pledgie {
   position: absolute;
   top:      10px;
   right:    50px;
+}
+
+div#twitter {
+  position: absolute;
+  right:    50px;
+  top:      150px;
 }
 
 h1 {

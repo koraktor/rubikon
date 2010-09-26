@@ -9,9 +9,8 @@ Rubikon is a simple to use, yet powerful Ruby framework for building
 console-based applications.
 
 <div class="note">
-<h1>Warning:</h1><br />
-Rubikon is still in an early development stage. If you want to use it be aware
-that you will probably run into problems and or restrictions.
+<h1>Note:</h1><br />
+Rubikon is still in an early development stage.
 </div>
 
 Installation
@@ -21,25 +20,25 @@ You can install Rubikon using RubyGem. This is the easiest way of installing
 and recommended for most users.
 
 {% highlight bash %}
-    $ gem install rubikon
+  $ gem install rubikon
 {% endhighlight %}
 
 If you want to use the development code you should clone the Git repository:
 
 {% highlight bash %}
-    $ git clone git://github.com/koraktor/rubikon.git
-    $ cd rubikon
-    $ rake install
+  $ git clone git://github.com/koraktor/rubikon.git
+  $ cd rubikon
+  $ rake install
 {% endhighlight %}
 
 Requirements
 ============
 
-The Rubikon gem doesn't have any dependencies. Everything you need is a sane
-[Ruby](http://www.ruby-lang.org) environment including
-[RubyGems](http://www.rubygems.org). Any Ruby version from 1.8.6 onwards is
-supported.
+* Any other operating system which has a usable console and is supported by a
+  compatible Ruby implementation
+* Ruby 1.8.6 or newer (see the [wiki][1] for more details)
 
-If you want to work with the source code you will need
-[Git](http://git-scm.com) and
-[Jeweler](http://github.com/technicalpickles/jeweler).
+Right now, Rubikon doesn't have any dependencies. So there's nothing else to
+worry about.
+
+[1]: http://github.com/koraktor/rubikon/wiki/Compatibility

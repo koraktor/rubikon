@@ -11,7 +11,7 @@ Creating a Rubikon application is as simple as creating a Ruby class:
   require 'rubygems'
   require 'rubikon'
 
-  class MyApplication < Rubikon::Application
+  class MyApplication < Rubikon::Application::Base
   end
 {% endhighlight %}
 
@@ -31,25 +31,36 @@ This is done using `default` inside your application class:
 
 If you run this application it will just print `Hello World!`.
 
-Ok, this is nothing special, but you can also add command-line options to your
-appication using `action` inside your class:
+Ok, this is nothing special, but you can also add command-line arguments to
+your application using `command` inside your class:
 
 {% highlight ruby %}
-  action 'hello' do
+  command :hello do
     puts 'Hello World!'
   end
 {% endhighlight %}
 
-This way your application would do nothing when called without options, but it
-would print `Hello World!` when called using e.g. `ruby myapp.rb --hello`.
-Please note that Rubikon will add dashes to options by default. If you don't
-like this behaviour and want options like RubyGem's `install` or `update` just use
-the following inside your application class:
+This way your application would do nothing when called without arguments, but
+it would print `Hello World!` when called using `ruby myapp.rb hello`. A
+command is code that is executed when the application is called with the
+command's name as the first argument &ndash; just like RubyGem's `install` or
+Git's `commit`.
+
+Another part of Rubikon's DSL are flags and options. Both are parameter types
+that change the behaviour of the application. While a flag is a parameter
+without arguments, an option may take one or more additional arguments. Typical
+examples for flags are `--debug` or `--verbose` (or short `-d` and `-v`).
+RubyGem's `--version` is an example for an option that requires additional
+arguments. Flags and options are easily added to your application's commands
+using Rubikon's DSL:
 
 {% highlight ruby %}
-  set :dashed_options, false
+  flag :more
+  option :name, 2
+  command :hello do
+    # Code for command 'hello'
+  end
 {% endhighlight %}
 
-Please see the [`samples`][1] directory for more in detail sample applications.
-
- [1]: http://github.com/koraktor/rubikon/tree/master/samples/
+See the [Rubikon wiki](http://github.com/koraktor/rubikon/wiki) for further
+reference.
