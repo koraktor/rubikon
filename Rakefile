@@ -37,7 +37,7 @@ begin
     gem.name = gem.rubyforge_project = 'rubikon'
     gem.summary = 'Rubikon - A Ruby console app framework'
 
-    gem.add_development_dependency('jewler')
+    gem.add_development_dependency('jeweler')
     gem.add_development_dependency('yard')
   end
 rescue LoadError
