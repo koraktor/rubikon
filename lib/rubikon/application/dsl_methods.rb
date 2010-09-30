@@ -313,32 +313,6 @@ module Rubikon
       end
       alias_method :parameters, :params
 
-      # Output text using +IO#<<+ of the output stream
-      #
-      # @param [String] text The text to write into the output stream
-      # @since 0.2.0
-      def put(text)
-        @settings[:ostream] << text
-        @settings[:ostream].flush
-      end
-
-      # Output a character using +IO#putc+ of the output stream
-      #
-      # @param [String, Numeric] char The character to write into the output
-      #        stream
-      # @since 0.2.0
-      def putc(char)
-        @settings[:ostream].putc char
-      end
-
-      # Output a line of text using +IO#puts+ of the output stream
-      #
-      # @param [String] text The text to write into the output stream
-      # @since 0.2.0
-      def puts(text)
-        @settings[:ostream].puts text
-      end
-
       # Displays a progress bar while the given block is executed
       #
       # Inside the block you have access to a instance of ProgressBar. So you
@@ -371,6 +345,32 @@ module Rubikon
 
           block.call(progress)
         end
+      end
+
+      # Output text using +IO#<<+ of the output stream
+      #
+      # @param [String] text The text to write into the output stream
+      # @since 0.2.0
+      def put(text)
+        @settings[:ostream] << text
+        @settings[:ostream].flush
+      end
+
+      # Output a character using +IO#putc+ of the output stream
+      #
+      # @param [String, Numeric] char The character to write into the output
+      #        stream
+      # @since 0.2.0
+      def putc(char)
+        @settings[:ostream].putc char
+      end
+
+      # Output a line of text using +IO#puts+ of the output stream
+      #
+      # @param [String] text The text to write into the output stream
+      # @since 0.2.0
+      def puts(text)
+        @settings[:ostream].puts text
       end
 
       # Sets an application setting
