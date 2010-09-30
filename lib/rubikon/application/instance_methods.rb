@@ -34,6 +34,7 @@ module Rubikon
         @current_command       = nil
         @current_global_option = nil
         @global_parameters     = {}
+        @hooks                 = {}
         @initialized           = false
         @parameters            = []
         @path                  = File.dirname($0)
@@ -60,7 +61,11 @@ module Rubikon
       #        given to the application as options
       def run(args = ARGV)
         begin
-          init unless @initialized
+          unless @initialized
+            hook :pre_init
+            init
+            hook :post_init
+          end
 
           command, parameters, args = parse_arguments(args)
 
@@ -74,7 +79,9 @@ module Rubikon
           end
 
           @current_command = command
+          hook :post_execute
           result = command.run(*args)
+          hook :post_execute
           @current_command = nil
           result
         rescue
@@ -164,6 +171,13 @@ module Rubikon
 
         current_ostream << @settings[:ostream].string
         @settings[:ostream] = current_ostream
+      end
+
+      # Executes the hook with the secified name
+      #
+      # @param [Symbol] name The name of the hook to execute
+      def hook(name)
+        @hooks[name].call unless @hooks[name].nil?
       end
 
       # This method is called once for each application and is used to

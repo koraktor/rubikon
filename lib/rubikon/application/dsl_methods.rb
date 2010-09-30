@@ -316,6 +316,46 @@ module Rubikon
       end
       alias_method :parameters, :params
 
+      # Defines a block of code used as a hook that should be executed after
+      # the command execution has finished
+      #
+      # @param [Proc] The code block to execute after the command execution has
+      #        finished
+      # @since 0.4.0
+      def post_execute(&block)
+        @hooks[:post_execute] = block
+      end
+
+      # Defines a block of code used as a hook that should be executed after
+      # the application has been initialized
+      #
+      # @param [Proc] The code block to execute after the application has been
+      #        initialized
+      # @since 0.4.0
+      def post_init(&block)
+        @hooks[:post_init] = block
+      end
+
+      # Defines a block of code used as a hook that should be executed before
+      # the command has been started
+      #
+      # @param [Proc] The code block to execute before the command has been
+      #        started
+      # @since 0.4.0
+      def pre_execute(&block)
+        @hooks[:pre_execute] = block
+      end
+
+      # Defines a block of code used as a hook that should be executed before
+      # the application has been initialized
+      #
+      # @param [Proc] The code block to execute before the application has been
+      #        initialized
+      # @since 0.4.0
+      def pre_init(&block)
+        @hooks[:pre_init] = block
+      end
+
       # Displays a progress bar while the given block is executed
       #
       # Inside the block you have access to a instance of ProgressBar. So you
