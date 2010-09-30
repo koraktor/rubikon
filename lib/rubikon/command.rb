@@ -26,8 +26,8 @@ module Rubikon
     # Create a new application command with the given name with a reference to
     # the app it belongs to
     #
-    # @param [Application::Base] app A reference to the application 
-    #        instance this command belongs to
+    # @param [Application::Sandbox] app A reference to the sandboxed
+    #        application this command belongs to
     # @param [#to_sym] name The name of this command, used in application
     #        arguments
     # @param [Proc] block The code block which should be executed by this
@@ -37,7 +37,7 @@ module Rubikon
     # @raise [BlockMissingError] if no command code block is given and a
     #        command file does not exist
     def initialize(app, name, &block)
-      raise ArgumentError unless app.is_a? Application::Base
+      raise ArgumentError unless app.is_a? Application::Sandbox
       super(name, nil)
 
       @app    = app
@@ -49,13 +49,13 @@ module Rubikon
         @file_name = "#{@app.path}/commands/#{name}.rb"
         raise BlockMissingError unless File.exists?(@file_name)
         code = open(@file_name).read
-        @block = Proc.new { instance_eval(code) }
+        @block = Proc.new { @app.instance_eval(code) }
       end
     end
 
     # Add a new Parameter for this command
     #
-    # @param [Parameter, Hash] parameter The parameter to add to this 
+    # @param [Parameter, Hash] parameter The parameter to add to this
     #        command. This might also be a Hash where every key will be an
     #        alias to the corresponding value, e.g. <tt>{ :alias => :parameter
     #        }</tt>.

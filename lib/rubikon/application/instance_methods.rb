@@ -3,6 +3,7 @@
 #
 # Copyright (c) 2009-2010, Sebastian Staudt
 
+require 'rubikon/application/sandbox'
 require 'rubikon/command'
 require 'rubikon/exceptions'
 require 'rubikon/flag'
@@ -22,9 +23,6 @@ module Rubikon
     # @since 0.2.0
     module InstanceMethods
 
-      # @return [String] The absolute path of the application
-      attr_reader :path
-
       # Initialize with default settings
       #
       # If you really need to override this in your application class, be sure
@@ -39,6 +37,7 @@ module Rubikon
         @initialized           = false
         @parameters            = []
         @path                  = File.dirname($0)
+        @sandbox               = Sandbox.new(self)
         @settings              = {
           :autorun         => true,
           :help_as_default => true,
@@ -108,16 +107,20 @@ module Rubikon
       # This takes any defined commands and it's corresponding options and
       # descriptions and displays them in a user-friendly manner.
       def help_command
+        commands = @commands
+        global_parameters = @global_parameters
+        settings = @settings
+
         command :help, 'Display this help screen' do
-          put @settings[:help_banner]
+          put settings[:help_banner]
 
           help = {}
-          @commands.each_value do |command|
+          commands.each_value do |command|
             help[command.name.to_s] = command.description
           end
 
           global_params = ''
-          @global_parameters.values.uniq.sort {|a,b| a.name.to_s <=> b.name.to_s }.each do |param|
+          global_parameters.values.uniq.sort {|a,b| a.name.to_s <=> b.name.to_s }.each do |param|
             global_params << ' ['
             ([param.name] + param.aliases).each_with_index do |name, index|
               name = name.to_s
@@ -137,7 +140,7 @@ module Rubikon
             puts "Without command: #{default_description}\n\n"
           end
 
-          puts "Commands:"
+          puts 'Commands:'
           max_command_length = help.keys.max { |a, b| a.size <=> b.size }.size
           help.sort_by { |name, description| name }.each do |name, description|
             puts "  #{name.ljust(max_command_length)}    #{description}"

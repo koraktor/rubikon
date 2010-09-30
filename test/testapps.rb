@@ -44,6 +44,10 @@ class TestApp < Application::Base
     end
   end
 
+  command :sandbox do
+    send(args[0].to_sym)
+  end
+
   command :throbber do
     throbber do
       sleep 0.5

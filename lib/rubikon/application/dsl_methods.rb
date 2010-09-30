@@ -18,6 +18,9 @@ module Rubikon
 
       private
 
+      # @return [String] The absolute path of the application
+      attr_reader :path
+
       # Returns the arguments for the currently executed Command
       #
       # @return [Array]
@@ -62,7 +65,7 @@ module Rubikon
             end
           end
         else
-          command = Command.new(self, name, &block)
+          command = Command.new(@sandbox, name, &block)
           command.description = description unless description.nil?
           @commands.each do |command_alias, command_name|
             if command_name == command.name

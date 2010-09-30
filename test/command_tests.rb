@@ -19,14 +19,17 @@ class CommandTests < Test::Unit::TestCase
 
     setup do
       @app = DummyApp.instance
+      sandbox = nil
       @app.instance_eval do
         @path = File.dirname(__FILE__)
+        sandbox = @sandbox
       end
+      @sandbox = sandbox
     end
 
     should 'be a Parameter' do
       assert Command.included_modules.include?(Parameter)
-      assert Command.new(@app, :command){}.is_a?(Parameter)
+      assert Command.new(@sandbox, :command){}.is_a?(Parameter)
     end
 
     should 'raise an exception when no appliation is given' do
@@ -37,7 +40,7 @@ class CommandTests < Test::Unit::TestCase
 
     should 'raise an exception when no code block is given' do
       assert_raise BlockMissingError do
-        Command.new @app, :command
+        Command.new @sandbox, :command
       end
     end
 
@@ -45,7 +48,7 @@ class CommandTests < Test::Unit::TestCase
       description = 'This is a command'
       name        = :command
       assert_nothing_raised do
-        command = Command.new @app, name do end
+        command = Command.new @sandbox, name do end
         command.description = description
         assert_equal name, command.name
         assert_equal description, command.description
@@ -53,7 +56,7 @@ class CommandTests < Test::Unit::TestCase
     end
 
     should 'correctly parse given parameters' do
-      command = Command.new @app, :command do end
+      command = Command.new @sandbox, :command do end
       option = Option.new(:test, 1)
       command << option
       flag = Flag.new(:t)
@@ -70,7 +73,7 @@ class CommandTests < Test::Unit::TestCase
     end
 
     should 'allow parameter aliases' do
-      command = Command.new @app, :command do end
+      command = Command.new @sandbox, :command do end
       flag1 = Flag.new(:test)
       command << flag1
       flag2 = Flag.new(:test2)
@@ -83,7 +86,7 @@ class CommandTests < Test::Unit::TestCase
 
     should 'run the code supplied inside its block' do
       block_run = false
-      command = Command.new @app, :command do
+      command = Command.new @sandbox, :command do
         block_run = true
       end
       command.run
@@ -92,7 +95,7 @@ class CommandTests < Test::Unit::TestCase
 
     should 'run external code if no block is given' do
       @app.external_command_run = false
-      command = Command.new @app, :external_command
+      command = Command.new @sandbox, :external_command
       command.run
       assert @app.external_command_run
     end

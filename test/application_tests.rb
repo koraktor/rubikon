@@ -110,7 +110,7 @@ class ApplicationTests < Test::Unit::TestCase
 
     should 'have a working help command' do
       @app.run(%w{help})
-      assert_match /Usage: [^ ]* \[--debug\|-d\] \[--gopt\|--go \.\.\.\] \[--verbose\|-v\] command \[args\]\n\nCommands:\n  help           Display this help screen\n  input          \n  object_id      \n  parameters     \n  progressbar    \n  throbber       \n/, @ostream.string
+      assert_match /Usage: [^ ]* \[--debug\|-d\] \[--gopt\|--go \.\.\.\] \[--verbose\|-v\] command \[args\]\n\nCommands:\n  help           Display this help screen\n  input          \n  object_id      \n  parameters     \n  progressbar    \n  sandbox        \n  throbber       \n/, @ostream.string
     end
 
     should 'have a working DSL for command parameters' do
@@ -119,6 +119,14 @@ class ApplicationTests < Test::Unit::TestCase
       assert_equal [:f], params[0].aliases
       assert_equal :option, params[1].name
       assert_equal [:o], params[1].aliases
+    end
+
+    should 'be protected by a sandbox' do
+      %w{init parse_arguments run}.each do |method|
+        assert_raise NoMethodError do
+          @app.run(['sandbox', method])
+        end
+      end
     end
 
   end
