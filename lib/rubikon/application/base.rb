@@ -21,9 +21,7 @@ module Rubikon
     # @since 0.2.0
     class Base
 
-      class << self
-        include Rubikon::Application::ClassMethods
-      end
+      extend Rubikon::Application::ClassMethods
 
       include Rubikon::Application::DSLMethods
       include Rubikon::Application::InstanceMethods
