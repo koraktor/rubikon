@@ -38,6 +38,7 @@ begin
     gem.summary = 'Rubikon - A Ruby console app framework'
 
     gem.add_development_dependency('jeweler')
+    gem.add_development_dependency('shoulda')
     gem.add_development_dependency('yard')
   end
 rescue LoadError
