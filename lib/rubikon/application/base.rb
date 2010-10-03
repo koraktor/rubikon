@@ -12,6 +12,11 @@ require 'rubikon/application/instance_methods'
 
 module Rubikon
 
+  # The Application module contains all basic functionality of a Rubikon
+  # application
+  #
+  # @author Sebastian Staudt
+  # @since 0.2.0
   module Application
 
     # The main class of Rubikon. Let your own application class inherit from

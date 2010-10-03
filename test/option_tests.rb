@@ -5,7 +5,7 @@
 
 require 'test_helper'
 
-class FlagTests < Test::Unit::TestCase
+class OptionTests < Test::Unit::TestCase
 
   context 'A Rubikon option' do
 
