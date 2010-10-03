@@ -78,7 +78,7 @@ module Rubikon
 
         unless command.nil? || @parameters.empty?
           @parameters.each do |parameter|
-            command << parameter
+            command.add_param(parameter)
           end
           @parameters.clear
         end

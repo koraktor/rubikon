@@ -5,6 +5,7 @@
 
 require 'rubikon/application/base'
 require 'rubikon/exceptions'
+require 'rubikon/has_arguments'
 require 'rubikon/parameter'
 
 module Rubikon
@@ -17,6 +18,7 @@ module Rubikon
   class Command
 
     include Parameter
+    include HasArguments
 
     attr_accessor :description
     attr_reader   :args, :params
@@ -38,10 +40,13 @@ module Rubikon
     #        command file does not exist
     def initialize(app, name, &block)
       raise ArgumentError unless app.is_a? Application::Sandbox
-      super(name, nil)
+      super(name, &block)
 
-      @app    = app
-      @params = {}
+      @app       = app
+      @args      = []
+      @params    = {}
+
+      arg_count = 0
 
       if block_given?
         @block = block
@@ -53,14 +58,14 @@ module Rubikon
       end
     end
 
-    # Add a new Parameter for this command
+    # Add a new parameter for this command
     #
     # @param [Parameter, Hash] parameter The parameter to add to this
     #        command. This might also be a Hash where every key will be an
     #        alias to the corresponding value, e.g. <tt>{ :alias => :parameter
     #        }</tt>.
     # @see Parameter
-    def <<(parameter)
+    def add_param(parameter)
       if parameter.is_a? Hash
         parameter.each do |alias_name, name|
           alias_name = alias_name.to_sym
@@ -110,7 +115,7 @@ module Rubikon
         end
 
         if parameter.nil? || !parameter.more_args?
-          @args << arg
+          self << arg
         else
           parameter << arg
         end

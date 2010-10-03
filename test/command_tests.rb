@@ -58,9 +58,9 @@ class CommandTests < Test::Unit::TestCase
     should 'correctly parse given parameters' do
       command = Command.new @sandbox, :command do end
       option = Option.new(:test, 1)
-      command << option
+      command.add_param option
       flag = Flag.new(:t)
-      command << flag
+      command.add_param flag
       command.run(*%w{--test arg -t test})
       assert option.active?
       assert flag.active?
@@ -75,10 +75,10 @@ class CommandTests < Test::Unit::TestCase
     should 'allow parameter aliases' do
       command = Command.new @sandbox, :command do end
       flag1 = Flag.new(:test)
-      command << flag1
+      command.add_param flag1
       flag2 = Flag.new(:test2)
-      command << flag2
-      command << { :t => :test, :t2 => :test2 }
+      command.add_param flag2
+      command.add_param({ :t => :test, :t2 => :test2 })
       command.run(*%w{-t --t2})
       assert flag1.active?
       assert flag2.active?

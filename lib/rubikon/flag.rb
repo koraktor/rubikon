@@ -23,7 +23,7 @@ module Rubikon
     # @param name (see Parameter#initialize)
     # @param block (see Parameter#initialize)
     def initialize(name, &block)
-      super(name, 0, &block)
+      super(name, &block)
     end
 
     # Adds an argument to this flag
