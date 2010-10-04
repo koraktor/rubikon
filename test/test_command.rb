@@ -13,7 +13,7 @@ class DummyApp < Application::Base
 
 end
 
-class CommandTests < Test::Unit::TestCase
+class TestCommand < Test::Unit::TestCase
 
   context 'A Rubikon command' do
 

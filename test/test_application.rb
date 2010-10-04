@@ -6,7 +6,7 @@
 require 'test_helper'
 require 'testapps'
 
-class ApplicationTests < Test::Unit::TestCase
+class TestApplication < Test::Unit::TestCase
 
   context 'A Rubikon application\'s class' do
 

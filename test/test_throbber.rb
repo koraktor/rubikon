@@ -5,7 +5,7 @@
 
 require 'test_helper'
 
-class ThrobberTests < Test::Unit::TestCase
+class TestThrobber < Test::Unit::TestCase
 
   context 'A throbber' do
 

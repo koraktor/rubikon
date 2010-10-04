@@ -5,7 +5,7 @@
 
 require 'test_helper'
 
-class ProgressBarTests < Test::Unit::TestCase
+class TestProgressBar < Test::Unit::TestCase
 
   context 'A progress bar' do
 
