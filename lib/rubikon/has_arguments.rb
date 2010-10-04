@@ -57,6 +57,9 @@ module Rubikon
       elsif arg_count.is_a?(Range) || arg_count.is_a?(Array)
         @min_arg_count = arg_count.first
         @max_arg_count = arg_count.last
+      else
+        @min_arg_count = 0
+        @max_arg_count = 0
       end
     end
 
