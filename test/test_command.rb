@@ -56,7 +56,7 @@ class TestCommand < Test::Unit::TestCase
     end
 
     should 'correctly parse given parameters' do
-      command = Command.new @sandbox, :command do end
+      command = Command.new @sandbox, :command, 1 do end
       option = Option.new(:test, 1)
       command.add_param option
       flag = Flag.new(:t)

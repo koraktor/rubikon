@@ -32,13 +32,16 @@ module Rubikon
     #        application this command belongs to
     # @param [#to_sym] name The name of this command, used in application
     #        arguments
+    # @param [Range, Array, Numeric] arg_count The number of arguments this
+    #        command takes.
     # @param [Proc] block The code block which should be executed by this
     #        command
     # @raise [ArgumentError] if the given application object isn't a Rubikon
     #        application
     # @raise [BlockMissingError] if no command code block is given and a
     #        command file does not exist
-    def initialize(app, name, &block)
+    # @see HasArguments#arg_count=
+    def initialize(app, name, arg_count = nil, &block)
       raise ArgumentError unless app.is_a? Application::Sandbox
       super(name, &block)
 
@@ -46,7 +49,7 @@ module Rubikon
       @args      = []
       @params    = {}
 
-      arg_count = 0
+      self.arg_count = arg_count
 
       if block_given?
         @block = block

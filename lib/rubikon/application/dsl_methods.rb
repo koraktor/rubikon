@@ -53,7 +53,7 @@ module Rubikon
       #
       # @return [Command]
       # @since 0.2.0
-      def command(name, description = nil, &block)
+      def command(name, arg_count = nil, description = nil, &block)
         if name.is_a? Hash
           name.each do |alias_name, command_name|
             command = @commands[command_name]
@@ -65,7 +65,7 @@ module Rubikon
             end
           end
         else
-          command = Command.new(@sandbox, name, &block)
+          command = Command.new(@sandbox, name, arg_count, &block)
           command.description = description unless description.nil?
           @commands.each do |command_alias, command_name|
             if command_name == command.name

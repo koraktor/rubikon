@@ -118,7 +118,7 @@ module Rubikon
         global_parameters = @global_parameters
         settings = @settings
 
-        command :help, 'Display this help screen' do
+        command :help, nil, 'Display this help screen' do
           put settings[:help_banner]
 
           help = {}

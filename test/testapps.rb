@@ -44,7 +44,7 @@ class TestApp < Application::Base
     end
   end
 
-  command :sandbox do
+  command :sandbox, 1 do
     send(args[0].to_sym)
   end
 
