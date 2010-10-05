@@ -3,29 +3,13 @@
 #
 # Copyright (c) 2009-2010, Sebastian Staudt
 
-require 'test_helper'
-
-class DummyApp < Application::Base
-
-  set :autorun, false
-
-  attr_accessor :external_command_run
-
-end
+require 'test_parameter'
 
 class TestCommand < Test::Unit::TestCase
 
-  context 'A Rubikon command' do
+  include TestParameter
 
-    setup do
-      @app = DummyApp.instance
-      sandbox = nil
-      @app.instance_eval do
-        @path = File.dirname(__FILE__)
-        sandbox = @sandbox
-      end
-      @sandbox = sandbox
-    end
+  context 'A Rubikon command' do
 
     should 'be a Parameter' do
       assert Command.included_modules.include?(Parameter)
@@ -57,9 +41,9 @@ class TestCommand < Test::Unit::TestCase
 
     should 'correctly parse given parameters' do
       command = Command.new @sandbox, :command, 1 do end
-      option = Option.new(:test, 1)
+      option = Option.new(@sandbox, :test, 1)
       command.add_param option
-      flag = Flag.new(:t)
+      flag = Flag.new(@sandbox, :t)
       command.add_param flag
       command.run(*%w{--test arg -t test})
       assert option.active?
@@ -74,9 +58,9 @@ class TestCommand < Test::Unit::TestCase
 
     should 'allow parameter aliases' do
       command = Command.new @sandbox, :command do end
-      flag1 = Flag.new(:test)
+      flag1 = Flag.new(@sandbox, :test)
       command.add_param flag1
-      flag2 = Flag.new(:test2)
+      flag2 = Flag.new(@sandbox, :test2)
       command.add_param flag2
       command.add_param({ :t => :test, :t2 => :test2 })
       command.run(*%w{-t --t2})

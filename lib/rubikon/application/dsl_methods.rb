@@ -134,7 +134,7 @@ module Rubikon
         if name.is_a? Hash
           @parameters << name
         else
-          @parameters << Flag.new(name, &block)
+          @parameters << Flag.new(@sandbox, name, &block)
         end
       end
 
@@ -187,7 +187,7 @@ module Rubikon
             end
           end
         else
-          flag = Flag.new(name, &block)
+          flag = Flag.new(@sandbox, name, &block)
           @global_parameters.each do |flag_alias, flag_name|
             if flag_name == flag.name
               @global_parameters[flag_alias] = flag
@@ -228,7 +228,7 @@ module Rubikon
             end
           end
         else
-          option = Option.new(name, arg_count, &block)
+          option = Option.new(@sandbox, name, arg_count, &block)
           @global_parameters.each do |option_alias, option_name|
             if option_name == option.name
               @global_parameters[option_alias] = option
@@ -283,7 +283,7 @@ module Rubikon
         if name.is_a? Hash
           @parameters << name
         else
-          @parameters << Option.new(name.to_s, arg_count, &block)
+          @parameters << Option.new(@sandbox, name.to_s, arg_count, &block)
         end
       end
 

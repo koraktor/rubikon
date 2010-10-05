@@ -3,20 +3,32 @@
 #
 # Copyright (c) 2010, Sebastian Staudt
 
-require 'test_helper'
+require 'test_parameter'
 
 class TestOption < Test::Unit::TestCase
 
+  include TestParameter
+
   context 'A Rubikon option' do
+
+    setup do
+      @app = DummyApp.instance
+      sandbox = nil
+      @app.instance_eval do
+        @path = File.dirname(__FILE__)
+        sandbox = @sandbox
+      end
+      @sandbox = sandbox
+    end
 
     should 'be a Parameter' do
       assert Option.included_modules.include?(Parameter)
-      assert Option.new(:test).is_a?(Parameter)
+      assert Option.new(@sandbox, :test).is_a?(Parameter)
     end
 
     should 'call its code block if it is activated' do
       block_run = false
-      option = Option.new :test do
+      option = Option.new @sandbox, :test do
         block_run = true
       end
       option.active!
@@ -25,13 +37,13 @@ class TestOption < Test::Unit::TestCase
     end
 
     should 'have arguments' do
-      option = Option.new :test
+      option = Option.new @sandbox, :test
       assert option.respond_to?(:arg_count)
       assert option.respond_to?(:args)
     end
 
     should 'only have required arguments if argument count is > 0' do
-      option = Option.new :test, 2
+      option = Option.new @sandbox, :test, 2
       assert !option.args_full?
       assert option.more_args?
       option << 'argument'
@@ -50,7 +62,7 @@ class TestOption < Test::Unit::TestCase
     end
 
     should 'have required and optional arguments if argument count is < 0' do
-      option = Option.new :test, -1
+      option = Option.new @sandbox, :test, -1
       assert !option.args_full?
       assert option.more_args?
       assert_raise MissingArgumentError do
@@ -63,7 +75,7 @@ class TestOption < Test::Unit::TestCase
     end
 
     should 'only have optional arguments if argument count is 0' do
-      option = Option.new :test, 0
+      option = Option.new @sandbox, :test, 0
       assert option.args_full?
       assert option.more_args?
       option << 'argument'

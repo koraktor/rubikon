@@ -24,11 +24,14 @@ module Rubikon
     # @param [Symbol, #to_sym] name The name of the parameter
     # @param [Proc] block An optional code block to be executed if this
     #        parameter is used
-    def initialize(name, &block)
-      @active    = false
-      @aliases   = []
-      @block     = block
-      @name      = name.to_sym
+    def initialize(app, name, &block)
+      raise ArgumentError unless app.is_a? Application::Sandbox
+
+      @active  = false
+      @aliases = []
+      @app     = app
+      @block   = block
+      @name    = name.to_sym
     end
 
     # Marks this parameter as active when it has been supplied by the user on
@@ -36,7 +39,7 @@ module Rubikon
     # exists
     def active!
       @active = true
-      @block.call unless @block.nil?
+      @app.instance_eval(&@block) unless @block.nil?
     end
 
     # Returns whether this parameter has is active, i.e. it has been supplied

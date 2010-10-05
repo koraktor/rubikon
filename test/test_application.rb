@@ -108,9 +108,13 @@ class TestApplication < Test::Unit::TestCase
       $VERBOSE = false
     end
 
+    should 'have working global options' do
+      assert_equal 'test', @app.run(%w{globalopt --gopt test})
+    end
+
     should 'have a working help command' do
       @app.run(%w{help})
-      assert_match /Usage: [^ ]* \[--debug\|-d\] \[--gopt\|--go \.\.\.\] \[--verbose\|-v\] command \[args\]\n\nCommands:\n  help           Display this help screen\n  input          \n  object_id      \n  parameters     \n  progressbar    \n  sandbox        \n  throbber       \n/, @ostream.string
+      assert_match /Usage: [^ ]* \[--debug\|-d\] \[--gopt\|--go \.\.\.\] \[--verbose\|-v\] command \[args\]\n\nCommands:\n  globalopt      \n  help           Display this help screen\n  input          \n  object_id      \n  parameters     \n  progressbar    \n  sandbox        \n  throbber       \n/, @ostream.string
     end
 
     should 'have a working DSL for command parameters' do

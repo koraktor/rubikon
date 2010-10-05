@@ -3,6 +3,14 @@
 #
 # Copyright (c) 2009-2010, Sebastian Staudt
 
+class DummyApp < Application::Base
+
+  set :autorun, false
+
+  attr_accessor :external_command_run
+
+end
+
 class TestApp < Application::Base
 
   set :autorun, false
@@ -46,6 +54,10 @@ class TestApp < Application::Base
 
   command :sandbox, 1 do
     send(args[0].to_sym)
+  end
+
+  command :globalopt do
+    @global
   end
 
   command :throbber do

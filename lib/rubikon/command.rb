@@ -42,10 +42,8 @@ module Rubikon
     #        command file does not exist
     # @see HasArguments#arg_count=
     def initialize(app, name, arg_count = nil, &block)
-      raise ArgumentError unless app.is_a? Application::Sandbox
-      super(name, &block)
+      super(app, name, &block)
 
-      @app       = app
       @args      = []
       @params    = {}
 

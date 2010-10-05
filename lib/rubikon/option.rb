@@ -29,8 +29,8 @@ module Rubikon
     # @param [Proc] block An optional code block to be executed if this
     #        option is used
     # @see HasArguments#arg_count=
-    def initialize(name, arg_count = 0, &block)
-      super(name, &block)
+    def initialize(app, name, arg_count = 0, &block)
+      super(app, name, &block)
 
       @args          = []
       self.arg_count = arg_count

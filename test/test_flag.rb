@@ -3,20 +3,32 @@
 #
 # Copyright (c) 2010, Sebastian Staudt
 
-require 'test_helper'
+require 'test_parameter'
 
 class TestFlag < Test::Unit::TestCase
 
+  include TestParameter
+
   context 'A Rubikon flag' do
+
+    setup do
+      @app = DummyApp.instance
+      sandbox = nil
+      @app.instance_eval do
+        @path = File.dirname(__FILE__)
+        sandbox = @sandbox
+      end
+      @sandbox = sandbox
+    end
 
     should 'be a Parameter' do
       assert Flag.included_modules.include?(Parameter)
-      assert Flag.new(:test).is_a?(Parameter)
+      assert Flag.new(@sandbox, :test).is_a?(Parameter)
     end
 
     should 'call its code block if it is activated' do
       block_run = false
-      flag = Flag.new :flag do
+      flag = Flag.new @sandbox, :flag do
         block_run = true
       end
       flag.active!
@@ -25,7 +37,7 @@ class TestFlag < Test::Unit::TestCase
     end
 
     should 'not allow any arguments' do
-      flag = Flag.new :test
+      flag = Flag.new @sandbox, :test
       assert_raise ExtraArgumentError do
         flag << 'argument'
       end
