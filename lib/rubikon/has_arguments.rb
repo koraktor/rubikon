@@ -19,6 +19,18 @@ module Rubikon
     attr_reader :args
     alias_method :arguments, :args
 
+    # Access the arguments of this object using a numeric or symbolic index
+    #
+    # @param [Numeric, Symbol] The index of the argument to return. Numeric
+    #        indices can be used always while symbolic arguments are only
+    #        available for named arguments.
+    # @return The argument with the specified index
+    # @since 0.4.0
+    def [](arg)
+      arg = @arg_names.index(arg) if arg.is_a? Symbol
+      @args[arg]
+    end
+
     # Adds an argument to this object. Arguments can be accessed inside the
     # application code using the args method.
     #
@@ -27,6 +39,7 @@ module Rubikon
     # @raise [ExtraArgumentError] if the parameter has all required arguments
     #        supplied and does not take optional arguments
     # @return [Array] The supplied arguments of this object
+    # @see #[]
     # @see #args
     # @since 0.3.0
     def <<(arg)
@@ -50,6 +63,7 @@ module Rubikon
     #        Finally an array of symbols enables named arguments where the
     #        argument count is the size of the array and each argument is named
     #        after the corresponding symbol.
+    # @see #[]
     # @see #args
     def arg_count=(arg_count)
       @arg_names = nil

@@ -17,12 +17,12 @@ class HelloWorld < Rubikon::Application::Base
 
   # Greet the whole world per default
   flag :more
-  option :name, 1
+  option :name, [:who]
   option :names, -1
   default 'Simple hello world' do
     debug 'Starting to greet the world...'
     if given? :name
-      greet parameters[:name].args[0]
+      greet parameters[:name][:who]
     elsif given? :names
       parameters[:names].args.each do |name|
         greet name
