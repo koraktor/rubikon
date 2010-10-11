@@ -19,14 +19,15 @@ module Rubikon
     attr_reader :args
     alias_method :arguments, :args
 
-    # Adds an argument to this parameter. Parameter arguments can be accessed
-    # inside the Application code using the parameter's args method.
+    # Adds an argument to this object. Arguments can be accessed inside the
+    # application code using the args method.
     #
     # @param [String] arg The argument to add to the supplied arguments of this
     #        parameter
     # @raise [ExtraArgumentError] if the parameter has all required arguments
     #        supplied and does not take optional arguments
-    # @return [Array] The supplied arguments of this parameter
+    # @return [Array] The supplied arguments of this object
+    # @see #args
     # @since 0.3.0
     def <<(arg)
       if args_full? && @args.size == @max_arg_count
@@ -35,7 +36,8 @@ module Rubikon
       @args << arg
     end
 
-    # Set the allowed range of argument counts this object takes
+    # Set the allowed range of argument counts this object takes. Additionally
+    # arguments may be named.
     #
     # @param [Fixnum, Range, Array] arg_count A range or array allows any
     #        number of arguments inside the limits between the first and the
@@ -45,7 +47,12 @@ module Rubikon
     #        the amount of required arguments, but allows additional, optional
     #        arguments. A argument count of 0 means there are no required
     #        arguments, but it allows optional arguments.
+    #        Finally an array of symbols enables named arguments where the
+    #        argument count is the size of the array and each argument is named
+    #        after the corresponding symbol.
+    # @see #args
     def arg_count=(arg_count)
+      @arg_names = nil
       if arg_count.is_a? Fixnum
         if arg_count > 0
           @min_arg_count = arg_count
@@ -54,6 +61,9 @@ module Rubikon
           @min_arg_count = -arg_count
           @max_arg_count = -1
         end
+      elsif arg_count.is_a?(Array) && arg_count.all? { |a| a.is_a? Symbol }
+        @max_arg_count = @min_arg_count = arg_count.size
+        @arg_names = arg_count
       elsif arg_count.is_a?(Range) || arg_count.is_a?(Array)
         @min_arg_count = arg_count.first
         @max_arg_count = arg_count.last
