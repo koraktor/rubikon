@@ -21,8 +21,9 @@ class TestOption < Test::Unit::TestCase
       @sandbox = sandbox
     end
 
-    should 'be a Parameter' do
+    should 'be a Parameter with arguments' do
       assert Option.included_modules.include?(Parameter)
+      assert Option.included_modules.include?(HasArguments)
       assert Option.new(@sandbox, :test).is_a?(Parameter)
     end
 
@@ -34,52 +35,6 @@ class TestOption < Test::Unit::TestCase
       option.active!
       assert option.active?
       assert block_run
-    end
-
-    should 'have arguments' do
-      option = Option.new @sandbox, :test
-      assert option.respond_to?(:arg_count)
-      assert option.respond_to?(:args)
-    end
-
-    should 'only have required arguments if argument count is > 0' do
-      option = Option.new @sandbox, :test, 2
-      assert !option.args_full?
-      assert option.more_args?
-      option << 'argument'
-      assert_equal %w{argument}, option.args
-      assert_raise MissingArgumentError do
-        option.check_args
-      end
-      option << 'argument'
-      assert option.args_full?
-      assert !option.more_args?
-      assert_equal %w{argument argument}, option.args
-      assert_raise ExtraArgumentError do
-        option << 'argument'
-      end
-      assert_equal %w{argument argument}, option.args
-    end
-
-    should 'have required and optional arguments if argument count is < 0' do
-      option = Option.new @sandbox, :test, -1
-      assert !option.args_full?
-      assert option.more_args?
-      assert_raise MissingArgumentError do
-        option.check_args
-      end
-      option << 'argument'
-      assert option.args_full?
-      assert option.more_args?
-      assert_equal %w{argument}, option.args
-    end
-
-    should 'only have optional arguments if argument count is 0' do
-      option = Option.new @sandbox, :test, 0
-      assert option.args_full?
-      assert option.more_args?
-      option << 'argument'
-      assert_equal %w{argument}, option.args
     end
 
   end
