@@ -72,7 +72,7 @@ module Rubikon
       if add_progress > 0
         @ostream << @progress_char * add_progress
         @ostream.flush
-        @ostream.puts '' if @progress == @size
+        @ostream.putc 10 if @progress == @size
       end
 
       self
