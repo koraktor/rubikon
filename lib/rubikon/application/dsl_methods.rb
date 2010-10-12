@@ -19,24 +19,6 @@ module Rubikon
       # @return [String] The absolute path of the application
       attr_reader :path
 
-      # Returns the arguments for the currently executed Command
-      #
-      # @return [Array]
-      # @since 0.2.0
-      #
-      # @example
-      #  command :something do
-      #    puts arguments[0]
-      #  end
-      def args
-        unless @current_command.nil?
-          @current_command.arguments
-        else
-          @current_global_option.arguments
-        end
-      end
-      alias_method :arguments, :args
-
       private
 
       # Define a new application Command or an alias to an existing one
@@ -299,22 +281,6 @@ module Rubikon
       def ostream
         @settings[:ostream]
       end
-
-      # Returns the parameters for the currently executed command
-      #
-      # @return [Array] The parameters of the currently executed command
-      # @see Command
-      # @since 0.2.0
-      #
-      # @example
-      #  option :message, 1
-      #  command :something do
-      #    puts parameters[:message].args[0] if given? :message
-      #  end
-      def params
-        @current_command.parameters
-      end
-      alias_method :parameters, :params
 
       # Defines a block of code used as a hook that should be executed after
       # the command execution has finished

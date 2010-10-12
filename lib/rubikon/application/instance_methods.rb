@@ -77,12 +77,12 @@ module Rubikon
           command, parameters, args = parse_arguments(args)
 
           parameters.each do |parameter|
+            @current_global_param = parameter
             if parameter.is_a? Option
               parameter.check_args
-              @current_global_option = parameter
             end
             parameter.active!
-            @current_global_option = nil
+            @current_global_param = nil
           end
 
           @current_command = command
@@ -201,6 +201,32 @@ module Rubikon
         end
 
         @initialized = true
+      end
+
+      # This is used to determine the receiver of a method call inside the
+      # application code.
+      #
+      # This is used to have a convenient way to access e.g. paramter
+      # arguments.
+      #
+      # This will delegate a method call to the currently executed parameter
+      # if the receiving object exists and responds to the desired method.
+      # Currently executed means the application's execution is inside a
+      # parameter's code block at the moment, i.e. a call to a missing method
+      # inside a parameter's code block will trigger this behavior.
+      #
+      # @example Access a command's arguments
+      #   command :args, [:one, :two] do
+      #     puts "One: #{[:one]}, Two: #{[:two]}"
+      #   end
+      # @since 0.4.0
+      def method_missing(name, *args, &block)
+        receiver = @current_param || @current_global_param || @current_command
+        if receiver.nil? || !receiver.respond_to?(name)
+          super
+        else
+          receiver.send(name, *args, &block)
+        end
       end
 
       # Parses the command-line arguments given to the application by the

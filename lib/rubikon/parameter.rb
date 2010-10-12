@@ -19,6 +19,7 @@ module Rubikon
 
     # @return [Symbol] The primary name of this parameter
     attr_reader :name
+
     # Creates a new parameter with the given name
     #
     # @param [Symbol, #to_sym] name The name of the parameter

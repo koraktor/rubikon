@@ -18,14 +18,6 @@ module Rubikon
 
     include Parameter
 
-    # Creates a new flag with the given name and an optional code block
-    #
-    # @param name (see Parameter#initialize)
-    # @param block (see Parameter#initialize)
-    def initialize(app, name, &block)
-      super(app, name, &block)
-    end
-
     # Adds an argument to this flag
     #
     # @param arg (see Parameter#<<)
