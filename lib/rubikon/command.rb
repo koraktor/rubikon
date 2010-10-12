@@ -111,7 +111,9 @@ module Rubikon
         end
 
         unless parameter.nil? || parameter.active?
+          @app.current_param = parameter
           parameter.active!
+          @app.current_param = nil
           next
         end
 

@@ -23,6 +23,9 @@ module Rubikon
     # @since 0.2.0
     module InstanceMethods
 
+      # @param [Parameter] Sets the parameter that's currently executed
+      attr_writer :current_param
+
       # @return [Application::Sandbox] The sandbox this application runs in
       attr_reader :sandbox
 
@@ -33,16 +36,17 @@ module Rubikon
       #
       # @see #set
       def initialize
-        @commands              = {}
-        @current_command       = nil
-        @current_global_option = nil
-        @global_parameters     = {}
-        @hooks                 = {}
-        @initialized           = false
-        @parameters            = []
-        @path                  = File.dirname($0)
-        @sandbox               = Sandbox.new(self)
-        @settings              = {
+        @commands             = {}
+        @current_command      = nil
+        @current_global_param = nil
+        @current_param        = nil
+        @global_parameters    = {}
+        @hooks                = {}
+        @initialized          = false
+        @parameters           = []
+        @path                 = File.dirname($0)
+        @sandbox              = Sandbox.new(self)
+        @settings             = {
           :autorun         => true,
           :help_as_default => true,
           :help_banner     => "Usage: #{$0}",
