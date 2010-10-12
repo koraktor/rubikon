@@ -11,24 +11,14 @@ class TestFlag < Test::Unit::TestCase
 
   context 'A Rubikon flag' do
 
-    setup do
-      @app = DummyApp.instance
-      sandbox = nil
-      @app.instance_eval do
-        @path = File.dirname(__FILE__)
-        sandbox = @sandbox
-      end
-      @sandbox = sandbox
-    end
-
     should 'be a Parameter' do
       assert Flag.included_modules.include?(Parameter)
-      assert Flag.new(@sandbox, :test).is_a?(Parameter)
+      assert Flag.new(@app, :test).is_a?(Parameter)
     end
 
     should 'call its code block if it is activated' do
       block_run = false
-      flag = Flag.new @sandbox, :flag do
+      flag = Flag.new @app, :flag do
         block_run = true
       end
       flag.active!
@@ -37,7 +27,7 @@ class TestFlag < Test::Unit::TestCase
     end
 
     should 'not allow any arguments' do
-      flag = Flag.new @sandbox, :test
+      flag = Flag.new @app, :test
       assert_raise ExtraArgumentError do
         flag << 'argument'
       end

@@ -25,7 +25,7 @@ module Rubikon
     # @param [Proc] block An optional code block to be executed if this
     #        parameter is used
     def initialize(app, name, &block)
-      raise ArgumentError unless app.is_a? Application::Sandbox
+      raise ArgumentError unless app.is_a? Application::Base
 
       @active  = false
       @aliases = []
@@ -39,7 +39,7 @@ module Rubikon
     # exists
     def active!
       @active = true
-      @app.instance_eval(&@block) unless @block.nil?
+      @app.sandbox.instance_eval(&@block) unless @block.nil?
     end
 
     # Returns whether this parameter has is active, i.e. it has been supplied

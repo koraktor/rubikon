@@ -11,25 +11,15 @@ class TestOption < Test::Unit::TestCase
 
   context 'A Rubikon option' do
 
-    setup do
-      @app = DummyApp.instance
-      sandbox = nil
-      @app.instance_eval do
-        @path = File.dirname(__FILE__)
-        sandbox = @sandbox
-      end
-      @sandbox = sandbox
-    end
-
     should 'be a Parameter with arguments' do
       assert Option.included_modules.include?(Parameter)
       assert Option.included_modules.include?(HasArguments)
-      assert Option.new(@sandbox, :test).is_a?(Parameter)
+      assert Option.new(@app, :test).is_a?(Parameter)
     end
 
     should 'call its code block if it is activated' do
       block_run = false
-      option = Option.new @sandbox, :test do
+      option = Option.new @app, :test do
         block_run = true
       end
       option.active!

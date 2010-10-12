@@ -16,8 +16,6 @@ module Rubikon
     # @since 0.3.0
     module DSLMethods
 
-      private
-
       # @return [String] The absolute path of the application
       attr_reader :path
 
@@ -38,6 +36,8 @@ module Rubikon
         end
       end
       alias_method :arguments, :args
+
+      private
 
       # Define a new application Command or an alias to an existing one
       #
@@ -65,7 +65,7 @@ module Rubikon
             end
           end
         else
-          command = Command.new(@sandbox, name, arg_count, &block)
+          command = Command.new(self, name, arg_count, &block)
           command.description = description unless description.nil?
           @commands.each do |command_alias, command_name|
             if command_name == command.name
@@ -134,7 +134,7 @@ module Rubikon
         if name.is_a? Hash
           @parameters << name
         else
-          @parameters << Flag.new(@sandbox, name, &block)
+          @parameters << Flag.new(self, name, &block)
         end
       end
 
@@ -187,7 +187,7 @@ module Rubikon
             end
           end
         else
-          flag = Flag.new(@sandbox, name, &block)
+          flag = Flag.new(self, name, &block)
           @global_parameters.each do |flag_alias, flag_name|
             if flag_name == flag.name
               @global_parameters[flag_alias] = flag
@@ -228,7 +228,7 @@ module Rubikon
             end
           end
         else
-          option = Option.new(@sandbox, name, arg_count, &block)
+          option = Option.new(self, name, arg_count, &block)
           @global_parameters.each do |option_alias, option_name|
             if option_name == option.name
               @global_parameters[option_alias] = option
@@ -283,7 +283,7 @@ module Rubikon
         if name.is_a? Hash
           @parameters << name
         else
-          @parameters << Option.new(@sandbox, name.to_s, arg_count, &block)
+          @parameters << Option.new(self, name.to_s, arg_count, &block)
         end
       end
 

@@ -13,7 +13,7 @@ class TestCommand < Test::Unit::TestCase
 
     should 'be a Parameter' do
       assert Command.included_modules.include?(Parameter)
-      assert Command.new(@sandbox, :command){}.is_a?(Parameter)
+      assert Command.new(@app, :command){}.is_a?(Parameter)
     end
 
     should 'raise an exception when no appliation is given' do
@@ -24,7 +24,7 @@ class TestCommand < Test::Unit::TestCase
 
     should 'raise an exception when no code block is given' do
       assert_raise BlockMissingError do
-        Command.new @sandbox, :command
+        Command.new @app, :command
       end
     end
 
@@ -32,7 +32,7 @@ class TestCommand < Test::Unit::TestCase
       description = 'This is a command'
       name        = :command
       assert_nothing_raised do
-        command = Command.new @sandbox, name do end
+        command = Command.new @app, name do end
         command.description = description
         assert_equal name, command.name
         assert_equal description, command.description
@@ -40,10 +40,10 @@ class TestCommand < Test::Unit::TestCase
     end
 
     should 'correctly parse given parameters' do
-      command = Command.new @sandbox, :command, 1 do end
-      option = Option.new(@sandbox, :test, 1)
+      command = Command.new @app, :command, 1 do end
+      option = Option.new(@app, :test, 1)
       command.add_param option
-      flag = Flag.new(@sandbox, :t)
+      flag = Flag.new(@app, :t)
       command.add_param flag
       command.run(*%w{--test arg -t test})
       assert option.active?
@@ -57,10 +57,10 @@ class TestCommand < Test::Unit::TestCase
     end
 
     should 'allow parameter aliases' do
-      command = Command.new @sandbox, :command do end
-      flag1 = Flag.new(@sandbox, :test)
+      command = Command.new @app, :command do end
+      flag1 = Flag.new(@app, :test)
       command.add_param flag1
-      flag2 = Flag.new(@sandbox, :test2)
+      flag2 = Flag.new(@app, :test2)
       command.add_param flag2
       command.add_param({ :t => :test, :t2 => :test2 })
       command.run(*%w{-t --t2})
@@ -70,7 +70,7 @@ class TestCommand < Test::Unit::TestCase
 
     should 'run the code supplied inside its block' do
       block_run = false
-      command = Command.new @sandbox, :command do
+      command = Command.new @app, :command do
         block_run = true
       end
       command.run
@@ -78,10 +78,9 @@ class TestCommand < Test::Unit::TestCase
     end
 
     should 'run external code if no block is given' do
-      @app.external_command_run = false
-      command = Command.new @sandbox, :external_command
+      command = Command.new @app, :external_command
       command.run
-      assert @app.external_command_run
+      assert @app.sandbox.instance_variable_get(:@external_command_run)
     end
 
   end

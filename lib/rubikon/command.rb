@@ -55,7 +55,7 @@ module Rubikon
         @file_name = "#{@app.path}/commands/#{name}.rb"
         raise BlockMissingError unless File.exists?(@file_name)
         code = open(@file_name).read
-        @block = Proc.new { @app.instance_eval(code) }
+        @block = Proc.new { @app.sandbox.instance_eval(code) }
       end
     end
 
@@ -133,7 +133,7 @@ module Rubikon
     #        command
     def run(*args)
       parse_arguments(args)
-      @app.instance_eval(&@block)
+      @app.sandbox.instance_eval(&@block)
     end
 
   end

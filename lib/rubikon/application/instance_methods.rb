@@ -23,6 +23,9 @@ module Rubikon
     # @since 0.2.0
     module InstanceMethods
 
+      # @return [Application::Sandbox] The sandbox this application runs in
+      attr_reader :sandbox
+
       # Initialize with default settings
       #
       # If you really need to override this in your application class, be sure
