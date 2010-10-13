@@ -28,7 +28,7 @@ Creating a Rubikon application is as simple as creating a Ruby class:
     require 'rubygems'
     require 'rubikon'
 
-    class MyApplication < Rubikon::Application
+    class MyApplication < Rubikon::Application::Base
     end
 
 If you save this code in a file called `myapp.rb` you can run it using
@@ -39,7 +39,7 @@ even more easily by typing `./myapp.rb`.
 Now go on and define what your application should do when the user runs it.
 This is done using `default`:
 
-    class MyApplication < Rubikon::Application
+    class MyApplication < Rubikon::Application::Base
 
       default do
         puts 'Hello World!'
@@ -49,9 +49,9 @@ This is done using `default`:
 
 If you run this application it will just print `Hello World!`.
 
-You can also add command-line options to your appication using `command`:
+You can also add command-line options to your application using `command`:
 
-    class MyApplication < Rubikon::Application
+    class MyApplication < Rubikon::Application::Base
 
       command :hello do
         puts 'Hello World!'
@@ -85,8 +85,8 @@ Please see the `samples` directory for more in detail sample applications.
 **Warning**:
 
 Rubikon is still in an early development stage. If you want to use it be aware
-that you will probably run into problems and or restrictions. See the
-Contribute section if you want to help making Rubikon better.
+that you will might run into problems and or restrictions. See the Contribute
+section if you want to help to make Rubikon better.
 
 ## Features
 
@@ -132,8 +132,8 @@ You may also see Rubikon as a portmanteau word consisting of *"Ruby"* and
 ## License
 
 This code is free software; you can redistribute it and/or modify it under the
-terms of the new BSD License. A copy of this license can be found in the LICENSE
-file.
+terms of the new BSD License. A copy of this license can be found in the
+LICENSE file.
 
 ## Credits
 
