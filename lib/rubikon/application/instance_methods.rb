@@ -68,12 +68,7 @@ module Rubikon
       #        given to the application as options
       def run(args = ARGV)
         begin
-          unless @initialized
-            hook :pre_init
-            init
-            hook :post_init
-          end
-
+          init
           command, parameters, args = parse_arguments(args)
 
           parameters.each do |parameter|
@@ -208,6 +203,14 @@ module Rubikon
       # run, but <em>after</em> the application is setup, i.e. after the user
       # has defined the application class.
       def init
+        return if @initialized
+
+        @current_command      = nil
+        @current_param        = nil
+        @current_global_param = nil
+
+        hook :pre_init
+
         debug_flag
         help_command
         verbose_flag
@@ -217,6 +220,8 @@ module Rubikon
         end
 
         @initialized = true
+
+        hook :post_init
       end
 
       # This is used to determine the receiver of a method call inside the
