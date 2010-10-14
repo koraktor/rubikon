@@ -81,7 +81,7 @@ module Rubikon
           end
 
           @current_command = command
-          hook :post_execute
+          hook :pre_execute
           result = command.run(*args)
           hook :post_execute
           @current_command = nil
@@ -195,7 +195,7 @@ module Rubikon
       #
       # @param [Symbol] name The name of the hook to execute
       def hook(name)
-        @hooks[name].call unless @hooks[name].nil?
+        @sandbox.instance_eval &@hooks[name] unless @hooks[name].nil?
       end
 
       # This method is called once for each application and is used to

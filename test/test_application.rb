@@ -140,6 +140,13 @@ class TestApplication < Test::Unit::TestCase
       assert_equal dir, @app.path
     end
 
+    should 'have working hooks' do
+      TestAppWithHooks.set :ostream, @ostream
+      TestAppWithHooks.run(%w{execute})
+
+      assert_equal "pre init\npost init\npre execute\nexecute\npost execute\n", @ostream.string
+    end
+
   end
 
 end

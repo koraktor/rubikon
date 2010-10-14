@@ -78,3 +78,29 @@ class TestAppWithoutDefault < Application::Base
   set :raise_errors, true
 
 end
+
+class TestAppWithHooks < Application::Base
+
+  set :autorun, false
+
+  pre_init do
+    puts 'pre init'
+  end
+
+  post_init do
+    puts 'post init'
+  end
+
+  pre_execute do
+    puts 'pre execute'
+  end
+
+  post_execute do
+    puts 'post execute'
+  end
+
+  command :execute do
+    puts 'execute'
+  end
+
+end
