@@ -42,12 +42,9 @@ module Rubikon
     #        command file does not exist
     # @see HasArguments#arg_count=
     def initialize(app, name, arg_count = nil, &block)
-      super(app, name, &block)
+      super(app, name, arg_count, &block)
 
-      @args      = []
-      @params    = {}
-
-      self.arg_count = arg_count
+      @params = {}
 
       if block_given?
         @block = block

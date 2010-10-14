@@ -4,48 +4,48 @@
 # Copyright (c) 2010, Sebastian Staudt
 
 require 'test_helper'
+require 'test_parameter'
 
-module HasArgumentExtension
+class HasArg
+  include HasArguments
+
   attr_reader :arg_names
+
+  def initialize(arg_count)
+     super(DummyApp.instance, 'dummy', arg_count)
+  end
 end
 
 class TestHasArguments < Test::Unit::TestCase
 
   context 'A parameter with arguments' do
 
-    setup do
-      @has_arg = Object.new
-      @has_arg.extend HasArguments
-      @has_arg.extend HasArgumentExtension
-      @has_arg.instance_eval { @args = [] }
-    end
-
     should 'allow a Numeric as argument count' do
-      @has_arg.arg_count = 1
+      @has_arg = HasArg.new(1)
       assert_equal 1..1, @has_arg.arg_count
       assert_nil @has_arg.arg_names
     end
 
     should 'allow a Range as argument count' do
-      @has_arg.arg_count = 1..3
+      @has_arg = HasArg.new(1..3)
       assert_equal 1..3, @has_arg.arg_count
       assert_nil @has_arg.arg_names
     end
 
     should 'allow an Array as argument count' do
-      @has_arg.arg_count = [2, 5, 6]
+      @has_arg = HasArg.new([2, 5, 6])
       assert_equal 2..6, @has_arg.arg_count
       assert_nil @has_arg.arg_names
     end
 
     should 'allow a Symbol Array as argument names' do
-      @has_arg.arg_count = [:arg1, :arg2, :arg3]
+      @has_arg = HasArg.new([:arg1, :arg2, :arg3])
       assert_equal 3..3, @has_arg.arg_count
       assert_equal [:arg1, :arg2, :arg3], @has_arg.arg_names
     end
 
     should 'only have required arguments if argument count is > 0' do
-      @has_arg.arg_count = 2
+      @has_arg = HasArg.new(2)
       assert !@has_arg.args_full?
       assert @has_arg.more_args?
       @has_arg << 'argument'
@@ -64,7 +64,7 @@ class TestHasArguments < Test::Unit::TestCase
     end
 
     should 'have required and optional arguments if argument count is < 0' do
-      @has_arg.arg_count = -1
+      @has_arg = HasArg.new(-1)
       assert !@has_arg.args_full?
       assert @has_arg.more_args?
       assert_raise MissingArgumentError do
@@ -77,7 +77,7 @@ class TestHasArguments < Test::Unit::TestCase
     end
 
     should 'only have optional arguments if argument count is 0' do
-      @has_arg.arg_count = 0
+      @has_arg = HasArg.new(0)
       assert @has_arg.args_full?
       assert @has_arg.more_args?
       @has_arg << 'argument'
@@ -85,7 +85,7 @@ class TestHasArguments < Test::Unit::TestCase
     end
 
     should 'provide named arguments' do
-      @has_arg.arg_count = [:named]
+      @has_arg = HasArg.new([:named])
       @has_arg << 'argument'
       assert_equal 'argument', @has_arg[:named]
     end

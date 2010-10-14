@@ -3,6 +3,8 @@
 #
 # Copyright (c) 2010, Sebastian Staudt
 
+require 'rubikon/parameter'
+
 module Rubikon
 
   # This module is included in all classes used for parsing command-line
@@ -15,9 +17,54 @@ module Rubikon
   # @since 0.4.0
   module HasArguments
 
+    include Parameter
+
     # @return [Array<String>] The arguments given to this parameter
     attr_reader :args
     alias_method :arguments, :args
+
+    # Creates a new parameter with arguments with the given name and an
+    # optional code block
+    #
+    # @param [Application::Base] app The application this parameter belongs to
+    # @param [Symbol, #to_sym] name The name of the option
+    # @param [Fixnum, Range, Array] arg_count A range or array allows any
+    #        number of arguments inside the limits between the first and the
+    #        last element of the range or array (-1 stands for an arbitrary
+    #        number of arguments). A positive number indicates the exact amount
+    #        of required arguments while a negative argument count indicates
+    #        the amount of required arguments, but allows additional, optional
+    #        arguments. A argument count of 0 means there are no required
+    #        arguments, but it allows optional arguments.
+    #        Finally an array of symbols enables named arguments where the
+    #        argument count is the size of the array and each argument is named
+    #        after the corresponding symbol.
+    # @param [Proc] block An optional code block to be executed if this
+    #        option is used
+    def initialize(app, name, arg_count = 0, &block)
+      super(app, name, &block)
+
+      @args      = []
+      @arg_names = nil
+      if arg_count.is_a? Fixnum
+        if arg_count > 0
+          @min_arg_count = arg_count
+          @max_arg_count = arg_count
+        elsif arg_count <= 0
+          @min_arg_count = -arg_count
+          @max_arg_count = -1
+        end
+      elsif arg_count.is_a?(Array) && arg_count.all? { |a| a.is_a? Symbol }
+        @max_arg_count = @min_arg_count = arg_count.size
+        @arg_names = arg_count
+      elsif arg_count.is_a?(Range) || arg_count.is_a?(Array)
+        @min_arg_count = arg_count.first
+        @max_arg_count = arg_count.last
+      else
+        @min_arg_count = 0
+        @max_arg_count = 0
+      end
+    end
 
     # Access the arguments of this object using a numeric or symbolic index
     #
@@ -49,42 +96,9 @@ module Rubikon
       @args << arg
     end
 
-    # Set the allowed range of argument counts this object takes. Additionally
-    # arguments may be named.
-    #
-    # @param [Fixnum, Range, Array] arg_count A range or array allows any
-    #        number of arguments inside the limits between the first and the
-    #        last element of the range or array (-1 stands for an arbitrary
-    #        number of arguments). A positive number indicates the exact amount
-    #        of required arguments while a negative argument count indicates
-    #        the amount of required arguments, but allows additional, optional
-    #        arguments. A argument count of 0 means there are no required
-    #        arguments, but it allows optional arguments.
-    #        Finally an array of symbols enables named arguments where the
-    #        argument count is the size of the array and each argument is named
-    #        after the corresponding symbol.
-    # @see #[]
-    # @see #args
-    def arg_count=(arg_count)
-      @arg_names = nil
-      if arg_count.is_a? Fixnum
-        if arg_count > 0
-          @min_arg_count = arg_count
-          @max_arg_count = arg_count
-        elsif arg_count <= 0
-          @min_arg_count = -arg_count
-          @max_arg_count = -1
-        end
-      elsif arg_count.is_a?(Array) && arg_count.all? { |a| a.is_a? Symbol }
-        @max_arg_count = @min_arg_count = arg_count.size
-        @arg_names = arg_count
-      elsif arg_count.is_a?(Range) || arg_count.is_a?(Array)
-        @min_arg_count = arg_count.first
-        @max_arg_count = arg_count.last
-      else
-        @min_arg_count = 0
-        @max_arg_count = 0
-      end
+    def active!
+      check_args
+      super
     end
 
     # Return the allowed range of argument counts this object takes
