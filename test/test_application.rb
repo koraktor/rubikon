@@ -133,6 +133,12 @@ class TestApplication < Test::Unit::TestCase
       end
     end
 
+    should 'know its file system location' do
+      dir = File.expand_path(File.dirname(__FILE__))
+      assert_equal dir + '/testapps.rb', @app.base_file
+      assert_equal dir, @app.path
+    end
+
   end
 
 end

@@ -3,6 +3,8 @@
 #
 # Copyright (c) 2009-2010, Sebastian Staudt
 
+require 'pathname'
+
 require 'rubikon/application/sandbox'
 require 'rubikon/command'
 require 'rubikon/exceptions'
@@ -44,12 +46,10 @@ module Rubikon
         @hooks                = {}
         @initialized          = false
         @parameters           = []
-        @path                 = File.dirname($0)
         @sandbox              = Sandbox.new(self)
         @settings             = {
           :autorun         => true,
           :help_as_default => true,
-          :help_banner     => "Usage: #{$0}",
           :istream         => $stdin,
           :name            => self.class.to_s,
           :ostream         => $stdout,
@@ -101,6 +101,22 @@ module Rubikon
       end
 
       private
+
+      # Sets the (first) file this application has been defined in.
+      #
+      # This also sets the path of the application used to load external
+      # command code and the default banner for the help screen.
+      #
+      # @param [String] file The (first) file of the class definition
+      # @see DSLMethods#base_file
+      # @see DSLMethods#path
+      # @since 0.4.0
+      def base_file=(file)
+        @base_file = file
+        @path      = File.dirname(file)
+
+        @settings[:help_banner] ||= "Usage: #{Pathname.new(file).relative_path_from(Pathname.new(Dir.getwd))}"
+      end
 
       # Defines a global Flag for enabling debug output
       #

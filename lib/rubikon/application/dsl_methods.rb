@@ -16,6 +16,9 @@ module Rubikon
     # @since 0.3.0
     module DSLMethods
 
+      # @return [String] The (first) definition file of the application
+      attr_reader :base_file
+
       # @return [String] The absolute path of the application
       attr_reader :path
 

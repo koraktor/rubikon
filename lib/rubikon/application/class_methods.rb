@@ -33,6 +33,7 @@ module Rubikon
       #        This is the user's application.
       def inherited(subclass)
         subclass.class_eval { include Singleton }
+        subclass.send(:base_file=, File.expand_path(caller.first.split(':').first))
         at_exit { subclass.run if subclass.send(:autorun?) }
       end
 
