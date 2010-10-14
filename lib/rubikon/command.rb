@@ -99,7 +99,6 @@ module Rubikon
     # @see Option
     def parse_arguments(args)
       @args = []
-      parameter = nil
       args.each do |arg|
         if arg.start_with?('-')
           parameter_name = arg.start_with?('--') ? arg[2..-1] : arg[1..-1]
@@ -107,23 +106,21 @@ module Rubikon
           raise UnknownParameterError.new(arg) if parameter.nil?
         end
 
-        unless parameter.nil? || parameter.active?
+        unless parameter.nil?
+          @app.current_param.active! unless @app.current_param.nil?
           @app.current_param = parameter
-          parameter.active!
-          @app.current_param = nil
           next
         end
 
-        if parameter.nil? || !parameter.more_args?
+        if @app.current_param.nil? || !@app.current_param.more_args?
           self << arg
         else
-          parameter << arg
+          @app.current_param << arg
         end
       end
 
-      @params.values.each do |param|
-        param.check_args if param.is_a?(Option) && param.active?
-      end
+      @app.current_param.active! unless @app.current_param.nil?
+      @app.current_param = nil
     end
 
     # Run this command's code block
