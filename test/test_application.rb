@@ -32,6 +32,7 @@ class TestApplication < Test::Unit::TestCase
       @app = TestApp
       @ostream = StringIO.new
       @app.set :ostream, @ostream
+      @app.set :raise_errors, true
     end
 
     should 'exit gracefully' do
@@ -45,7 +46,6 @@ class TestApplication < Test::Unit::TestCase
       @ostream.rewind
       assert_equal "Error:\n", @ostream.gets
       assert_equal "    Unknown command: unknown\n", @ostream.gets
-      @app.set :raise_errors, true
     end
 
     should 'run its default command without arguments' do
@@ -76,9 +76,10 @@ class TestApplication < Test::Unit::TestCase
       assert_equal 'input: ', @ostream.gets
     end
 
-    should "not break output while displaying a throbber or progress bar" do
+    should 'not break output while displaying a throbber or progress bar' do
       @app.run(%w{throbber})
-      assert_equal " \b-\b\\\b|\b/\bdon't\nbreak\n", @ostream.string
+      assert_match (/ \x08(?:(?:-|\\|\/|\|)\x08){4,}don't\nbreak\n/), @ostream.string
+
       @ostream.rewind
 
       @app.run(%w{progressbar})

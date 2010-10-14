@@ -14,7 +14,7 @@ class TestThrobber < Test::Unit::TestCase
     end
 
     should 'have default throbber strings' do
-      assert_equal '-\|/', Throbber.const_get(:SPINNER)
+      assert_equal '-\|/', Throbber::SPINNER
     end
 
     should 'work correctly' do
@@ -29,7 +29,7 @@ class TestThrobber < Test::Unit::TestCase
       thread.join
       throbber.join
 
-      spinner = Throbber.const_get(:SPINNER)
+      spinner = Throbber::SPINNER
       check_throbber = ' '
       ((finished_at - started_at) / 0.25).floor.times do |char_index|
         check_throbber << "\b"
