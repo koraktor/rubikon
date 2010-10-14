@@ -3,6 +3,8 @@
 #
 # Copyright (c) 2009-2010, Sebastian Staudt
 
+require 'singleton'
+
 module Rubikon
 
   module Application
@@ -30,8 +32,7 @@ module Rubikon
       # @param [Class] subclass The subclass inheriting from Application::Base.
       #        This is the user's application.
       def inherited(subclass)
-        super
-        Singleton.__init__(subclass)
+        subclass.class_eval { include Singleton }
         at_exit { subclass.run if subclass.send(:autorun?) }
       end
 

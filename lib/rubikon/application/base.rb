@@ -3,9 +3,6 @@
 #
 # Copyright (c) 2009-2010, Sebastian Staudt
 
-require 'singleton'
-require 'yaml'
-
 require 'rubikon/application/class_methods'
 require 'rubikon/application/dsl_methods'
 require 'rubikon/application/instance_methods'
@@ -26,11 +23,10 @@ module Rubikon
     # @since 0.2.0
     class Base
 
-      extend Rubikon::Application::ClassMethods
+      extend ClassMethods
 
-      include Rubikon::Application::DSLMethods
-      include Rubikon::Application::InstanceMethods
-      include Singleton
+      include DSLMethods
+      include InstanceMethods
 
     end
 
