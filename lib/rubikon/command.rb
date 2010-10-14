@@ -28,9 +28,8 @@ module Rubikon
     # Create a new application command with the given name with a reference to
     # the app it belongs to
     #
-    # @param [Application::Sandbox] app A reference to the sandboxed
-    #        application this command belongs to
-    # @param [#to_sym] name The name of this command, used in application
+    # @param [Application::Base] app The application this command belongs to
+    # @param [Symbol, #to_sym] name The name of this command, used in application
     #        arguments
     # @param [Range, Array, Numeric] arg_count The number of arguments this
     #        command takes.

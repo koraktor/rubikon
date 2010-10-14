@@ -22,6 +22,7 @@ module Rubikon
 
     # Creates a new parameter with the given name
     #
+    # @param [Application::Base] app The application this parameter belongs to
     # @param [Symbol, #to_sym] name The name of the parameter
     # @param [Proc] block An optional code block to be executed if this
     #        parameter is used
