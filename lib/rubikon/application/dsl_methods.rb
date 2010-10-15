@@ -231,7 +231,7 @@ module Rubikon
       # @since 0.2.0
       #
       # @example Display a prompt "Please type something: "
-      #  action 'interactive' do
+      #  command 'interactive' do
       #    user_provided_value = input 'Please type something'
       #
       #    # Do something with the data

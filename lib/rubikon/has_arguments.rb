@@ -66,7 +66,7 @@ module Rubikon
       end
     end
 
-    # Access the arguments of this object using a numeric or symbolic index
+    # Access the arguments of this parameter using a numeric or symbolic index
     #
     # @param [Numeric, Symbol] The index of the argument to return. Numeric
     #        indices can be used always while symbolic arguments are only
@@ -78,14 +78,14 @@ module Rubikon
       @args[arg]
     end
 
-    # Adds an argument to this object. Arguments can be accessed inside the
+    # Adds an argument to this parameter. Arguments can be accessed inside the
     # application code using the args method.
     #
     # @param [String] arg The argument to add to the supplied arguments of this
     #        parameter
     # @raise [ExtraArgumentError] if the parameter has all required arguments
     #        supplied and does not take optional arguments
-    # @return [Array] The supplied arguments of this object
+    # @return [Array] The supplied arguments of this parameter
     # @see #[]
     # @see #args
     # @since 0.3.0
@@ -96,30 +96,35 @@ module Rubikon
       @args << arg
     end
 
+    # Marks this parameter as active when it has been supplied by the user on
+    # the command-line. This also checks the arguments given to this parameter.
+    #
+    # @see #check_args
+    # @see Paramter#active!
     def active!
       check_args
       super
     end
 
-    # Return the allowed range of argument counts this object takes
+    # Return the allowed range of argument counts this parameter takes
     #
-    # @return [Range] The allowed range of argument counts this object takes
+    # @return [Range] The allowed range of argument counts this parameter takes
     def arg_count
       @min_arg_count..@max_arg_count
     end
 
-    # Checks whether this object has all required arguments supplied
+    # Checks whether this parameter has all required arguments supplied
     #
-    # @return +true+ if all required object arguments have been supplied
+    # @return +true+ if all required parameter arguments have been supplied
     # @since 0.3.0
     def args_full?
       @args.size >= @min_arg_count
     end
 
-    # Checks the arguments for this object
+    # Checks the arguments for this parameter
     #
     # @raise [MissingArgumentError] if there are not enough arguments for
-    #        this object
+    #        this parameter
     # @since 0.3.0
     def check_args
       raise MissingArgumentError.new(@name) unless args_full?
@@ -137,7 +142,7 @@ module Rubikon
     #     @user = name
     #   end
     def method_missing(name, *args, &block)
-      if args.empty? && !block_given? && @arg_names.include?(name)
+      if args.empty? && !block_given? && !@arg_names.nil? && @arg_names.include?(name)
         @args[@arg_names.index(name)]
       else
         super
@@ -145,6 +150,8 @@ module Rubikon
     end
 
     # Checks whether this parameter can take more arguments
+    #
+    # @return +true+ if this parameter can take more arguments
     # @since 0.3.0
     def more_args?
       @max_arg_count == -1 || @args.size < @max_arg_count
@@ -158,7 +165,7 @@ module Rubikon
     # @return +true+ if named argument with the specified name exists
     # @see #method_missing
     def respond_to_missing?(name, include_private = false)
-      @arg_names.include?(name)
+      !@arg_names.nil? && @arg_names.include?(name)
     end
 
   end
