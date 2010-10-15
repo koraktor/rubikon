@@ -125,12 +125,40 @@ module Rubikon
       raise MissingArgumentError.new(@name) unless args_full?
     end
 
-    # Checks whether this object can take more arguments
+    # If a named argument with the specified method name exists, a call to that
+    # method will return the value of the argument.
     #
-    # @return +true+ if this object can take more arguments
+    # @param (see ClassMethods#method_missing)
+    # @see #args
+    # @see #[]
+    #
+    # @example
+    #   option :user, [:name] do
+    #     @user = name
+    #   end
+    def method_missing(name, *args, &block)
+      if args.empty? && !block_given? && @arg_names.include?(name)
+        @args[@arg_names.index(name)]
+      else
+        super
+      end
+    end
+
+    # Checks whether this parameter can take more arguments
     # @since 0.3.0
     def more_args?
       @max_arg_count == -1 || @args.size < @max_arg_count
+    end
+
+    # Checks whether an argument with the given name exists for this parameter
+    #
+    # This is used to determine if a method call would successfully return the
+    # value of an argument.
+    #
+    # @return +true+ if named argument with the specified name exists
+    # @see #method_missing
+    def respond_to_missing?(name, include_private = false)
+      @arg_names.include?(name)
     end
 
   end

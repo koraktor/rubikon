@@ -22,7 +22,7 @@ class HelloWorld < Rubikon::Application::Base
   default 'Simple hello world' do
     debug 'Starting to greet the world...'
     if given? :name
-      greet parameters[:name][:who]
+      greet parameters[:name].who
     elsif given? :names
       parameters[:names].args.each do |name|
         greet name
