@@ -128,6 +128,7 @@ module Rubikon
     #        command
     def run(*args)
       parse_arguments(args)
+      check_args
       @app.sandbox.instance_eval(&@block)
     end
 
