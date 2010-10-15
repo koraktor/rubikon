@@ -146,6 +146,8 @@ LICENSE file.
 * [GitHub project page][1]
 * [GitHub issue tracker][2]
 
+Follow Rubikon on Twitter [@rubikonrb](http://twitter.com/rubikonrb).
+
  [1]: http://github.com/koraktor/rubikon
  [2]: http://github.com/koraktor/rubikon/issues
  [3]: http://koraktor.github.com/rubikon
