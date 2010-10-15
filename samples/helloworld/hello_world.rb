@@ -24,7 +24,7 @@ class HelloWorld < Rubikon::Application::Base
     if given? :name
       greet parameters[:name].who
     elsif given? :names
-      parameters[:names].args.each do |name|
+      names.args.each do |name|
         greet name
       end
     else

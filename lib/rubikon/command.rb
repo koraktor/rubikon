@@ -17,7 +17,6 @@ module Rubikon
   # @since 0.3.0
   class Command
 
-    include Parameter
     include HasArguments
 
     attr_accessor :description
@@ -41,7 +40,7 @@ module Rubikon
     #        command file does not exist
     # @see HasArguments#arg_count=
     def initialize(app, name, arg_count = nil, &block)
-      super(app, name, arg_count, &block)
+      super
 
       @params = {}
 
@@ -86,6 +85,26 @@ module Rubikon
       end
     end
 
+    # If a parameter with the specified method name exists, a call to that
+    # method will return the value of the parameter.
+    #
+    # @param (see ClassMethods#method_missing)
+    # @see DSLMethods#params
+    #
+    # @example
+    #   option :user, [:who]
+    #   command :hello, [:mood] do
+    #     puts "Hello #{user.who}"
+    #     puts "I feel #{mood}"
+    #   end
+    def method_missing(name, *args, &block)
+      if args.empty? && !block_given? && @params.key?(name)
+        @params[name]
+      else
+        super
+      end
+    end
+
     # Parses the arguments of this command and sets each Parameter as active
     # if it has been supplied by the user on the command-line. Additional
     # arguments are passed to the individual parameters.
@@ -120,6 +139,17 @@ module Rubikon
 
       @app.current_param.active! unless @app.current_param.nil?
       @app.current_param = nil
+    end
+
+    # Checks whether a parameter with the given name exists for this command
+    #
+    # This is used to determine if a method call would successfully return the
+    # value of a parameter.
+    #
+    # @return +true+ if named parameter with the specified name exists
+    # @see #method_missing
+    def respond_to_missing?(name, include_private = false)
+      @params.key?(name) || super
     end
 
     # Run this command's code block

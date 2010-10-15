@@ -238,7 +238,7 @@ module Rubikon
       #
       # @example Access a command's arguments
       #   command :args, [:one, :two] do
-      #     puts "One: #{[:one]}, Two: #{[:two]}"
+      #     puts "One: #{one}, Two: #{two}"
       #   end
       # @since 0.4.0
       def method_missing(name, *args, &block)
