@@ -40,8 +40,8 @@ class TestCommand < Test::Unit::TestCase
     end
 
     should 'correctly parse given parameters' do
-      command = Command.new @app, :command, 1 do end
-      option = Option.new(@app, :test, 1)
+      command = Command.new @app, :command, [:cmd_arg] do end
+      option = Option.new(@app, :test, [:opt_arg])
       command.add_param option
       flag = Flag.new(@app, :t)
       command.add_param flag
@@ -49,7 +49,11 @@ class TestCommand < Test::Unit::TestCase
       assert option.active?
       assert flag.active?
       assert_equal %w{test}, command.arguments
+      assert_equal 'test', command[0]
+      assert_equal 'test', command.cmd_arg
       assert_equal %w{arg}, command.parameters[:test].args
+      assert_equal 'arg', command.test[0]
+      assert_equal 'arg', command.test.opt_arg
 
       assert_raise UnknownParameterError do
         command.run(*%w{--unknown})
@@ -58,11 +62,12 @@ class TestCommand < Test::Unit::TestCase
 
     should 'allow parameter aliases' do
       command = Command.new @app, :command do end
+      command.add_param({ :t => :test })
       flag1 = Flag.new(@app, :test)
       command.add_param flag1
       flag2 = Flag.new(@app, :test2)
       command.add_param flag2
-      command.add_param({ :t => :test, :t2 => :test2 })
+      command.add_param({ :t2 => :test2 })
       command.run(*%w{-t --t2})
       assert flag1.active?
       assert flag2.active?

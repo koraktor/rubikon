@@ -88,6 +88,10 @@ class TestHasArguments < Test::Unit::TestCase
       @has_arg = HasArg.new([:named])
       @has_arg << 'argument'
       assert_equal 'argument', @has_arg[:named]
+      assert_equal 'argument', @has_arg.named
+      assert_raise NoMethodError do
+        @has_arg.not_named
+      end
     end
 
   end

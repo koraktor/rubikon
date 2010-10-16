@@ -17,13 +17,30 @@ class TestApp < Application::Base
   set :name, 'Rubikon test application'
   set :raise_errors, true
 
-  global_option :go => :gopt
+  global_flag :gf1 => :gflag
+  global_flag :gflag do
+    @global = 'flag'
+  end
+  global_flag :gf2 => :gflag
+
+  global_option :go1 => :gopt
   global_option :gopt, 1 do
     @global = args[0]
   end
+  global_option :go2 => :gopt
 
   default do
     'default command'
+  end
+
+  option :arg, [:opt_arg] do
+    @result = []
+    @result << opt_arg
+  end
+  command :arguments, [:cmd_arg] do
+    @result << arg.opt_arg
+    @result << cmd_arg
+    @result
   end
 
   command :input do

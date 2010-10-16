@@ -109,21 +109,33 @@ class TestApplication < Test::Unit::TestCase
       $VERBOSE = false
     end
 
-    should 'have working global options' do
+    should 'have working global parameters' do
+      assert_equal 'flag', @app.run(%w{globalopt --gflag})
+      assert_equal 'flag', @app.run(%w{globalopt --gf1})
+      assert_equal 'flag', @app.run(%w{globalopt --gf2})
       assert_equal 'test', @app.run(%w{globalopt --gopt test})
+      assert_equal 'test', @app.run(%w{globalopt --go1 test})
+      assert_equal 'test', @app.run(%w{globalopt --go2 test})
     end
 
     should 'have a working help command' do
       @app.run(%w{help})
-      assert_match /Usage: [^ ]* \[--debug\|-d\] \[--gopt\|--go \.\.\.\] \[--verbose\|-v\] command \[args\]\n\nCommands:\n  globalopt      \n  help           Display this help screen\n  input          \n  object_id      \n  parameters     \n  progressbar    \n  sandbox        \n  throbber       \n/, @ostream.string
+      assert_match /Usage: [^ ]* \[--debug\|-d\] \[--gflag\|--gf1\|--gf2\] \[--gopt\|--go1\|--go2 \.\.\.\] \[--verbose\|-v\] command \[args\]\n\nCommands:\n  arguments      \n  globalopt      \n  help           Display this help screen\n  input          \n  object_id      \n  parameters     \n  progressbar    \n  sandbox        \n  throbber       \n/, @ostream.string
     end
 
     should 'have a working DSL for command parameters' do
       params = @app.run(%w{parameters}).values.uniq.sort { |a,b| a.name.to_s <=> b.name.to_s }
       assert_equal :flag, params[0].name
       assert_equal [:f], params[0].aliases
+      assert !params[0].active?
       assert_equal :option, params[1].name
       assert_equal [:o], params[1].aliases
+      assert !params[1].active?
+    end
+
+    should 'allow simplified access to arguments' do
+      result = @app.run(%w{arguments cmd_test --arg opt_test})
+      assert_equal %w{opt_test opt_test cmd_test}, result
     end
 
     should 'be protected by a sandbox' do
