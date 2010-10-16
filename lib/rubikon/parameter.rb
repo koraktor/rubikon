@@ -52,6 +52,13 @@ module Rubikon
       @active
     end
 
+    # Resets this parameter to its initial state
+    #
+    # @since 0.4.0
+    def reset
+      @active = false
+    end
+
   end
 
 end

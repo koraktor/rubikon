@@ -157,6 +157,15 @@ module Rubikon
       @max_arg_count == -1 || @args.size < @max_arg_count
     end
 
+    # Resets this parameter to its initial state
+    #
+    # @see Parameter#reset
+    # @since 0.4.0
+    def reset
+      super
+      @args.clear
+    end
+
     # Checks whether an argument with the given name exists for this parameter
     #
     # This is used to determine if a method call would successfully return the

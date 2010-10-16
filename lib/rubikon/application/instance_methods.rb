@@ -85,6 +85,8 @@ module Rubikon
           result = command.run(*args)
           hook :post_execute
           @current_command = nil
+
+          reset
           result
         rescue
           raise $! if @settings[:raise_errors]
@@ -293,6 +295,18 @@ module Rubikon
         end
 
         return command, parameters, args
+      end
+
+      # Resets this application to its initial state
+      #
+      # @see Command#reset
+      # @see HasArguments#reset
+      # @see Parameter#reset
+      # @since 0.4.0
+      def reset
+        (@commands.values + @global_parameters.values).uniq.each do |param|
+          param.reset
+        end
       end
 
       # Defines a global Flag for enabling verbose output

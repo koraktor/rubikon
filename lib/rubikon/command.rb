@@ -141,6 +141,15 @@ module Rubikon
       @app.current_param = nil
     end
 
+    # Resets this command to its initial state
+    #
+    # @see HasArguments#reset
+    # @since 0.4.0
+    def reset
+      super
+      @params.values.uniq.each { |param| param.reset if param.is_a? Parameter }
+    end
+
     # Checks whether a parameter with the given name exists for this command
     #
     # This is used to determine if a method call would successfully return the
