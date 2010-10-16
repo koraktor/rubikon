@@ -19,9 +19,11 @@ module Rubikon
 
     include HasArguments
 
+    # @return [String] The description of this command
     attr_accessor :description
-    attr_reader   :args, :params
-    alias_method  :arguments, :args
+
+    # @return [Array<Parameter>] The parameters of this command
+    attr_reader   :params
     alias_method  :parameters, :params
 
     # Create a new application command with the given name with a reference to
@@ -50,7 +52,7 @@ module Rubikon
         @file_name = "#{@app.path}/commands/#{name}.rb"
         raise BlockMissingError unless File.exists?(@file_name)
         code = open(@file_name).read
-        @block = Proc.new { @app.sandbox.instance_eval(code) }
+        @block = Proc.new { instance_eval(code) }
       end
     end
 

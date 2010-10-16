@@ -74,11 +74,10 @@ Flags and options are easily added to your application's commands using
 Rubikon's DSL:
 
     flag :more
-    option :name, 2
+    option :name, [:who]
     command :hello do
-      ...
+      puts "Hello #{who}"
     end
-
 
 Please see the `samples` directory for more in detail sample applications.
 

@@ -25,7 +25,7 @@ module Rubikon
     # @since 0.2.0
     module InstanceMethods
 
-      # @param [Parameter] Sets the parameter that's currently executed
+      # @return [Parameter] The parameter that's currently executed
       attr_accessor :current_param
 
       # @return [Application::Sandbox] The sandbox this application runs in
