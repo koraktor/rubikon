@@ -79,6 +79,7 @@ module Rubikon
         @params.each do |name, param|
           if param == parameter.name
             parameter.aliases << name
+            @params[name] = parameter
           end
         end
         @params[parameter.name] = parameter
