@@ -23,7 +23,7 @@ unless Object.method_defined?(:respond_to_missing?)
     #
     # @see #respond_to_missing?
     def respond_to?(symbol, include_private = false)
-      respond_to_missing?(symbol, include_private) || super
+      super || respond_to_missing?(symbol, include_private)
     end
 
     # Hook method to return whether the _obj_ can respond to _id_ method or
