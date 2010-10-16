@@ -5,6 +5,7 @@
 
 require 'rake/testtask'
 
+samples_files = Dir.glob(File.join('samples', '**', '*.rb'))
 src_files = Dir.glob(File.join('lib', '**', '*.rb'))
 test_files = Dir.glob(File.join('test', '**', '*.rb'))
 
@@ -31,7 +32,7 @@ begin
     gem.email = 'koraktor@gmail.com'
     gem.description = 'A simple to use, yet powerful Ruby framework for building console-based applications.'
     gem.date = Time.now
-    gem.files = %w(README.md Rakefile LICENSE) + src_files + test_files
+    gem.files = %w(README.md Rakefile LICENSE) + samples_files + src_files + test_files
     gem.has_rdoc = false
     gem.homepage = 'http://koraktor.github.com/rubikon'
     gem.name = gem.rubyforge_project = 'rubikon'
