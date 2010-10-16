@@ -23,7 +23,7 @@ module Rubikon
       # @param [Application::Base] app The application to be sandboxed
       def initialize(app)
         raise ArgumentError unless app.is_a? Application::Base
-        @app = app
+        @__app__ = app
       end
 
       # Method calls on the sandbox wrapper will be relayed to the singleton
@@ -39,7 +39,7 @@ module Rubikon
            InstanceMethods.private_method_defined?(name)
           raise NoMethodError.new("Method `#{name}' is protected by the application sandbox", name)
         end
-        @app.send(name, *args, &block)
+        @__app__.send(name, *args, &block)
       end
 
       # Relay putc to the instance method
@@ -50,7 +50,7 @@ module Rubikon
       # @param [String, Numeric] char The character to write into the output
       #        stream
       def putc(text)
-        @app.send(:putc, text)
+        @__app__.send(:putc, text)
       end
 
       # Relay puts to the instance method
@@ -60,7 +60,7 @@ module Rubikon
       #
       # @param [String] text The text to write into the output stream
       def puts(text)
-        @app.send(:puts, text)
+        @__app__.send(:puts, text)
       end
 
     end
