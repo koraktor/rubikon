@@ -132,15 +132,16 @@ module Rubikon
       # @example
       #  flag :status
       #  command :something do
-      #    print_status if given? :status
+      #    print_status if active? :status
       #  end
-      def given?(name)
+      def active?(name)
         name = name.to_sym
         parameter = @global_parameters[name]
         parameter = @current_command.parameters[name] if parameter.nil?
         return false if parameter.nil?
         parameter.active?
       end
+      alias_method :given?, :active?
 
       # Create a new flag with the given name to be used globally
       #

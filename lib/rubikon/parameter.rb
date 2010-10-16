@@ -51,6 +51,7 @@ module Rubikon
     def active?
       @active
     end
+    alias_method :given?, :active?
 
     # Resets this parameter to its initial state
     #
