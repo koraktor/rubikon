@@ -41,7 +41,8 @@ module Rubikon
     # exists
     def active!
       @active = true
-      @app.sandbox.instance_eval(&@block) unless @block.nil?
+      Application::InstanceMethods.instance_method(:sandbox).bind(@app).call.
+        instance_eval(&@block) unless @block.nil?
     end
 
     # Returns whether this parameter has is active, i.e. it has been supplied

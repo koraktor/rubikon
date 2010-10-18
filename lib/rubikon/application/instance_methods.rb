@@ -68,9 +68,12 @@ module Rubikon
       # @param [Array<String>] args The command line arguments that should be
       #        given to the application as options
       def run(args = ARGV)
+        hook = InstanceMethods.instance_method(:hook).bind(self)
+
         begin
-          init
-          command, parameters, args = parse_arguments(args)
+          InstanceMethods.instance_method(:init).bind(self).call
+          command, parameters, args = InstanceMethods.
+            instance_method(:parse_arguments).bind(self).call(args)
 
           parameters.each do |parameter|
             @current_global_param = parameter
@@ -82,12 +85,12 @@ module Rubikon
           end
 
           @current_command = command
-          hook :pre_execute
-          result = command.run(*args)
-          hook :post_execute
+          hook.call(:pre_execute)
+          result = command.send(:run, *args)
+          hook.call(:post_execute)
           @current_command = nil
 
-          reset
+          InstanceMethods.instance_method(:reset).bind(self).call
           result
         rescue
           raise $! if @settings[:raise_errors]
@@ -209,15 +212,17 @@ module Rubikon
       def init
         return if @initialized
 
+        hook = InstanceMethods.instance_method(:hook).bind(self)
+
         @current_command      = nil
         @current_param        = nil
         @current_global_param = nil
 
-        hook :pre_init
+        hook.call(:pre_init)
 
-        debug_flag
-        help_command
-        verbose_flag
+        InstanceMethods.instance_method(:debug_flag).bind(self).call
+        InstanceMethods.instance_method(:help_command).bind(self).call
+        InstanceMethods.instance_method(:verbose_flag).bind(self).call
 
         if @settings[:help_as_default] && !@commands.keys.include?(:__default)
           default :help
@@ -225,7 +230,7 @@ module Rubikon
 
         @initialized = true
 
-        hook :post_init
+        hook.call(:post_init)
       end
 
       # This is used to determine the receiver of a method call inside the

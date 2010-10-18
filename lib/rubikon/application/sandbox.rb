@@ -35,11 +35,13 @@ module Rubikon
       #        InstanceMethods and should therefore be protected
       # @see InstanceMethods
       def method_missing(name, *args, &block)
-        if InstanceMethods.method_defined?(name) ||
-           InstanceMethods.private_method_defined?(name)
+        if @__app__.class.instance_methods(false).include?(name.to_s) ||
+           !(InstanceMethods.method_defined?(name) ||
+           InstanceMethods.private_method_defined?(name))
+          @__app__.send(name, *args, &block)
+        else
           raise NoMethodError.new("Method `#{name}' is protected by the application sandbox", name)
         end
-        @__app__.send(name, *args, &block)
       end
 
       # Relay putc to the instance method

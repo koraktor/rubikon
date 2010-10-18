@@ -34,7 +34,11 @@ module Rubikon
       def inherited(subclass)
         subclass.class_eval { include Singleton }
         subclass.send(:base_file=, File.expand_path(caller.first.split(':').first))
-        at_exit { subclass.run if subclass.send(:autorun?) }
+        at_exit do
+          if subclass.send(:autorun?)
+            InstanceMethods.instance_method(:run).bind(subclass.instance).call
+          end
+        end
       end
 
       # This is used for convinience. Method calls on the class itself are

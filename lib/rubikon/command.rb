@@ -119,6 +119,11 @@ module Rubikon
     # @see Flag
     # @see Option
     def parse_arguments(args)
+      current_param = Application::InstanceMethods.
+        instance_method(:current_param).bind(@app)
+      set_current_param = Application::InstanceMethods.
+        instance_method(:current_param=).bind(@app)
+
       @args = []
       args.each do |arg|
         if arg.start_with?('-')
@@ -128,20 +133,20 @@ module Rubikon
         end
 
         unless parameter.nil?
-          @app.current_param.active! unless @app.current_param.nil?
-          @app.current_param = parameter
+          current_param.call.active! unless current_param.call.nil?
+          set_current_param.call(parameter)
           next
         end
 
-        if @app.current_param.nil? || !@app.current_param.more_args?
+        if current_param.call.nil? || !current_param.call.more_args?
           self << arg
         else
-          @app.current_param << arg
+          current_param.call << arg
         end
       end
 
-      @app.current_param.active! unless @app.current_param.nil?
-      @app.current_param = nil
+      current_param.call.active! unless current_param.call.nil?
+      set_current_param.call(nil)
     end
 
     # Resets this command to its initial state
@@ -171,7 +176,8 @@ module Rubikon
     def run(*args)
       parse_arguments(args)
       check_args
-      @app.sandbox.instance_eval(&@block)
+      Application::InstanceMethods.instance_method(:sandbox).bind(@app).call.
+        instance_eval(&@block)
     end
 
   end
