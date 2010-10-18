@@ -14,17 +14,6 @@ class TestOption < Test::Unit::TestCase
     should 'be a Parameter with arguments' do
       assert Option.included_modules.include?(Parameter)
       assert Option.included_modules.include?(HasArguments)
-      assert Option.new(@app, :test).is_a?(Parameter)
-    end
-
-    should 'call its code block if it is activated' do
-      block_run = false
-      option = Option.new @app, :test do
-        block_run = true
-      end
-      option.active!
-      assert option.active?
-      assert block_run
     end
 
   end

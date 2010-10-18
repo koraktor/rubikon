@@ -11,9 +11,9 @@ class TestCommand < Test::Unit::TestCase
 
   context 'A Rubikon command' do
 
-    should 'be a Parameter' do
+    should 'be a Parameter with arguments' do
       assert Command.included_modules.include?(Parameter)
-      assert Command.new(@app, :command){}.is_a?(Parameter)
+      assert Command.included_modules.include?(HasArguments)
     end
 
     should 'raise an exception when no appliation is given' do
