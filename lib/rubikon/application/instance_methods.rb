@@ -77,10 +77,8 @@ module Rubikon
 
           parameters.each do |parameter|
             @current_global_param = parameter
-            if parameter.is_a? Option
-              parameter.check_args
-            end
-            parameter.active!
+            parameter.send :check_args if parameter.is_a? Option
+            parameter.send :active!
             @current_global_param = nil
           end
 
@@ -252,7 +250,8 @@ module Rubikon
       # @since 0.4.0
       def method_missing(name, *args, &block)
         receiver = @current_param || @current_global_param || @current_command
-        if receiver.nil? || !receiver.respond_to?(name)
+        if receiver.nil? || (!receiver.respond_to?(name) &&
+           !receiver.public_methods(false).include?(name))
           super
         else
           receiver.send(name, *args, &block)
@@ -286,7 +285,7 @@ module Rubikon
           elsif arg.start_with?('-')
             parameter = @global_parameters[arg[1..-1].to_sym]
           else
-            if !parameter.nil? && parameter.more_args?
+            if !parameter.nil? && parameter.send(:more_args?)
               parameter.args << args.delete(arg)
             else
               parameter = nil
@@ -311,7 +310,7 @@ module Rubikon
       # @since 0.4.0
       def reset
         (@commands.values + @global_parameters.values).uniq.each do |param|
-          param.reset
+          param.send :reset
         end
       end
 

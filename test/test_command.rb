@@ -42,10 +42,10 @@ class TestCommand < Test::Unit::TestCase
     should 'correctly parse given parameters' do
       command = Command.new @app, :command, [:cmd_arg] do end
       option = Option.new(@app, :test, [:opt_arg])
-      command.add_param option
+      command.send(:add_param, option)
       flag = Flag.new(@app, :t)
-      command.add_param flag
-      command.run(*%w{--test arg -t test})
+      command.send(:add_param, flag)
+      command.send(:run, *%w{--test arg -t test})
       assert option.active?
       assert flag.active?
       assert_equal %w{test}, command.arguments
@@ -56,21 +56,21 @@ class TestCommand < Test::Unit::TestCase
       assert_equal 'arg', command.test.opt_arg
 
       assert_raise UnknownParameterError do
-        command.run(*%w{--unknown})
+        command.send(:run, *%w{--unknown})
       end
     end
 
     should 'allow parameter aliases' do
       command = Command.new @app, :command do end
-      command.add_param({ :t => :test })
+      command.send(:add_param, { :t => :test })
       flag1 = Flag.new(@app, :test)
-      command.add_param flag1
+      command.send(:add_param, flag1)
       flag2 = Flag.new(@app, :test2)
-      command.add_param flag2
-      command.add_param({ :t2 => :test2 })
-      command.run(*%w{-t --t2})
-      assert flag1.active?
-      assert flag2.active?
+      command.send(:add_param, flag2)
+      command.send(:add_param, { :t2 => :test2 })
+      command.send(:run, *%w{-t --t2})
+      assert flag1.send(:active?)
+      assert flag2.send(:active?)
     end
 
     should 'run the code supplied inside its block' do
@@ -78,13 +78,13 @@ class TestCommand < Test::Unit::TestCase
       command = Command.new @app, :command do
         block_run = true
       end
-      command.run
+      command.send :run
       assert block_run
     end
 
     should 'run external code if no block is given' do
       command = Command.new @app, :external_command
-      command.run
+      command.send :run
       assert @app.sandbox.instance_variable_get(:@external_command_run)
     end
 

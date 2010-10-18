@@ -78,6 +78,8 @@ module Rubikon
       @args[arg]
     end
 
+    protected
+
     # Adds an argument to this parameter. Arguments can be accessed inside the
     # application code using the args method.
     #

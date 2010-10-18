@@ -56,6 +56,8 @@ module Rubikon
       end
     end
 
+    private
+
     # Add a new parameter for this command
     #
     # @param [Parameter, Hash] parameter The parameter to add to this
@@ -133,19 +135,19 @@ module Rubikon
         end
 
         unless parameter.nil?
-          current_param.call.active! unless current_param.call.nil?
+          current_param.call.send(:active!) unless current_param.call.nil?
           set_current_param.call(parameter)
           next
         end
 
-        if current_param.call.nil? || !current_param.call.more_args?
+        if current_param.call.nil? || !current_param.call.send(:more_args?)
           self << arg
         else
-          current_param.call << arg
+          current_param.call.send(:<<, arg)
         end
       end
 
-      current_param.call.active! unless current_param.call.nil?
+      current_param.call.send(:active!) unless current_param.call.nil?
       set_current_param.call(nil)
     end
 
@@ -155,7 +157,9 @@ module Rubikon
     # @since 0.4.0
     def reset
       super
-      @params.values.uniq.each { |param| param.reset if param.is_a? Parameter }
+      @params.values.uniq.each do |param|
+        param.send(:reset) if param.is_a? Parameter
+      end
     end
 
     # Checks whether a parameter with the given name exists for this command

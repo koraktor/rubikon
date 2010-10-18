@@ -18,6 +18,8 @@ module Rubikon
 
     include Parameter
 
+    private
+
     # Adds an argument to this flag
     #
     # @param arg (see Parameter#<<)

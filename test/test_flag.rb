@@ -21,7 +21,7 @@ class TestFlag < Test::Unit::TestCase
       flag = Flag.new @app, :flag do
         block_run = true
       end
-      flag.active!
+      flag.send :active!
       assert flag.active?
       assert block_run
     end
@@ -29,11 +29,11 @@ class TestFlag < Test::Unit::TestCase
     should 'not allow any arguments' do
       flag = Flag.new @app, :test
       assert_raise ExtraArgumentError do
-        flag << 'argument'
+        flag.send(:<<, 'argument')
       end
 
-      assert flag.args_full?
-      assert !flag.more_args?
+      assert flag.send(:args_full?)
+      assert !flag.send(:more_args?)
       assert !flag.respond_to?(:args)
     end
 

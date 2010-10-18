@@ -36,15 +36,6 @@ module Rubikon
       @name    = name.to_sym
     end
 
-    # Marks this parameter as active when it has been supplied by the user on
-    # the command-line. This also calls the code block of the parameter if it
-    # exists
-    def active!
-      @active = true
-      Application::InstanceMethods.instance_method(:sandbox).bind(@app).call.
-        instance_eval(&@block) unless @block.nil?
-    end
-
     # Returns whether this parameter has is active, i.e. it has been supplied
     # by the user on the command-line
     #
@@ -53,6 +44,17 @@ module Rubikon
       @active
     end
     alias_method :given?, :active?
+
+    protected
+
+    # Marks this parameter as active when it has been supplied by the user on
+    # the command-line. This also calls the code block of the parameter if it
+    # exists
+    def active!
+      @active = true
+      Application::InstanceMethods.instance_method(:sandbox).bind(@app).call.
+        instance_eval(&@block) unless @block.nil?
+    end
 
     # Resets this parameter to its initial state
     #

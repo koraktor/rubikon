@@ -63,7 +63,7 @@ module Rubikon
 
         unless command.nil? || @parameters.empty?
           @parameters.each do |parameter|
-            command.add_param(parameter)
+            command.send(:add_param, parameter)
           end
           @parameters.clear
         end
@@ -139,7 +139,7 @@ module Rubikon
         parameter = @global_parameters[name]
         parameter = @current_command.parameters[name] if parameter.nil?
         return false if parameter.nil?
-        parameter.active?
+        parameter.send(:active?)
       end
       alias_method :given?, :active?
 
