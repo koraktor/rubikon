@@ -4,6 +4,7 @@
 # Copyright (c) 2009-2010, Sebastian Staudt
 
 require 'pathname'
+require 'stringio'
 
 require 'rubikon/application/sandbox'
 require 'rubikon/command'
