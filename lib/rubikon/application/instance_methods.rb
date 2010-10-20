@@ -88,7 +88,6 @@ module Rubikon
           hook.call(:post_execute)
           @current_command = nil
 
-          InstanceMethods.instance_method(:reset).bind(self).call
           result
         rescue
           raise $! if @settings[:raise_errors]
@@ -96,6 +95,8 @@ module Rubikon
           puts "Error:\n    #{$!.message}"
           puts "    #{$!.backtrace.join("\n    ")}" if $DEBUG
           exit 1
+        ensure
+          InstanceMethods.instance_method(:reset).bind(self).call
         end
       end
 
