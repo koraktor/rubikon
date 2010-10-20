@@ -309,6 +309,7 @@ module Rubikon
       # @see Parameter#reset
       # @since 0.4.0
       def reset
+        @settings[:ostream].rewind
         (@commands.values + @global_parameters.values).uniq.each do |param|
           param.send :reset
         end

@@ -43,7 +43,6 @@ class TestApplication < Test::Unit::TestCase
         assert_instance_of SystemExit, e
         assert_equal 1, e.status
       end
-      @ostream.rewind
       assert_equal "Error:\n", @ostream.gets
       assert_equal "    Unknown command: unknown\n", @ostream.gets
     end
@@ -72,16 +71,12 @@ class TestApplication < Test::Unit::TestCase
       @istream.puts input_string
       @istream.rewind
       assert_equal input_string, @app.run(%w{input})
-      @ostream.rewind
       assert_equal 'input: ', @ostream.gets
     end
 
     should 'not break output while displaying a throbber or progress bar' do
       @app.run(%w{throbber})
       assert_match (/ \x08(?:(?:-|\\|\/|\|)\x08){4,}don't\nbreak\n/), @ostream.string
-
-      @ostream.rewind
-
       @app.run(%w{progressbar})
       assert_equal "#" * 20 << "\n" << "test\n" * 4, @ostream.string
     end
