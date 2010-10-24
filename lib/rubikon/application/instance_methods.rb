@@ -55,9 +55,10 @@ module Rubikon
           :help_as_default => true,
           :istream         => $stdin,
           :name            => self.class.to_s,
-          :ostream         => $stdout,
           :raise_errors    => false
         }
+
+        self.ostream = $stdout
       end
 
       # Run this application
