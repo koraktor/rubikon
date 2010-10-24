@@ -365,8 +365,8 @@ module Rubikon
       # @param [String] text The text to write into the output stream
       # @since 0.2.0
       def put(text)
-        @settings[:ostream] << text
-        @settings[:ostream].flush
+        ostream << text
+        ostream.flush
       end
 
       # Output a character using +IO#putc+ of the output stream
@@ -375,7 +375,7 @@ module Rubikon
       #        stream
       # @since 0.2.0
       def putc(char)
-        @settings[:ostream].putc char
+        ostream.putc char
       end
 
       # Output a line of text using +IO#puts+ of the output stream
@@ -383,7 +383,7 @@ module Rubikon
       # @param [String] text The text to write into the output stream
       # @since 0.2.0
       def puts(text)
-        @settings[:ostream].puts text
+        ostream.puts text
       end
 
       # Sets an application setting
@@ -406,7 +406,12 @@ module Rubikon
       #  set :name, 'My App'
       #  set :autorun, false
       def set(setting, value)
-        @settings[setting.to_sym] = value
+        setting = setting.to_sym
+        unless setting == :ostream
+          @settings[setting.to_sym] = value
+        else
+          self.ostream = value
+        end
       end
 
       # Displays a throbber while the given block is executed

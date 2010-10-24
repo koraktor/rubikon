@@ -43,7 +43,12 @@ class TestApplication < Test::Unit::TestCase
         assert_instance_of SystemExit, e
         assert_equal 1, e.status
       end
-      assert_equal "Error:\n", @ostream.gets
+      if @app.instance.instance_eval { @settings[:colors] }
+        error_text = "\e[0;31mError:\e[0m\n"
+      else
+        error_text = "Error:\n"
+      end
+      assert_equal error_text, @ostream.gets
       assert_equal "    Unknown command: unknown\n", @ostream.gets
     end
 

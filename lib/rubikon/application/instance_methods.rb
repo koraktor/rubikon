@@ -7,6 +7,7 @@ require 'pathname'
 require 'stringio'
 
 require 'rubikon/application/sandbox'
+require 'rubikon/colored_io'
 require 'rubikon/command'
 require 'rubikon/exceptions'
 require 'rubikon/flag'
@@ -50,6 +51,7 @@ module Rubikon
         @sandbox              = Sandbox.new(self)
         @settings             = {
           :autorun         => true,
+          :colors          => true,
           :help_as_default => true,
           :istream         => $stdin,
           :name            => self.class.to_s,
@@ -92,7 +94,7 @@ module Rubikon
         rescue
           raise $! if @settings[:raise_errors]
 
-          puts "Error:\n    #{$!.message}"
+          puts "r{Error:}\n    #{$!.message}"
           puts "    #{$!.backtrace.join("\n    ")}" if $DEBUG
           exit 1
         ensure
@@ -187,13 +189,13 @@ module Rubikon
       # If the block needs to print to the real IO stream, it can access it
       # using its first parameter.
       def hidden_output(&block)
-        current_ostream = @settings[:ostream]
-        @settings[:ostream] = StringIO.new
+        current_ostream = ostream
+        self.ostream = StringIO.new
 
         block.call(current_ostream)
 
-        current_ostream << @settings[:ostream].string
-        @settings[:ostream] = current_ostream
+        current_ostream << ostream.string
+        self.ostream = current_ostream
       end
 
       # Executes the hook with the secified name
@@ -259,6 +261,20 @@ module Rubikon
         end
       end
 
+      # Sets the output stream of the application
+      #
+      # If colors are enabled, this checks if the stream supports the
+      # +color_filter+ method and enables the +ColoredIO+ if not.
+      #
+      # @param [IO] ostream The output stream to use
+      # @see ColoredIO.add_color_filter
+      def ostream=(ostream)
+        if !ostream.respond_to?(:color_filter)
+          ColoredIO.add_color_filter(ostream, @settings[:colors])
+        end
+        @settings[:ostream] = ostream
+      end
+
       # Parses the command-line arguments given to the application by the
       # user. This distinguishes between commands, global flags and command
       # flags
@@ -305,12 +321,18 @@ module Rubikon
 
       # Resets this application to its initial state
       #
+      # This rewinds the output stream, removes the color features from the and
+      # resets all commands and global parameters.
+      #
+      # @see ColoredIO.remove_color_filter
       # @see Command#reset
       # @see HasArguments#reset
+      # @see IO#rewind
       # @see Parameter#reset
       # @since 0.4.0
       def reset
-        @settings[:ostream].rewind
+        ostream.rewind
+        ColoredIO.remove_color_filter(ostream)
         (@commands.values + @global_parameters.values).uniq.each do |param|
           param.send :reset
         end
