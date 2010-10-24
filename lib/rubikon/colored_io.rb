@@ -4,6 +4,17 @@ module Rubikon
   
   module ColoredIO
 
+    COLORS = {
+      :bl => 30,
+      :r  => 31,
+      :g  => 32,
+      :y  => 33,
+      :b  => 34,
+      :p  => 35,
+      :c  => 36,
+      :w  => 37,
+    }
+
     # Enables color filtering on the given output stream (or another object
     # responding to +puts+)
     #
@@ -30,16 +41,7 @@ module Rubikon
       end
 
       class << io
-        COLORS = {
-          :bl => 30,
-          :r  => 31,
-          :g  => 32,
-          :y  => 33,
-          :b  => 34,
-          :p  => 35,
-          :c  => 36,
-          :w  => 37,
-        }
+        const_set :COLORS, COLORS
 
         def puts(text = '')
           super color_filter(text.to_s)
