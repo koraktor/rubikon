@@ -52,6 +52,17 @@ class HelloWorld < Rubikon::Application::Base
     end
   end
 
+  # Show a progress bar while iterating through a loop
+  command :progress_fancy, 'Display a progress bar' do
+    put 'Watch my progress while I greet the world: '
+    x = 1000000
+    progress_bar(:char => '#', :maximum => x, :size => 30, :bracket => true, :bracket_filler => '-') do |progress|
+      x.times do
+        progress.+
+      end
+    end
+  end
+  
   # Sleep for 5 seconds while displaying a throbber
   command :throbber, 'Display a throbber' do
     put 'Greeting the whole world takes some time... '

@@ -41,7 +41,12 @@ module Rubikon
       @size     = options[:size] || 20
       @factor   = @size.round.to_f / @maximum
       @value    = 0
-
+      @bracket  = options[:bracket] || false
+      @bracket_filler = options[:bracket_filler] || ' '
+      if(@bracket)
+          @ostream << '['+(@bracket_filler*@size)+']'+"\b"*(@size+1)
+          @ostream.flush 
+      end
       self + (options[:start] || 0)
     end
 
