@@ -35,13 +35,19 @@ module Rubikon
       end
       @maximum.round
 
-      @progress_char = options[:char] || '#'
-      @ostream  = options[:ostream] || $stdout
-      @progress = 0
-      @size     = options[:size] || 20
-      @factor   = @size.round.to_f / @maximum
-      @value    = 0
+      @progress_char  = options[:char] || '#'
+      @ostream        = options[:ostream] || $stdout
+      @progress       = 0
+      @size           = options[:size] || 20
+      @factor         = @size.round.to_f / @maximum
+      @value          = 0
+      @brackets       = options[:brackets] || false
+      @bracket_filler = options[:bracket_filler] || ' '
 
+      if @brackets
+        @ostream << '[' + @bracket_filler * @size + ']'+ "\b" * (@size + 1)
+        @ostream.flush
+      end
       self + (options[:start] || 0)
     end
 

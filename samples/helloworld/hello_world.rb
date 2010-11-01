@@ -42,10 +42,11 @@ class HelloWorld < Rubikon::Application::Base
   end
 
   # Show a progress bar while iterating through a loop
+  flag :brackets
   command :progress, 'Display a progress bar' do
     put 'Watch my progress while I greet the world: '
     x = 1000000
-    progress_bar(:char => '+', :maximum => x, :size => 30) do |progress|
+    progress_bar(:char => '+', :maximum => x, :size => 30, :brackets => brackets.given?, :bracket_filler => '-') do |progress|
       x.times do
         progress.+
       end
