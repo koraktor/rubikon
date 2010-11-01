@@ -100,6 +100,24 @@ class TestProgressBar < Test::Unit::TestCase
       assert_equal 101, @bar.instance_variable_get(:@value)
     end
 
+    should 'have brackets when enabled' do
+      ostream = StringIO.new
+      options = {
+        :brackets => true,
+        :bracket_filler => '-',
+        :ostream => ostream
+      }
+
+      @bar = ProgressBar.new options
+      assert_equal '[' + '-' * 20 + ']' + "\b" * 21, ostream.string
+
+      @bar + 50
+      assert_equal '[' + '-' * 20 + ']' + "\b" * 21 + '#' * 10, ostream.string
+
+      @bar + 50
+      assert_equal '[' + '-' * 20 + ']' + "\b" * 21 + '#' * 20 + "\n", ostream.string
+    end
+
   end
 
 end
