@@ -78,4 +78,16 @@ module Rubikon
 
   end
 
+  # Raised if a command has been supplied that does not exist
+  #
+  # @author Sebastian Staudt
+  # @since 0.5.0
+  class UnsupportedConfigFormatError < ArgumentError
+
+    def initialize(ext)
+      super "Unknown config file extension: #{ext}"
+    end
+
+  end
+
 end

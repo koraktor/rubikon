@@ -19,6 +19,8 @@ module Rubikon
       # @return [String] The (first) definition file of the application
       attr_reader :base_file
 
+      attr_reader :config
+
       # @return [String] The absolute path of the application
       attr_reader :path
 

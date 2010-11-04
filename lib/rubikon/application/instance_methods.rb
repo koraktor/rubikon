@@ -9,6 +9,7 @@ require 'stringio'
 require 'rubikon/application/sandbox'
 require 'rubikon/colored_io'
 require 'rubikon/command'
+require 'rubikon/config/factory'
 require 'rubikon/exceptions'
 require 'rubikon/flag'
 require 'rubikon/option'
@@ -52,6 +53,8 @@ module Rubikon
         @settings             = {
           :autorun         => true,
           :colors          => true,
+          :config_file     => "#{self.class.to_s.downcase}.yml",
+          :config_paths    => [ '/etc', File.expand_path('~'), File.expand_path('.') ],
           :help_as_default => true,
           :istream         => $stdin,
           :name            => self.class.to_s,
@@ -74,6 +77,8 @@ module Rubikon
         hook = InstanceMethods.instance_method(:hook).bind(self)
 
         begin
+          @config = Config::Factory.new(@settings[:config_file], @settings[:config_paths]).config
+
           InstanceMethods.instance_method(:init).bind(self).call
           command, parameters, args = InstanceMethods.
             instance_method(:parse_arguments).bind(self).call(args)
