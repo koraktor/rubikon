@@ -54,12 +54,20 @@ module Rubikon
           :autorun         => true,
           :colors          => true,
           :config_file     => "#{self.class.to_s.downcase}.yml",
-          :config_paths    => [ '/etc', File.expand_path('~'), File.expand_path('.') ],
           :help_as_default => true,
           :istream         => $stdin,
           :name            => self.class.to_s,
           :raise_errors    => false
         }
+
+	@settings[:config_paths] = []
+        if RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
+          @settings[:config_paths] << ENV['ALLUSERSPROFILE']
+        else
+          @settings[:config_paths] << '/etc'
+        end
+        @settings[:config_paths] << File.expand_path('~')
+        @settings[:config_paths] << File.expand_path('.')
 
         self.ostream = $stdout
       end
