@@ -407,14 +407,17 @@ module Rubikon
       # @since 0.2.0
       #
       # Available settings
-      # +autorun+::        If true, let the application run as soon as its
-      #                    class is defined
-      # +help_banner+::    Defines a banner for the help message
-      #                    (<em>unused</em>)
-      # +istream+::        Defines an input stream to use
-      # +name+::           Defines the name of the application
-      # +ostream+::        Defines an output stream to use
-      # +raise_errors+::   If true, raise errors, otherwise fail gracefully
+      # +autorun+::      If +true+, let the application run as soon as its
+      #                  class is defined. This is generally useful for simple
+      #                  "code and run" applications.
+      # +colors+::       If +true+, enables colored output using ColoredIO
+      # +config_file+::  The name of the config file to search
+      # +config_paths+:: The paths to search for config files
+      # +help_banner+::  Defines a banner for the help message
+      # +istream+::      Defines an input stream to use
+      # +name+::         Defines the name of the application
+      # +ostream+::      Defines an output stream to use
+      # +raise_errors+:: If +true+, raise errors, otherwise fail gracefully
       #
       # @example
       #  set :name, 'My App'

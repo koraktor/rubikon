@@ -9,8 +9,16 @@ module Rubikon
 
   module Config
 
+    # A configuration provider loading configuration data from YAML files
+    #
+    # @author Sebastian Staudt
+    # @since 0.5.0
     class YamlProvider
 
+      # Loads a configuration Hash from a YAML formatted file
+      #
+      # @param [String] file The path of the file to load
+      # @return [Hash] The configuration data loaded from the file
       def load_config(file)
         YAML.load_file file
       end

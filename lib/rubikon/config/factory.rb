@@ -8,14 +8,40 @@ require 'rubikon/config/yaml_provider'
 
 module Rubikon
 
+  # This module contains several classes used to load configuration data from
+  # various sources
+  #
+  # @author Sebastian Staudt
+  # @since 0.5.0
   module Config
 
+    # The configuration factory is used to load one or more configuration
+    # files from different search paths and using different file formats, e.g.
+    # YAML.
+    #
+    # @author Sebastian Staudt
     class Factory
 
+      # Providers available for use
       PROVIDERS = [ :auto, :yaml ]
 
-      attr_reader :config, :files
+      # @return [Hash] The configuration data loaded from the configuration
+      #         files found inside the search paths
+      attr_reader :config
 
+      # @return [Array<String>] The paths of the configuration files found and
+      #        loaded 
+      attr_reader :files
+
+      # Creates a new factory instance with a given file name to be searched in
+      # the given paths and using the specified provider to load the
+      # configuration data from the files.
+      #
+      # @param [String] name The name of the configuration file
+      # @param [Array<String>] search_paths An array of paths to be searched
+      #        for configuration files
+      # @param [PROVIDERS] provider The provider to use for loading
+      #        configuration data from the files found
       def initialize(name, search_paths, provider = :yaml)
         provider = :auto unless PROVIDERS.include?(provider)
         provider = Config.const_get("#{provider.to_s.capitalize}Provider").new
