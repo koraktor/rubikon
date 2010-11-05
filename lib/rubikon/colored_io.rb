@@ -5,15 +5,25 @@ module Rubikon
   module ColoredIO
 
     COLORS = {
-      :bl => 30,
-      :r  => 31,
-      :g  => 32,
-      :y  => 33,
-      :b  => 34,
-      :p  => 35,
-      :c  => 36,
-      :w  => 37,
+      :black  => 30,
+      :bl     => 30,
+      :red    => 31,
+      :r      => 31,
+      :green  => 32,
+      :g      => 32,
+      :yellow => 33,
+      :y      => 33,
+      :blue   => 34,
+      :b      => 34,
+      :purple => 35,
+      :p      => 35,
+      :cyan   => 37,
+      :c      => 36,
+      :white  => 37,
+      :w      => 37,
     }
+
+    COLOR_MATCHER = COLORS.keys.join('|')
 
     # Enables color filtering on the given output stream (or another object
     # responding to +puts+)
@@ -51,15 +61,15 @@ module Rubikon
       if enabled
         class << io
           def color_filter(text)
-            text.gsub(/([bcgprwy]|bl)\{(.*?)\}/) do
-              "\e[0;#{COLORS[$1.to_sym]}m#{$2}\e[0m"
+            text.gsub(/(#{COLOR_MATCHER})\{(.*?)\}/i) do
+              "\e[0;#{COLORS[$1.downcase.to_sym]}m#{$2}\e[0m"
             end
           end
         end
       else
         class << io
           def color_filter(text)
-            text.gsub(/([bcgprwy]|bl)\{(.*?)\}/, '\2')
+            text.gsub(/(#{COLOR_MATCHER})\{(.*?)\}/i, '\2')
           end
         end
       end
