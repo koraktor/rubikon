@@ -1,8 +1,18 @@
+# This code is free software; you can redistribute it and/or modify it under
+# the terms of the new BSD License.
+#
+# Copyright (c) 2010, Sebastian Staudt
 
 module Rubikon
-  
+
+  # This module is used to enhance an IO stream to generate terminal
+  # color codes from simple text tags.
+  #
+  # @author Sebastian Staudt
+  # @since 0.5.0
   module ColoredIO
 
+    # Color codes that can be used inside a IO enhanced with ColoredIO
     COLORS = {
       :black  => 30,
       :bl     => 30,
@@ -22,6 +32,7 @@ module Rubikon
       :w      => 37,
     }
 
+    # The keys of the color codes joined for the regular expression
     COLOR_MATCHER = COLORS.keys.join('|')
 
     # Enables color filtering on the given output stream (or another object
