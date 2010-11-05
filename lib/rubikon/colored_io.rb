@@ -1,4 +1,3 @@
-require 'rbconfig'
 
 module Rubikon
   
@@ -42,7 +41,7 @@ module Rubikon
       return if io.respond_to?(:color_filter)
 
       enabled = enabled && ENV['TERM'] != 'dumb'
-      if enabled && RbConfig::CONFIG['host_os'] =~ /mswin|mingw/
+      if enabled && RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
         begin
           require 'Win32/Console/ANSI'
         rescue LoadError 
