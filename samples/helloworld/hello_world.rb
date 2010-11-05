@@ -38,7 +38,7 @@ class HelloWorld < Rubikon::Application::Base
   # Ask the user for his name and greet him
   command :interactive, 'Greet interactively' do
     name = input 'Please enter your name'
-    greet name
+    call :'__default', '--name', name
   end
 
   # Show a progress bar while iterating through a loop

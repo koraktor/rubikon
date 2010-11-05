@@ -26,6 +26,18 @@ module Rubikon
 
       private
 
+      # Call another named command with the given arguments
+      #
+      # @param [Symbol] command_name The name of the command to call
+      # @param [Array<String>] args The arguments to pass to the called command
+      # @see Command#run
+      def call(command_name, *args)
+        command = @current_command
+        @current_command = @commands[command_name]
+        @current_command.send(:run, *args)
+        @current_command = command
+      end
+
       # Define a new application Command or an alias to an existing one
       #
       # @param [String, Hash] name The name of the Command as used in
