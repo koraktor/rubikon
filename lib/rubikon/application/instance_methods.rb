@@ -85,7 +85,8 @@ module Rubikon
         hook = InstanceMethods.instance_method(:hook).bind(self)
 
         begin
-          @config = Config::Factory.new(@settings[:config_file], @settings[:config_paths]).config
+          @config = Config::Factory.new(@settings[:config_file],
+            @settings[:config_paths], @settings[:config_format]).config
 
           InstanceMethods.instance_method(:init).bind(self).call
           command, parameters, args = InstanceMethods.
