@@ -23,6 +23,8 @@ module Rubikon
       def load_config(file)
         ext = File.extname(file)
         case ext
+          when 'ini'
+            IniProvider.load_config file
           when 'yaml', 'yml'
             YamlProvider.load_config file
           else

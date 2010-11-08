@@ -4,6 +4,7 @@
 # Copyright (c) 2010, Sebastian Staudt
 
 require 'rubikon/config/auto_provider'
+require 'rubikon/config/ini_provider'
 require 'rubikon/config/yaml_provider'
 
 module Rubikon
@@ -23,7 +24,7 @@ module Rubikon
     class Factory
 
       # Providers available for use
-      PROVIDERS = [ :auto, :yaml ]
+      PROVIDERS = [ :auto, :ini, :yaml ]
 
       # @return [Hash] The configuration data loaded from the configuration
       #         files found inside the search paths
