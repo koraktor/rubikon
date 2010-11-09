@@ -23,10 +23,10 @@ module Rubikon
       def load_config(file)
         ext = File.extname(file)
         case ext
-          when 'ini'
-            IniProvider.load_config file
-          when 'yaml', 'yml'
-            YamlProvider.load_config file
+          when '.ini'
+            IniProvider.new.load_config file
+          when '.yaml', '.yml'
+            YamlProvider.new.load_config file
           else
             raise UnsupportedConfigFormatError.new(ext)
         end
