@@ -20,13 +20,13 @@ module Rubikon
       # @param [String] file The path of the config file to load
       # @return [Hash] The configuration values loaded from the file
       # @see YamlProvider
-      def load_config(file)
+      def self.load_config(file)
         ext = File.extname(file)
         case ext
           when '.ini'
-            IniProvider.new.load_config file
+            IniProvider.load_config file
           when '.yaml', '.yml'
-            YamlProvider.new.load_config file
+            YamlProvider.load_config file
           else
             raise UnsupportedConfigFormatError.new(ext)
         end

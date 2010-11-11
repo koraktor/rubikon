@@ -45,7 +45,7 @@ module Rubikon
       #        configuration data from the files found
       def initialize(name, search_paths, provider = :yaml)
         provider = :auto unless PROVIDERS.include?(provider)
-        provider = Config.const_get("#{provider.to_s.capitalize}Provider").new
+        provider = Config.const_get("#{provider.to_s.capitalize}Provider")
       
         @files  = []
         @config = {}

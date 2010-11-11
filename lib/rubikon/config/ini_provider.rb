@@ -20,7 +20,7 @@ module Rubikon
       #
       # @param [String] file The path of the file to load
       # @return [Hash] The configuration data loaded from the file
-      def load_config(file)
+      def self.load_config(file)
         content = File.new(file).readlines.map do |line|
           line.gsub(/(?:#|;).*/, '').strip
         end.join("\n")

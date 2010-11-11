@@ -18,7 +18,7 @@ class TestIniProvider < Test::Unit::TestCase
           'test2' => '2'
         }
       }
-      assert_equal expected, Rubikon::Config::IniProvider.new.load_config(ini)
+      assert_equal expected, Rubikon::Config::IniProvider.load_config(ini)
     end
 
   end

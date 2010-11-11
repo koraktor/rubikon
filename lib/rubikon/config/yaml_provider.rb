@@ -19,7 +19,7 @@ module Rubikon
       #
       # @param [String] file The path of the file to load
       # @return [Hash] The configuration data loaded from the file
-      def load_config(file)
+      def self.load_config(file)
         YAML.load_file file
       end
 
