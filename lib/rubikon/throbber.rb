@@ -21,16 +21,16 @@ module Rubikon
     # @param [Thread] thread The thread that should be watched
     # @see Application::InstanceMethods#throbber
     def initialize(ostream, thread)
-      proc = Proc.new do |ostream, thread|
+      proc = Proc.new do |os, thr|
           step = 0
-          ostream.putc 32
-          while thread.alive?
-            ostream << "\b#{SPINNER[step].chr}"
-            ostream.flush
+          os.putc 32
+          while thr.alive?
+            os << "\b#{SPINNER[step].chr}"
+            os.flush
             step = (step + 1) % 4
             sleep 0.25
           end
-        ostream.putc 8
+        os.putc 8
       end
 
       super { proc.call(ostream, thread) }

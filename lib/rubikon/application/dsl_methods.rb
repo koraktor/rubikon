@@ -53,6 +53,8 @@ module Rubikon
       # @return [Command]
       # @since 0.2.0
       def command(name, arg_count = nil, description = nil, &block)
+        command = nil
+
         if name.is_a? Hash
           name.each do |alias_name, command_name|
             command = @commands[command_name]

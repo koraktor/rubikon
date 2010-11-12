@@ -218,7 +218,7 @@ module Rubikon
       # @param [Symbol] name The name of the hook to execute
       # @since 0.4.0
       def hook(name)
-        @sandbox.instance_eval &@hooks[name] unless @hooks[name].nil?
+        @sandbox.instance_eval(&@hooks[name]) unless @hooks[name].nil?
       end
 
       # This method is called once for each application and is used to

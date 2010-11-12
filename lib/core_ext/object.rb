@@ -5,7 +5,8 @@
 
 unless Object.method_defined?(:respond_to_missing?)
 
-  # Extends Ruby's own Object class with method #start_with? for Ruby < 1.9.2
+  # Extends Ruby's own Object class with method #respond_to_missing? for Ruby
+  # < 1.9.2
   #
   # @author Sebastian Staudt
   # @since 0.4.0
