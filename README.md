@@ -93,14 +93,15 @@ section if you want to help to make Rubikon better.
 * Automatic checks for option arguments
 * Built-in methods to capture user input
 * Built-in methods to display progress bars and throbbers
+* Built-in support for configuration files
+* Built-in support for colored output
+* Automatic generation of a application help screen
 
 ## Future plans
 
 * User defined type safety of option arguments
-* Automatic generation of help screens
 * Improved error handling
-* Built-in support for configuration files
-* Built-in support for colored output
+* Automatic generation of command help screens
 
 ## Requirements
 
