@@ -24,6 +24,6 @@ require 'rubikon/application/base'
 module Rubikon
 
   # This is the current version of the Rubikon gem
-  VERSION = '0.4.1'
+  VERSION = '0.5.0'
 
 end
