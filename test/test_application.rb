@@ -159,6 +159,14 @@ class TestApplication < Test::Unit::TestCase
       assert_equal "pre init\npost init\npre execute\nexecute\npost execute\n", @ostream.string
     end
 
+    should 'allow combining single character parameters' do
+      @app.run(%w{-dv})
+      assert $DEBUG
+      assert $VERBOSE
+      $DEBUG = false
+      $VERBOSE = false
+    end
+
   end
 
 end

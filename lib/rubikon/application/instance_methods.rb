@@ -309,6 +309,14 @@ module Rubikon
           raise UnknownCommandError.new(command_arg) if command.nil?
         end
 
+        args = args.map do |arg|
+          if !arg.start_with?('--') && arg.start_with?('-') && arg.size > 2
+            arg[1..-1].split('').map { |a| "-#{a}"}
+          else
+            arg
+          end
+        end.flatten
+
         parameter  = nil
         parameters = []
         args.dup.each do |arg|
