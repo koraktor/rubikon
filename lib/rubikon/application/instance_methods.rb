@@ -60,7 +60,7 @@ module Rubikon
           :raise_errors    => false
         }
 
-	@settings[:config_paths] = []
+        @settings[:config_paths] = []
         if RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
           @settings[:config_paths] << ENV['ALLUSERSPROFILE']
         else
@@ -110,7 +110,7 @@ module Rubikon
           raise $! if @settings[:raise_errors]
 
           puts "r{Error:}\n    #{$!.message}"
-          puts "    #{$!.backtrace.join("\n    ")}" if $DEBUG
+          puts "     at #{$!.backtrace.join("\n     at ")}" if $DEBUG
           exit 1
         ensure
           InstanceMethods.instance_method(:reset).bind(self).call
