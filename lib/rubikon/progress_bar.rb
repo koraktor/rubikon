@@ -2,6 +2,7 @@
 # the terms of the new BSD License.
 #
 # Copyright (c) 2009-2010, Sebastian Staudt
+# Copyright (c) 2010, Dotan J. Nahum
 
 module Rubikon
 

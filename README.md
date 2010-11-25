@@ -138,6 +138,7 @@ LICENSE file.
 ## Credits
 
 * Sebastian Staudt -- koraktor(at)gmail.com
+* Dotan J. Nahum -- jondotan(at)gmail.com
 
 ## See Also
 
