@@ -398,7 +398,7 @@ module Rubikon
       #
       # @param [String] text The text to write into the output stream
       # @since 0.2.0
-      def puts(text)
+      def puts(text = nil)
         ostream.puts text
       end
 

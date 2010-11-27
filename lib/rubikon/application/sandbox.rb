@@ -61,7 +61,7 @@ module Rubikon
       # output IO object is used for printing text
       #
       # @param [String] text The text to write into the output stream
-      def puts(text)
+      def puts(text = nil)
         @__app__.send(:puts, text)
       end
 
