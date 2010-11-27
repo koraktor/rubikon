@@ -106,11 +106,11 @@ module Rubikon
       #
       # @return [Command] The default Command object
       # @since 0.2.0
-      def default(description = nil, &block)
-        if description.is_a? Symbol
-          command({ :__default => description })
+      def default(arg_count = nil, description = nil, &block)
+        if arg_count.is_a? Symbol
+          command({ :__default => arg_count })
         else
-          command(:__default, description, &block)
+          command(:__default, arg_count, description, &block)
         end
       end
 
