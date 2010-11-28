@@ -51,6 +51,7 @@ module Rubikon
         @parameters           = []
         @sandbox              = Sandbox.new(self)
         @settings             = {
+          :autohelp        => true,
           :autorun         => true,
           :colors          => true,
           :config_file     => "#{self.class.to_s.downcase}.yml",
@@ -109,9 +110,14 @@ module Rubikon
         rescue
           raise $! if @settings[:raise_errors]
 
-          puts "r{Error:}\n    #{$!.message}"
-          puts "     at #{$!.backtrace.join("\n     at ")}" if $DEBUG
-          exit 1
+          if @settings[:autohelp] && @commands.key?(:help) &&
+             $!.is_a?(UnknownCommandError)
+            call :help, $!.command
+          else
+            puts "r{Error:}\n    #{$!.message}"
+            debug "     at #{$!.backtrace.join("\n     at ")}"
+            exit 1
+          end
         ensure
           InstanceMethods.instance_method(:reset).bind(self).call
         end
