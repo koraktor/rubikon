@@ -120,7 +120,7 @@ class TestApplication < Test::Unit::TestCase
 
     should 'have a working help command' do
       @app.run(%w{help})
-      assert_match /Usage: [^ ]* \[--debug\|-d\] \[--gflag\|--gf1\|--gf2\] \[--gopt\|--go1\|--go2 \.\.\.\] \[--verbose\|-v\] command \[args\]\n\nCommands:\n  arguments      \n  globalopt      \n  help           Display this help screen\n  input          \n  object_id      \n  parameters     \n  progressbar    \n  sandbox        \n  throbber       \n/, @ostream.string
+      assert_match /Usage: [^ ]* \[--debug\|-d\] \[--gflag\|--gf1\|--gf2\] \[--gopt\|--go1\|--go2 \.\.\.\] \[--verbose\|-v\] \[command\] \[args\]\n\nCommands:\n  arguments      \n  globalopt      \n  help           Show help for the application or a single command\n  input          \n  object_id      \n  parameters     \n  progressbar    \n  sandbox        \n  throbber       \n/, @ostream.string
     end
 
     should 'have a working DSL for command parameters' do

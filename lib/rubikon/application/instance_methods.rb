@@ -149,6 +149,38 @@ module Rubikon
         global_flag :d => :debug
       end
 
+      # Prints a help screen for this application
+      #
+      # @param [String] info A additional information string to be displayed
+      #        right after usage information
+      # @since 0.6.0
+      def help(info = nil)
+        help = {}
+        @commands.each_value do |command|
+          help[command.name.to_s] = command.description
+        end
+        help.delete('__default')
+
+        if @commands.key? :__default
+          puts " [command] [args]\n\n"
+        else
+          puts " command [args]\n\n"
+        end
+
+        puts "#{info}\n\n" unless info.nil?
+
+        puts 'Commands:'
+        max_command_length = help.keys.max_by { |a| a.size }.size
+        help.sort_by { |name, description| name }.each do |name, description|
+          puts "  #{name.ljust(max_command_length)}    #{description}"
+        end
+
+        if @commands.key?(:__default) && @commands[:__default].description != :hidden
+          put "\nYou can also call this application without a command:"
+          puts @commands[:__default].help(false) + "\n"
+        end
+      end
+
       # Defines a command for displaying a help screen
       #
       # This takes any defined commands and it's corresponding options and
@@ -158,16 +190,11 @@ module Rubikon
         global_parameters = @global_parameters
         settings = @settings
 
-        command :help, nil, 'Display this help screen' do
+        command :help, 0..1, 'Show help for the application or a single command' do
           put settings[:help_banner]
 
-          help = {}
-          commands.each_value do |command|
-            help[command.name.to_s] = command.description
-          end
-
           global_params = ''
-          global_parameters.values.uniq.sort {|a,b| a.name.to_s <=> b.name.to_s }.each do |param|
+          global_parameters.values.uniq.sort_by { |a| a.name.to_s }.each do |param|
             global_params << ' ['
             ([param.name] + param.aliases).each_with_index do |name, index|
               name = name.to_s
@@ -178,19 +205,19 @@ module Rubikon
             global_params << ' ...' if param.is_a?(Option)
             global_params << ']'
           end
+          put global_params
 
-          default_description = help.delete('__default')
-          if default_description.nil?
-            puts "#{global_params} command [args]\n\n"
+          app_help = lambda { |info| @__app__.instance_eval { help(info) } }
+
+          unless args.first.nil?
+            command = args.first.to_sym
+            if commands.keys.include?(command)
+              puts commands[command].help
+            else
+              app_help.call("The command \"#{command}\" is undefined. The following commands are available:")
+            end
           else
-            puts "#{global_params} [command] [args]\n\n"
-            puts "Without command: #{default_description}\n\n"
-          end
-
-          puts 'Commands:'
-          max_command_length = help.keys.max { |a, b| a.size <=> b.size }.size
-          help.sort_by { |name, description| name }.each do |name, description|
-            puts "  #{name.ljust(max_command_length)}    #{description}"
+            app_help.call(nil)
           end
         end
       end
@@ -240,7 +267,8 @@ module Rubikon
         InstanceMethods.instance_method(:help_command).bind(self).call
         InstanceMethods.instance_method(:verbose_flag).bind(self).call
 
-        if @settings[:help_as_default] && !@commands.keys.include?(:__default)
+        if @settings[:help_as_default] && @commands.key?(:help) &&
+           !@commands.key?(:__default)
           default :help
         end
 

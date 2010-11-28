@@ -13,6 +13,7 @@ end
 
 class TestApp < Application::Base
 
+  set :autohelp, false
   set :autorun, false
   set :name, 'Rubikon test application'
   set :raise_errors, true
@@ -29,7 +30,7 @@ class TestApp < Application::Base
   end
   global_option :go2 => :gopt
 
-  default do
+  default nil, :hidden do
     'default command'
   end
 

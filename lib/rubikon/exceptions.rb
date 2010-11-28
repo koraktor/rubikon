@@ -62,8 +62,16 @@ module Rubikon
   # @since 0.3.0
   class UnknownCommandError < ArgumentError
 
+    # @return [Symbol] The name of the command that has been tried to access
+    attr_reader :command
+
+    # Creates a new error and stores the name of the command that could not be
+    # found
+    #
+    # @param [Symbol] name The name of the unknown command
     def initialize(name)
       super "Unknown command: #{name}"
+      @command = name
     end
 
   end

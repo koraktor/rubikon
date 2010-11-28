@@ -58,6 +58,66 @@ module Rubikon
       end
     end
 
+    # Generate help for this command
+    #
+    # @param [Boolean] show_usage If +true+, the returned String will also
+    #        include usage information
+    # @return [String] The contents of the help screen for this command
+    # @since 0.6.0
+    def help(show_usage = true)
+      help = ''
+
+      if show_usage
+        help << " #{name}" if name != :__default
+
+        @params.values.uniq.sort_by {|a| a.name.to_s }.each do |param|
+          help << ' ['
+          ([param.name] + param.aliases).each_with_index do |name, index|
+            name = name.to_s
+            help << '|' if index > 0
+            help << '-' if name.size > 1
+            help << "-#{name}"
+          end
+          help << ' ...' if param.is_a?(Option)
+          help << ']'
+        end
+      end
+
+      help << "\n\n#{description}" unless description.nil?
+
+      help_flags = {}
+      help_options = {}
+      params.each_value do |param|
+        if param.is_a? Flag
+          help_flags[param.name.to_s] = param
+        else
+          help_options[param.name.to_s] = param
+        end
+      end
+
+      param_name = lambda { |name| "#{name.size > 1 ? '-' : ' '}-#{name}" }
+      unless help_flags.empty? && help_options.empty?
+        max_param_length = (help_flags.keys + help_options.keys).
+          max_by { |a| a.size }.size + 2
+      end
+
+      unless help_flags.empty?
+        help << "\n\nFlags:"
+        help_flags.sort_by { |name, param| name }.each do |name, param|
+          help << "\n  #{param_name.call(name).ljust(max_param_length)}"
+        end
+      end
+
+      unless help_options.empty?
+      help << "\n\nOptions:\n"
+        help_options.sort_by { |name, param| name }.each do |name, param|
+          help << "  #{param_name.call(name).ljust(max_param_length)} ...\n"
+        end
+      end
+
+      help
+    end
+
     private
 
     # Add a new parameter for this command
