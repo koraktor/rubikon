@@ -16,15 +16,37 @@ module Rubikon
     # @since 0.3.0
     module DSLMethods
 
-      # @return [String] The (first) definition file of the application
+      # @return [String] The (first) file where the application has been
+      #         defined
       attr_reader :base_file
 
+      # @return [Hash] The active configuration of the application
       attr_reader :config
 
       # @return [String] The absolute path of the application
       attr_reader :path
 
       private
+
+      # Checks whether parameter with the given name has been supplied by the
+      # user on the command-line.
+      #
+      # @param [#to_sym] name The name of the parameter to check
+      # @since 0.2.0
+      #
+      # @example
+      #  flag :status
+      #  command :something do
+      #    print_status if active? :status
+      #  end
+      def active?(name)
+        name = name.to_sym
+        parameter = @global_parameters[name]
+        parameter = @current_command.parameters[name] if parameter.nil?
+        return false if parameter.nil?
+        parameter.send(:active?)
+      end
+      alias_method :given?, :active?
 
       # Call another named command with the given arguments
       #
@@ -138,26 +160,6 @@ module Rubikon
           @parameters << Flag.new(self, name, &block)
         end
       end
-
-      # Checks whether parameter with the given name has been supplied by the
-      # user on the command-line.
-      #
-      # @param [#to_sym] name The name of the parameter to check
-      # @since 0.2.0
-      #
-      # @example
-      #  flag :status
-      #  command :something do
-      #    print_status if active? :status
-      #  end
-      def active?(name)
-        name = name.to_sym
-        parameter = @global_parameters[name]
-        parameter = @current_command.parameters[name] if parameter.nil?
-        return false if parameter.nil?
-        parameter.send(:active?)
-      end
-      alias_method :given?, :active?
 
       # Create a new flag with the given name to be used globally
       #
