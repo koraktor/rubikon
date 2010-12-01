@@ -10,8 +10,8 @@ module Rubikon
   # A flag is an application parameter without arguments
   #
   # @author Sebastian Staudt
-  # @see Application::InstanceMethods#flag
-  # @see Application::InstanceMethods#global_flag
+  # @see Application::DSLMethods#flag
+  # @see Application::DSLMethods#global_flag
   # @see Parameter
   # @since 0.3.0
   class Flag

@@ -45,6 +45,7 @@ module Rubikon
   # Raised if the user did not specify a command and no default command exists
   #
   # @author Sebastian Staudt
+  # @see Application::DSLMethods#default
   # @since 0.3.0
   class NoDefaultCommandError < ArgumentError
 
@@ -57,6 +58,7 @@ module Rubikon
   # Raised if a command has been supplied that does not exist
   #
   # @author Sebastian Staudt
+  # @see Application::DSLMethods#command
   # @since 0.3.0
   class UnknownCommandError < ArgumentError
 
@@ -69,6 +71,10 @@ module Rubikon
   # Raised if a parameter has been supplied that does not exist
   #
   # @author Sebastian Staudt
+  # @see Application::DSLMethods#flag
+  # @see Application::DSLMethods#option
+  # @see Application::DSLMethods#global_flag
+  # @see Application::DSLMethods#global_option
   # @since 0.3.0
   class UnknownParameterError < ArgumentError
 

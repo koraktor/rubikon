@@ -9,7 +9,7 @@ module Rubikon
   # A class for displaying and managing progress bars
   #
   # @author Sebastian Staudt
-  # @see Application::InstanceMethods#throbber
+  # @see Application::DSLMethods#progress_bar
   # @since 0.2.0
   class ProgressBar
 

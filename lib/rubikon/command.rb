@@ -14,6 +14,8 @@ module Rubikon
   # be executed when running the Application.
   #
   # @author Sebastian Staudt
+  # @see Application::DSLMethods#command
+  # @see Application::DSLMethods#default
   # @since 0.3.0
   class Command
 

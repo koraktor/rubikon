@@ -11,6 +11,8 @@ module Rubikon
   #
   # @author Sebastian Staudt
   # @see Command
+  # @see Flag
+  # @see Option
   # @since 0.3.0
   module Parameter
 

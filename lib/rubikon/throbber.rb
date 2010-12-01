@@ -8,7 +8,7 @@ module Rubikon
   # A class for displaying and managing throbbers
   #
   # @author Sebastian Staudt
-  # @see Application::InstanceMethods#throbber
+  # @see Application::DSLMethods#throbber
   # @since 0.2.0
   class Throbber < Thread
 

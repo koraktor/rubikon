@@ -11,7 +11,8 @@ module Rubikon
   # arguments.
   #
   # @author Sebastian Staudt
-  # @see Application::InstanceMethods#option
+  # @see Application::DSLMethods#option
+  # @see Application::DSLMethods#global_option
   # @see Parameter
   # @since 0.3.0
   class Option

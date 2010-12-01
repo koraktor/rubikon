@@ -32,6 +32,7 @@ module Rubikon
       # user on the command-line.
       #
       # @param [#to_sym] name The name of the parameter to check
+      # @see Parameter
       # @since 0.2.0
       #
       # @example
@@ -73,6 +74,8 @@ module Rubikon
       #        is called with the associated parameter
       #
       # @return [Command]
+      # @see default
+      # @see Command
       # @since 0.2.0
       def command(name, arg_count = nil, description = nil, &block)
         command = nil
@@ -127,6 +130,8 @@ module Rubikon
       #        parameter is given to the application
       #
       # @return [Command] The default Command object
+      # @see Command
+      # @see command
       # @since 0.2.0
       def default(arg_count = nil, description = nil, &block)
         if arg_count.is_a? Symbol
@@ -275,6 +280,7 @@ module Rubikon
       #        arbitrary number of arguments
       # @param [Proc] block An optional code block that should be executed if
       #        this option is used
+      # @see Option
       # @since 0.2.0
       #
       # @example
@@ -439,6 +445,7 @@ module Rubikon
       #
       # @param [Proc] block The block to execute while the throbber is
       #        displayed
+      # @see Throbber
       # @since 0.2.0
       # @yield While the block is executed a throbber is displayed
       #

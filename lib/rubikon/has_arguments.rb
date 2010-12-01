@@ -72,6 +72,7 @@ module Rubikon
     #        indices can be used always while symbolic arguments are only
     #        available for named arguments.
     # @return The argument with the specified index
+    # @see #args
     # @since 0.4.0
     def [](arg)
       arg = @arg_names.index(arg) if arg.is_a? Symbol
