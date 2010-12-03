@@ -299,19 +299,22 @@ module Rubikon
       #         parameters of this command that have been supplied and any
       #         additional command-line arguments supplied
       def parse_arguments(args)
-        command_arg = args.shift
-        if command_arg.nil? || command_arg.start_with?('-')
+        command_arg = args.find { |arg| arg == '--' || !arg.start_with?('-') }
+        command_arg = nil if command_arg == '--'
+
+        if command_arg.nil?
           command = @commands[:__default]
-          args.unshift(command_arg) unless command_arg.nil?
           raise NoDefaultCommandError if command.nil?
         else
           command = @commands[command_arg.to_sym]
+          args.delete_at args.index(command_arg)
           raise UnknownCommandError.new(command_arg) if command.nil?
         end
 
+        args.delete '--'
         args = args.map do |arg|
           if !arg.start_with?('--') && arg.start_with?('-') && arg.size > 2
-            arg[1..-1].split('').map { |a| "-#{a}"}
+            arg[1..-1].split('').map { |a| "-#{a}" }
           else
             arg
           end
