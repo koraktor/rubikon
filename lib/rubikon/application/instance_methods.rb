@@ -354,7 +354,7 @@ module Rubikon
       # @see Parameter#reset
       # @since 0.4.0
       def reset
-        ostream.rewind
+        ostream.rewind if ostream.is_a? StringIO || !ostream.stat.chardev?
         ColoredIO.remove_color_filter(ostream)
         (@commands.values + @global_parameters.values).uniq.each do |param|
           param.send :reset
