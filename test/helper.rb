@@ -10,7 +10,3 @@ include Rubikon
 
 require 'rubygems'
 require 'shoulda'
-
-unless RUBY_VERSION[0..2] == '1.9'
-  begin require 'redgreen'; rescue LoadError; end
-end

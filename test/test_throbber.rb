@@ -3,7 +3,7 @@
 #
 # Copyright (c) 2009-2010, Sebastian Staudt
 
-require 'test_helper'
+require 'helper'
 
 class TestThrobber < Test::Unit::TestCase
 
