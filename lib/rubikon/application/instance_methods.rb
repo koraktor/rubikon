@@ -108,6 +108,8 @@ module Rubikon
           @current_command = nil
 
           result
+        rescue Interrupt
+          error "\nInterrupted... exiting."
         rescue
           raise $! if @settings[:raise_errors]
 
