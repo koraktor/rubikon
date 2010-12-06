@@ -45,7 +45,7 @@ class TestApp < Application::Base
   end
 
   command :input do
-    input 'input'
+    [input('input'), input('validated', 'x')]
   end
 
   command :alias_before => :object_id

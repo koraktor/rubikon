@@ -72,11 +72,11 @@ class TestApplication < Test::Unit::TestCase
       @istream = StringIO.new
       @app.set :istream, @istream
 
-      input_string = 'test'
-      @istream.puts input_string
+      @istream.puts "test\ntest\nx\n"
       @istream.rewind
-      assert_equal input_string, @app.run(%w{input})
-      assert_equal 'input: ', @ostream.gets
+
+      assert_equal %w{test x}, @app.run(%w{input})
+      assert_equal 'input: validated [x]: Please provide valid input [x]: ', @ostream.gets
     end
 
     should 'not break output while displaying a throbber or progress bar' do

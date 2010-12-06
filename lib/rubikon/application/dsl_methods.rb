@@ -252,6 +252,9 @@ module Rubikon
       #
       # @param [String, #to_s] prompt A String or other Object responding to
       #        +to_s+ used for displaying a prompt to the user
+      # @param [Array<String>] expected A list of strings that are accepted as
+      #        valid input. If not empty, input will be checked and the prompt
+      #        will be repeated if required.
       # @since 0.2.0
       #
       # @example Display a prompt "Please type something: "
@@ -261,11 +264,20 @@ module Rubikon
       #    # Do something with the data
       #    ...
       #  end
-      def input(prompt = '')
-        unless prompt.to_s.empty?
-          ostream << "#{prompt}: "
+      #
+      # @example Display a question with validated input
+      #  command :question do
+      #    good = input 'Do you feel good', 'y', 'n'
+      #    ...
+      #  end
+      def input(prompt = '', *expected)
+        prompt << " [#{expected.join '/'}]" unless expected.empty?
+        ostream << "#{prompt}: " unless prompt.to_s.empty?
+        input = @settings[:istream].gets[0..-2]
+        unless expected.empty? || expected.include?(input)
+          input = input 'Please provide valid input', *expected
         end
-        @settings[:istream].gets[0..-2]
+        input
       end
 
       # Create a new Option with the given name for the next Command
