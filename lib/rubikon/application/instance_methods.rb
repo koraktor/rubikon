@@ -70,6 +70,7 @@ module Rubikon
         @settings[:config_paths] << File.expand_path('~')
         @settings[:config_paths] << File.expand_path('.')
 
+        self.estream = $stderr
         self.ostream = $stdout
       end
 
@@ -114,8 +115,8 @@ module Rubikon
              $!.is_a?(UnknownCommandError)
             call :help, $!.command
           else
-            puts "r{Error:}\n    #{$!.message}"
-            debug "     at #{$!.backtrace.join("\n     at ")}"
+            error "r{Error:}\n    #{$!.message}"
+            error "     at #{$!.backtrace.join("\n     at ")}" if $DEBUG
             exit 1
           end
         ensure
@@ -147,12 +148,27 @@ module Rubikon
       # enable debug output.
       # Using it sets Ruby's global variable <tt>$DEBUG</tt> to +true+.
       #
-      # @return [Flag]
+      # @return [Flag] The debug flag
       def debug_flag
         global_flag :debug do
           $DEBUG = true
         end
         global_flag :d => :debug
+      end
+
+      # Sets the error output stream of the application
+      #
+      # If colors are enabled, this checks if the stream supports the
+      # +color_filter+ method and enables the +ColoredIO+ if not.
+      #
+      # @param [IO] estream The output stream to use
+      # @see ColoredIO.add_color_filter
+      # @since 0.6.0
+      def estream=(estream)
+        if !estream.respond_to?(:color_filter)
+          ColoredIO.add_color_filter(estream, @settings[:colors])
+        end
+        @settings[:estream] = estream
       end
 
       # Prints a help screen for this application
@@ -391,8 +407,10 @@ module Rubikon
       # @see Parameter#reset
       # @since 0.4.0
       def reset
-        ostream.rewind if ostream.is_a? StringIO || !ostream.stat.chardev?
-        ColoredIO.remove_color_filter(ostream)
+        [estream, ostream].each do |stream|
+          stream.rewind if stream.is_a? StringIO || !stream.stat.chardev?
+          ColoredIO.remove_color_filter(estream)
+        end
         (@commands.values + @global_parameters.values).uniq.each do |param|
           param.send :reset
         end

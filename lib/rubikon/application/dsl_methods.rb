@@ -141,6 +141,27 @@ module Rubikon
         end
       end
 
+      # Output a line of text using +IO#puts+ of the error output stream
+      #
+      # @param [String] text The text to write into the error output stream
+      # @since 0.6.0
+      def error(text = nil)
+        estream.puts text
+      end
+
+      # Convenience method for accessing the user-defined error output stream
+      #
+      # Use this if you want to work directly with the error output stream
+      #
+      # @return [IO] The error output stream object - usually +$stderr+
+      # @since 0.6.0
+      #
+      # @example
+      #  estream.flush
+      def estream
+        @settings[:estream]
+      end
+
       # Create a new Flag with the given name for the next Command
       #
       # @param [Symbol, #to_sym] name The name of the flag (without dashes).
@@ -435,6 +456,7 @@ module Rubikon
       # +colors+::       If +true+, enables colored output using ColoredIO
       # +config_file+::  The name of the config file to search
       # +config_paths+:: The paths to search for config files
+      # +estream+::      Defines an error output stream to use
       # +help_banner+::  Defines a banner for the help message
       # +istream+::      Defines an input stream to use
       # +name+::         Defines the name of the application
@@ -446,10 +468,12 @@ module Rubikon
       #  set :autorun, false
       def set(setting, value)
         setting = setting.to_sym
-        unless setting == :ostream
-          @settings[setting.to_sym] = value
-        else
+        if setting == :estream
+          self.estream = value
+        elsif setting == :ostream
           self.ostream = value
+        else
+          @settings[setting.to_sym] = value
         end
       end
 

@@ -30,7 +30,9 @@ class TestApplication < Test::Unit::TestCase
 
     setup do
       @app = TestApp
+      @estream = StringIO.new
       @ostream = StringIO.new
+      @app.set :estream, @estream
       @app.set :ostream, @ostream
       @app.set :raise_errors, true
     end
@@ -48,8 +50,8 @@ class TestApplication < Test::Unit::TestCase
       else
         error_text = "Error:\n"
       end
-      assert_equal error_text, @ostream.gets
-      assert_equal "    Unknown command: unknown\n", @ostream.gets
+      assert_equal error_text, @estream.gets
+      assert_equal "    Unknown command: unknown\n", @estream.gets
     end
 
     should 'run its default command without arguments' do
