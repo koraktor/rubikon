@@ -179,11 +179,13 @@ module Rubikon
       #  command :something do
       #    ...
       #  end
-      def flag(name, &block)
+      def flag(name, description = nil, &block)
         if name.is_a? Hash
           @parameters << name
         else
-          @parameters << Flag.new(self, name, &block)
+          flag = Flag.new(self, name, &block)
+          flag.description = description unless description.nil?
+          @parameters << flag
         end
       end
 
@@ -205,7 +207,7 @@ module Rubikon
       #  end
       # @example Define an alias to a global flag
       #  global_flag :q => :quiet
-      def global_flag(name, &block)
+      def global_flag(name, description = nil, &block)
         if name.is_a? Hash
           name.each do |alias_name, flag_name|
             flag = @global_parameters[flag_name]
@@ -218,6 +220,7 @@ module Rubikon
           end
         else
           flag = Flag.new(self, name, &block)
+          flag.description = description unless description.nil?
           @global_parameters.each do |flag_alias, flag_name|
             if flag_name == flag.name
               @global_parameters[flag_alias] = flag
@@ -246,7 +249,7 @@ module Rubikon
       #  end
       # @example Define an alias to a global option
       #  global_option :u => :user
-      def global_option(name, arg_count = 0, &block)
+      def global_option(name, arg_count = 0, description = nil, &block)
         if name.is_a? Hash
           name.each do |alias_name, option_name|
             option = @global_parameters[option_name]
@@ -259,6 +262,7 @@ module Rubikon
           end
         else
           option = Option.new(self, name, arg_count, &block)
+          option.description = description unless description.nil?
           @global_parameters.each do |option_alias, option_name|
             if option_name == option.name
               @global_parameters[option_alias] = option
@@ -322,11 +326,13 @@ module Rubikon
       #   command :something do
       #     ...
       #   end
-      def option(name, arg_count = 0, &block)
+      def option(name, arg_count = 0, description = nil, &block)
         if name.is_a? Hash
           @parameters << name
         else
-          @parameters << Option.new(self, name.to_s, arg_count, &block)
+          option = Option.new(self, name.to_s, arg_count, &block)
+          option.description = description unless description.nil?
+          @parameters << option
         end
       end
 

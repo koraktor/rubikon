@@ -19,6 +19,10 @@ module Rubikon
     # @return [Array<Symbol>] The alias names of this parameter
     attr_reader :aliases
 
+    # @return [String] The description of this parameter
+    # @since 0.6.0
+    attr_accessor :description
+
     # @return [Symbol] The primary name of this parameter
     attr_reader :name
 

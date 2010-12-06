@@ -16,9 +16,9 @@ end
 class HelloWorld < Rubikon::Application::Base
 
   # Greet the whole world per default
-  flag :more
-  option :name, [:who]
-  option :names, -1
+  flag :more, 'Display more information while greeting'
+  option :name, [:who], 'A single name to greet'
+  option :names, -1, 'One or more names to greet'
   default 'Simple hello world' do
     debug 'Starting to greet the world...'
     if given? :name
@@ -42,7 +42,7 @@ class HelloWorld < Rubikon::Application::Base
   end
 
   # Show a progress bar while iterating through a loop
-  flag :brackets
+  flag :brackets, 'Show brackets around the progress bar'
   command :progress, 'Display a progress bar' do
     put 'Watch my progress while I greet the world: '
     x = 1000000

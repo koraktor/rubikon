@@ -105,13 +105,16 @@ module Rubikon
         help << "\n\nFlags:"
         help_flags.sort_by { |name, param| name }.each do |name, param|
           help << "\n  #{param_name.call(name).ljust(max_param_length)}"
+          help << "      #{param.description}" unless param.description.nil?
         end
       end
 
       unless help_options.empty?
       help << "\n\nOptions:\n"
         help_options.sort_by { |name, param| name }.each do |name, param|
-          help << "  #{param_name.call(name).ljust(max_param_length)} ...\n"
+          help << "  #{param_name.call(name).ljust(max_param_length)} ..."
+          help << "  #{param.description}" unless param.description.nil?
+          help << "\n"
         end
       end
 
