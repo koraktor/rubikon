@@ -64,9 +64,8 @@ module Rubikon
         const_set :COLORS, COLORS
 
         def puts(text = '')
-          text = color_filter(text.to_s)
-          text << "\n" unless text.end_with?("\n")
-          self << text
+          self.class.
+            instance_method(:puts).bind(self).call color_filter(text.to_s)
         end
       end
 
