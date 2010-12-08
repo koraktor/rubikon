@@ -64,7 +64,9 @@ module Rubikon
         const_set :COLORS, COLORS
 
         def puts(text = '')
-          super color_filter(text.to_s)
+          text = color_filter(text.to_s)
+          text << "\n" unless text.end_with?("\n")
+          self << text
         end
       end
 
