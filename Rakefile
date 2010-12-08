@@ -19,31 +19,12 @@ Rake::TestTask.new do |t|
 end
 
 begin
-  require 'jeweler'
+  gem 'ore-tasks', '~> 0.3.0'
+  require 'ore/tasks'
 
-  gemspec = Gem::Specification.new do |gem|
-    line = File.read('lib/rubikon.rb')[/^\s*VERSION\s*=\s*.*/]
-    gem.version = line.match(/.*VERSION\s*=\s*['"](.*)['"]/)[1]
-  end
-
-  # Gem specification
-  Jeweler::Tasks.new(gemspec) do |gem|
-    gem.authors = ['Sebastian Staudt']
-    gem.email = 'koraktor@gmail.com'
-    gem.description = 'A simple to use, yet powerful Ruby framework for building console-based applications.'
-    gem.date = Time.now
-    gem.files = %w(.yardopts README.md Rakefile LICENSE) + samples_files + src_files + test_files
-    gem.has_rdoc = false
-    gem.homepage = 'http://koraktor.github.com/rubikon'
-    gem.name = gem.rubyforge_project = 'rubikon'
-    gem.summary = 'Rubikon - A Ruby console app framework'
-
-    gem.add_development_dependency('jeweler')
-    gem.add_development_dependency('shoulda')
-    gem.add_development_dependency('yard')
-  end
+  Ore::Tasks.new
 rescue LoadError
-  puts 'You need Jeweler to build the gem. Install it using `gem install jeweler`.'
+  puts "Run `gem install ore-tasks` to install 'ore/tasks'."
 end
 
 begin

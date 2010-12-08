@@ -1,0 +1,18 @@
+name:        rubikon
+version:     0.5.3
+summary:     Rubikon - A Ruby console app framework
+description: A simple to use, yet powerful Ruby framework for building
+             console-based applications.
+
+license:  BSD
+authors:  Sebastian Staudt
+email:    koraktor@gmail.com
+homepage: http://koraktor.github.com/rubikon
+has_yard: true
+
+require_paths: lib
+
+development_dependencies:
+  shoulda:   ~> 2.11.3
+  ore-tasks: ~> 0.3.0
+  yard:      ~> 0.6.4
