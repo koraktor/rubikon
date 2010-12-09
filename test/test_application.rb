@@ -167,6 +167,64 @@ class TestApplication < Test::Unit::TestCase
       $VERBOSE = false
     end
 
+    should 'parse arguments correctly' do
+      cmd, global_params, args = @app.parse_arguments(%w{})
+      assert_instance_of Command, cmd
+      assert_equal cmd.name, :__default
+      assert_equal [], global_params
+      assert_equal [], args
+
+      cmd, global_params, args = @app.parse_arguments(%w{-d -v})
+      assert_instance_of Command, cmd
+      assert_equal cmd.name, :__default
+      assert_instance_of Array, global_params
+      assert_equal 2, global_params.size
+      assert_instance_of Flag, global_params[0]
+      assert_equal :debug, global_params[0].name
+      assert_instance_of Flag, global_params[1]
+      assert_equal :verbose, global_params[1].name
+      assert_equal [], args
+
+      cmd, global_params, args = @app.parse_arguments(%w{-dv})
+      assert_instance_of Command, cmd
+      assert_equal cmd.name, :__default
+      assert_instance_of Array, global_params
+      assert_equal 2, global_params.size
+      assert_instance_of Flag, global_params[0]
+      assert_equal :debug, global_params[0].name
+      assert_instance_of Flag, global_params[1]
+      assert_equal :verbose, global_params[1].name
+      assert_equal [], args
+
+      cmd, global_params, args = @app.parse_arguments(%w{-x})
+      assert_instance_of Command, cmd
+      assert_equal cmd.name, :__default
+      assert_instance_of Array, global_params
+      assert_equal 0, global_params.size
+      assert_equal %w{-x}, args
+
+      cmd, global_params, args = @app.parse_arguments(%w{-d -v object_id})
+      assert_instance_of Command, cmd
+      assert_equal cmd.name, :object_id
+      assert_instance_of Array, global_params
+      assert_equal 2, global_params.size
+      assert_instance_of Flag, global_params[0]
+      assert_equal :debug, global_params[0].name
+      assert_instance_of Flag, global_params[1]
+      assert_equal :verbose, global_params[1].name
+      assert_equal [], args
+
+      cmd, global_params, args = @app.parse_arguments(%w{sandbox --gopt test puts})
+      assert_instance_of Command, cmd
+      assert_equal cmd.name, :sandbox
+      assert_instance_of Array, global_params
+      assert_equal 1, global_params.size
+      assert_instance_of Option, global_params[0]
+      assert_equal :gopt, global_params[0].name
+      assert_equal %w{test}, global_params[0].args
+      assert_equal %w{puts}, args
+    end
+
   end
 
 end
