@@ -1,7 +1,7 @@
 # This code is free software; you can redistribute it and/or modify it under
 # the terms of the new BSD License.
 #
-# Copyright (c) 2010, Sebastian Staudt
+# Copyright (c) 2010-2011, Sebastian Staudt
 
 module Rubikon
 
@@ -51,6 +51,34 @@ module Rubikon
         end
 
         config
+      end
+
+      # Saves a configuration Hash into a INI file
+      #
+      # @param [Hash] config The configuration to write
+      # @param [String] file The path of the file to write
+      # @since 0.6.0
+      def self.save_config(config, file)
+        unless config.is_a? Hash
+          raise ArgumentError.new('Configuration has to be a Hash')
+        end
+
+        file = File.new file, 'w'
+
+        config.each do |key, value|
+          if value.is_a? Hash
+            file << "\n" if file.pos > 0
+            file << "[#{key.to_s}]\n"
+
+            value.each do |k, v|
+              file << "  #{k.to_s} = #{v.to_s unless v.nil?}\n"
+            end
+          else
+            file << "#{key.to_s} = #{value.to_s unless value.nil?}\n"
+          end
+        end
+
+        file.close
       end
 
     end
