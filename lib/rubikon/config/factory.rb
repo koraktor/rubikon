@@ -45,17 +45,30 @@ module Rubikon
       #        configuration data from the files found
       def initialize(name, search_paths, provider = :yaml)
         provider = :auto unless PROVIDERS.include?(provider)
-        provider = Config.const_get("#{provider.to_s.capitalize}Provider")
+        @provider = Config.const_get("#{provider.to_s.capitalize}Provider")
       
         @files  = []
         @config = {}
         search_paths.each do |path|
           config_file = File.join path, name
           if File.exists? config_file
-            @config.merge! provider.load_config(config_file)
+            @config.merge! @provider.load_config(config_file)
             @files << config_file
           end
         end
+      end
+
+      # Save the given configuration into the specified file
+      #
+      # @param [Hash] The configuration to save
+      # @param [String] The file path where the configuration should be saved
+      # @since 0.6.0
+      def save_config(config, file)
+        unless config.is_a? Hash
+          raise ArgumentError.new('Configuration has to be a Hash')
+        end
+
+        @provider.save_config config, file
       end
 
     end

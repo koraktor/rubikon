@@ -62,14 +62,15 @@ module Rubikon
           :raise_errors    => false
         }
 
-        @settings[:config_paths] = []
         if RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
-          @settings[:config_paths] << ENV['ALLUSERSPROFILE']
+          global_config_path = ENV['ALLUSERSPROFILE']
         else
-          @settings[:config_paths] << '/etc'
+          global_config_path = '/etc'
         end
-        @settings[:config_paths] << File.expand_path('~')
-        @settings[:config_paths] << File.expand_path('.')
+
+        @settings[:config_paths] = [
+          global_config_path, File.expand_path('~'), File.expand_path('.')
+        ]
 
         self.estream = $stderr
         self.ostream = $stdout
@@ -99,9 +100,9 @@ module Rubikon
             @current_global_param = nil
           end
 
-          @config = Config::Factory.new(@settings[:config_file],
-            @settings[:config_paths], @settings[:config_format]).config
-          @config = @default_config.merge @config
+          @config_factory = Config::Factory.new(@settings[:config_file],
+            @settings[:config_paths], @settings[:config_format])
+          @config = @default_config.merge @config_factory.config
 
           @current_command = command
           hook.call(:pre_execute)

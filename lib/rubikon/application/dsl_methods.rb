@@ -496,6 +496,37 @@ module Rubikon
         end
       end
 
+      # Saves the current configuration into a configuration file
+      #
+      # The file name and format are specified in the application settings.
+      #
+      # @param [:global, :local, :user, String] Either one of the default
+      #        scopes or a specific path. The scopes map to a special path. On
+      #        UNIX systems this is +/etc+ for global configurations, the
+      #        user's home directory (+~+) for user configurations and the
+      #        current working directory (+.+) for local configurations.
+      # @see #default_config=
+      # @since 0.6.0
+      def save_config(scope = :user)
+        case scope
+          when :global
+            if RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
+              path = ENV['ALLUSERSPROFILE']
+            else
+              path = '/etc'
+            end
+          when :local
+            path = File.expand_path '.'
+          when :user
+            path = File.expand_path '~'
+          else
+            path = scope
+        end
+
+        @config_factory.save_config @config,
+          File.join(path, @settings[:config_file])
+      end
+
       # Displays a throbber while the given block is executed
       #
       # @param [Proc] block The block to execute while the throbber is
