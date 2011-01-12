@@ -361,9 +361,15 @@ module Rubikon
           command = @commands[:__default]
           raise NoDefaultCommandError if command.nil?
         else
-          command = @commands[command_arg.to_sym]
-          args.delete_at args.index(command_arg)
-          raise UnknownCommandError.new(command_arg) if command.nil?
+          if @commands.key? command_arg.to_sym
+            command = @commands[command_arg.to_sym]
+            args.delete_at args.index(command_arg)
+          else
+            command = @commands[:__default]
+            if command.nil? || command.args.empty?
+              raise UnknownCommandError.new(command_arg)
+            end
+          end
         end
 
         args.delete '--'
