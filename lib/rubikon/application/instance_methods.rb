@@ -1,7 +1,7 @@
 # This code is free software; you can redistribute it and/or modify it under
 # the terms of the new BSD License.
 #
-# Copyright (c) 2009-2010, Sebastian Staudt
+# Copyright (c) 2009-2011, Sebastian Staudt
 
 require 'pathname'
 require 'stringio'
@@ -45,6 +45,7 @@ module Rubikon
         @current_command      = nil
         @current_global_param = nil
         @current_param        = nil
+        @default_config       = {}
         @global_parameters    = {}
         @hooks                = {}
         @initialized          = false
@@ -100,6 +101,7 @@ module Rubikon
 
           @config = Config::Factory.new(@settings[:config_file],
             @settings[:config_paths], @settings[:config_format]).config
+          @config = @default_config.merge @config
 
           @current_command = command
           hook.call(:pre_execute)

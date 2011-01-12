@@ -1,7 +1,7 @@
 # This code is free software; you can redistribute it and/or modify it under
 # the terms of the new BSD License.
 #
-# Copyright (c) 2010, Sebastian Staudt
+# Copyright (c) 2010-2011, Sebastian Staudt
 
 module Rubikon
 
@@ -139,6 +139,19 @@ module Rubikon
         else
           command(:__default, arg_count, description, &block)
         end
+      end
+
+      # Set the default configuration for this application
+      #
+      # @param [Hash] config The default configuration to use
+      # @see #config
+      # @since 0.6.0
+      def default_config=(config)
+        unless config.is_a? Hash
+          raise ArgumentError.new('Configuration has to be a Hash')
+        end
+
+        @default_config = config
       end
 
       # Output a line of text using +IO#puts+ of the error output stream
