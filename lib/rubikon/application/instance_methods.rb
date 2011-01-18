@@ -7,6 +7,7 @@ require 'pathname'
 require 'stringio'
 
 require 'rubikon/application/sandbox'
+require 'rubikon/argument_vector'
 require 'rubikon/colored_io'
 require 'rubikon/command'
 require 'rubikon/config/factory'
@@ -41,17 +42,16 @@ module Rubikon
       #
       # @see #set
       def initialize
-        @commands             = {}
-        @current_command      = nil
-        @current_global_param = nil
-        @current_param        = nil
-        @default_config       = {}
-        @global_parameters    = {}
-        @hooks                = {}
-        @initialized          = false
-        @parameters           = []
-        @sandbox              = Sandbox.new(self)
-        @settings             = {
+        @commands          = {}
+        @current_command   = nil
+        @current_param     = nil
+        @default_config    = {}
+        @global_parameters = {}
+        @hooks             = {}
+        @initialized       = false
+        @parameters        = []
+        @sandbox           = Sandbox.new(self)
+        @settings          = {
           :autohelp        => true,
           :autorun         => true,
           :colors          => true,
@@ -90,23 +90,29 @@ module Rubikon
 
         begin
           InstanceMethods.instance_method(:init).bind(self).call
-          command, parameters, args = InstanceMethods.
+          global_params, command, command_params = InstanceMethods.
             instance_method(:parse_arguments).bind(self).call(args)
-
-          parameters.each do |parameter|
-            @current_global_param = parameter
-            parameter.send :check_args if parameter.is_a? Option
-            parameter.send :active!
-            @current_global_param = nil
-          end
 
           @config_factory = Config::Factory.new(@settings[:config_file],
             @settings[:config_paths], @settings[:config_format])
           @config = @default_config.merge @config_factory.config
 
+          global_params.each do |param|
+            @current_param = param
+            param.send :active!
+            @current_param = nil
+          end
+
           @current_command = command
           hook.call(:pre_execute)
-          result = command.send(:run, *args)
+
+          command_params.each do |param|
+            @current_param = param
+            param.send :active!
+            @current_param = nil
+          end
+
+          result = command.send(:run)
           hook.call(:post_execute)
           @current_command = nil
 
@@ -322,7 +328,7 @@ module Rubikon
       #   end
       # @since 0.4.0
       def method_missing(name, *args, &block)
-        receiver = @current_param || @current_global_param || @current_command
+        receiver = @current_param || @current_command
         if receiver.nil? || (!receiver.respond_to?(name) &&
            !receiver.public_methods(false).include?(name))
           super
@@ -349,61 +355,40 @@ module Rubikon
       # user. This distinguishes between commands, global flags and command
       # flags
       #
-      # @param [Array] args The command-line arguments
-      # @return [Command, Array<Symbol>, Array] The command to execute, the
-      #         parameters of this command that have been supplied and any
-      #         additional command-line arguments supplied
-      def parse_arguments(args)
-        command_arg = args.find { |arg| arg == '--' || !arg.start_with?('-') }
-        command_arg = nil if command_arg == '--'
+      # @param [String] argv The command-line arguments
+      # @raise [NoDefaultCommandError] if no command can be found and no
+      #        default command exists
+      # @raise [UnknownParameterError] if an unknown parameter is found
+      # @raise [UnknownParameterError] if an unknown command is found
+      # @return [Array<Parameter>] one All global parameters that have been
+      #         supplied
+      # @return [Command] two The command to execute, the parameters of this
+      #         command that have been supplied
+      # @return [Array<Parameter>] three All parameters of that command that have
+      #         been supplied
+      def parse_arguments(argv)
+        argv.extend ArgumentVector
 
-        if command_arg.nil?
-          command = @commands[:__default]
-          raise NoDefaultCommandError if command.nil?
-        else
-          if @commands.key? command_arg.to_sym
-            command = @commands[command_arg.to_sym]
-            args.delete_at args.index(command_arg)
+        argv.expand!
+
+        command, command_index = argv.command! @commands
+        raise NoDefaultCommandError if command.nil?
+
+        command_params = argv.params! command.params, command_index
+        global_params  = argv.params! @global_parameters
+
+        argv.scoped_args! command, command_index
+
+        unless argv.empty?
+          first = argv.first
+          if first.start_with? '-'
+            raise UnknownParameterError.new first
           else
-            command = @commands[:__default]
-            if command.nil? || command.args.empty?
-              raise UnknownCommandError.new(command_arg)
-            end
+            raise UnknownCommandError.new first
           end
         end
 
-        args.delete '--'
-        args = args.map do |arg|
-          if !arg.start_with?('--') && arg.start_with?('-') && arg.size > 2
-            arg[1..-1].split('').map { |a| "-#{a}" }
-          else
-            arg
-          end
-        end.flatten
-
-        parameter  = nil
-        parameters = []
-        args.dup.each do |arg|
-          if arg.start_with?('--')
-            parameter = @global_parameters[arg[2..-1].to_sym]
-          elsif arg.start_with?('-')
-            parameter = @global_parameters[arg[1..-1].to_sym]
-          else
-            if !parameter.nil? && parameter.send(:more_args?)
-              parameter.args << args.delete(arg)
-            else
-              parameter = nil
-            end
-            next
-          end
-
-          unless parameter.nil?
-            parameters << parameter
-            args.delete(arg)
-          end
-        end
-
-        return command, parameters, args
+        return global_params, command, command_params
       end
 
       # Resets this application to its initial state
@@ -433,7 +418,7 @@ module Rubikon
       # verbose output.
       # Using it sets Ruby's global variable <tt>$VERBOSE</tt> to +true+.
       #
-      # @return [Flag] The debug Flag object
+      # @return [Flag] The verbose Flag object
       def verbose_flag
         global_flag :verbose do
           $VERBOSE = true

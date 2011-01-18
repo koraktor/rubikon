@@ -175,47 +175,6 @@ module Rubikon
       end
     end
 
-    # Parses the arguments of this command and sets each Parameter as active
-    # if it has been supplied by the user on the command-line. Additional
-    # arguments are passed to the individual parameters.
-    #
-    # @param [Array<String>] args The arguments that have been passed to this
-    #        command
-    # @raise [UnknownParameterError] if an undefined parameter is passed to the
-    #        command
-    # @see Flag
-    # @see Option
-    def parse_arguments(args)
-      current_param = Application::InstanceMethods.
-        instance_method(:current_param).bind(@app)
-      set_current_param = Application::InstanceMethods.
-        instance_method(:current_param=).bind(@app)
-
-      @args = []
-      args.each do |arg|
-        if arg.start_with?('-')
-          parameter_name = arg.start_with?('--') ? arg[2..-1] : arg[1..-1]
-          parameter = @params[parameter_name.to_sym]
-          raise UnknownParameterError.new(arg) if parameter.nil?
-        end
-
-        unless parameter.nil?
-          current_param.call.send(:active!) unless current_param.call.nil?
-          set_current_param.call(parameter)
-          next
-        end
-
-        if current_param.call.nil? || !current_param.call.send(:more_args?)
-          self << arg
-        else
-          current_param.call.send(:<<, arg)
-        end
-      end
-
-      current_param.call.send(:active!) unless current_param.call.nil?
-      set_current_param.call(nil)
-    end
-
     # Resets this command to its initial state
     #
     # @see HasArguments#reset
@@ -239,11 +198,7 @@ module Rubikon
     end
 
     # Run this command's code block
-    #
-    # @param [Array<String>] args The arguments that have been passed to this
-    #        command
-    def run(*args)
-      parse_arguments(args)
+    def run
       check_args
       Application::InstanceMethods.instance_method(:sandbox).bind(@app).call.
         instance_eval(&@block)

@@ -3,6 +3,8 @@
 #
 # Copyright (c) 2010-2011, Sebastian Staudt
 
+require 'rubikon/argument_vector'
+
 module Rubikon
 
   module Application
@@ -53,12 +55,22 @@ module Rubikon
       #
       # @param [Symbol] command_name The name of the command to call
       # @param [Array<String>] args The arguments to pass to the called command
+      # @see ArgumentVector#params!
       # @see Command#run
       def call(command_name, *args)
-        command = @current_command
+        args.extend ArgumentVector
+        current_command = @current_command
+        current_param   = @current_param
+
         @current_command = @commands[command_name]
-        @current_command.send(:run, *args)
-        @current_command = command
+        args.params!(@current_command.params).each do |param|
+          @current_param = param
+          param.send :active!
+          @current_param = nil
+        end
+        @current_command.send :run
+        @current_command = current_command
+        @current_param   = current_param
       end
 
       # Define a new application Command or an alias to an existing one
