@@ -18,6 +18,8 @@ class TestApp < Application::Base
   set :name, 'Rubikon test application'
   set :raise_errors, true
 
+  attr_reader :commands, :global_parameters
+
   global_flag :gf1 => :gflag
   global_flag :gflag do
     @global = 'flag'
@@ -94,6 +96,8 @@ class TestAppWithoutDefault < Application::Base
   set :autorun, false
   set :help_as_default, false
   set :raise_errors, true
+
+  attr_reader :commands
 
 end
 
