@@ -209,12 +209,14 @@ class TestApplication < Test::Unit::TestCase
       assert_equal cmd.name, :object_id
       assert_equal [], cmd_params
 
-      global_params, cmd, cmd_params = @app.parse_arguments(%w{sandbox --gopt test puts})
+      global_params, cmd, cmd_params = @app.parse_arguments(%w{-d sandbox --gopt test puts})
       assert_instance_of Array, global_params
-      assert_equal 1, global_params.size
-      assert_instance_of Option, global_params[0]
-      assert_equal :gopt, global_params[0].name
-      assert_equal %w{test}, global_params[0].args
+      assert_equal 2, global_params.size
+      assert_instance_of Flag, global_params[0]
+      assert_equal :debug, global_params[0].name
+      assert_instance_of Option, global_params[1]
+      assert_equal :gopt, global_params[1].name
+      assert_equal %w{test}, global_params[1].args
       assert_instance_of Command, cmd
       assert_equal cmd.name, :sandbox
       assert_equal %w{puts}, cmd.args

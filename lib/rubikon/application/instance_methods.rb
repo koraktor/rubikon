@@ -377,7 +377,7 @@ module Rubikon
         command_params = argv.params! command.params, command_index
         global_params  = argv.params! @global_parameters
 
-        argv.scoped_args! command, command_index
+        argv.scoped_args! command
 
         unless argv.empty?
           first = argv.first
