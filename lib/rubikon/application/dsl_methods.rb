@@ -79,8 +79,7 @@ module Rubikon
       #        application parameters. This might also be a Hash where every
       #        key will be an alias to the corresponding value, e.g. <tt>{
       #        :alias => :command }</tt>.
-      # @param [String] description A description for this Command for use in
-      #        the application's help screen
+      # @param options (see HasArguments#initialize)
       # @param [Proc] block A block that contains the code that should be
       #        executed when this Command is called, i.e. when the application
       #        is called with the associated parameter
@@ -89,7 +88,7 @@ module Rubikon
       # @see default
       # @see Command
       # @since 0.2.0
-      def command(name, arg_count = nil, description = nil, &block)
+      def command(name, *options, &block)
         command = nil
 
         if name.is_a? Hash
@@ -103,8 +102,7 @@ module Rubikon
             end
           end
         else
-          command = Command.new(self, name, arg_count, &block)
-          command.description = description unless description.nil?
+          command = Command.new(self, name, *options, &block)
           @commands.each do |command_alias, command_name|
             if command_name == command.name
               @commands[command_alias] = command
@@ -135,8 +133,7 @@ module Rubikon
       # Define the default Command of the application, i.e. the Command that is
       # called if no matching Command parameter can be found
       #
-      # @param [String] description A description for this Command for use in
-      #        the application's help screen
+      # @param options (see HasArguments#initialize)
       # @param [Proc] block A block that contains the code that should be
       #        executed when this Command is called, i.e. when no command
       #        parameter is given to the application
@@ -145,11 +142,11 @@ module Rubikon
       # @see Command
       # @see command
       # @since 0.2.0
-      def default(arg_count = nil, description = nil, &block)
-        if arg_count.is_a? Symbol
-          command({ :__default => arg_count })
+      def default(*options, &block)
+        if options.size == 1 && options.first.is_a?(Symbol) && !block_given?
+          command :__default => options.first
         else
-          command(:__default, arg_count, description, &block)
+          command :__default, *options, &block
         end
       end
 
@@ -274,7 +271,7 @@ module Rubikon
       #  end
       # @example Define an alias to a global option
       #  global_option :u => :user
-      def global_option(name, arg_count = 0, description = nil, &block)
+      def global_option(name, *options, &block)
         if name.is_a? Hash
           name.each do |alias_name, option_name|
             option = @global_parameters[option_name]
@@ -286,8 +283,7 @@ module Rubikon
             end
           end
         else
-          option = Option.new(self, name, arg_count, &block)
-          option.description = description unless description.nil?
+          option = Option.new(self, name, *options, &block)
           @global_parameters.each do |option_alias, option_name|
             if option_name == option.name
               @global_parameters[option_alias] = option
@@ -337,9 +333,7 @@ module Rubikon
       #        options, +--+ for other options). This might also be a Hash
       #        where every key will be an alias to the corresponding value,
       #        e.g. <tt>{ :alias => :option }</tt>.
-      # @param [Numeric] arg_count The number of arguments this option takes.
-      #        Use +0+ for no required arguments or a negative value for an
-      #        arbitrary number of arguments
+      # @param options (see HasArguments#initialize)
       # @param [Proc] block An optional code block that should be executed if
       #        this option is used
       # @see Option
@@ -351,12 +345,11 @@ module Rubikon
       #   command :something do
       #     ...
       #   end
-      def option(name, arg_count = 0, description = nil, &block)
+      def option(name, *options, &block)
         if name.is_a? Hash
           @parameters << name
         else
-          option = Option.new(self, name.to_s, arg_count, &block)
-          option.description = description unless description.nil?
+          option = Option.new(self, name.to_s, *options, &block)
           @parameters << option
         end
       end

@@ -32,15 +32,15 @@ class TestApp < Application::Base
   end
   global_option :go2 => :gopt
 
-  default nil, :hidden do
+  default '<hidden>' do
     'default command'
   end
 
-  option :arg, [:opt_arg] do
+  option :arg, :opt_arg do
     @result = []
     @result << opt_arg
   end
-  command :arguments, [:cmd_arg] do
+  command :arguments, :cmd_arg do
     @result << arg.opt_arg
     @result << cmd_arg
     @result

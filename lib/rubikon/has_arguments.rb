@@ -1,7 +1,7 @@
 # This code is free software; you can redistribute it and/or modify it under
 # the terms of the new BSD License.
 #
-# Copyright (c) 2010, Sebastian Staudt
+# Copyright (c) 2010-2011, Sebastian Staudt
 
 require 'rubikon/parameter'
 
@@ -27,39 +27,72 @@ module Rubikon
     # optional code block
     #
     # @param [Application::Base] app The application this parameter belongs to
-    # @param [Symbol, #to_sym] name The name of the option
-    # @param [Fixnum, Range, Array] arg_count A range or array allows any
-    #        number of arguments inside the limits between the first and the
-    #        last element of the range or array (-1 stands for an arbitrary
-    #        number of arguments). A positive number indicates the exact amount
-    #        of required arguments while a negative argument count indicates
-    #        the amount of required arguments, but allows additional, optional
-    #        arguments. A argument count of 0 means there are no required
-    #        arguments, but it allows optional arguments.
-    #        Finally an array of symbols enables named arguments where the
-    #        argument count is the size of the array and each argument is named
+    # @param [Symbol, #to_sym] name The name of the parameter
+    # @param [Array] options A range or array allows any number of arguments
+    #        inside the limits between the first and the last element of the
+    #        range or array (-1 stands for an arbitrary number of arguments). A
+    #        positive number indicates the exact amount of required arguments
+    #        while a negative argument count indicates the amount of required
+    #        arguments, but allows additional, optional arguments. A argument
+    #        count of 0 means there are no required arguments, but it allows
+    #        optional arguments. Finally an array of symbols enables named
+    #        arguments where the argument count is the size of the array and
+    #        each argument is named
     #        after the corresponding symbol.
     # @param [Proc] block An optional code block to be executed if this
     #        option is used
-    def initialize(app, name, arg_count = 0, &block)
+    def initialize(app, name, *options, &block)
       super(app, name, &block)
 
-      @args      = []
-      @arg_names = nil
-      if arg_count.is_a? Fixnum
-        if arg_count > 0
-          @min_arg_count = arg_count
-          @max_arg_count = arg_count
-        elsif arg_count <= 0
-          @min_arg_count = -arg_count
+      @arg_names  = nil
+      @arg_values = nil
+      @args       = []
+
+      @description = options.shift if options.first.is_a? String
+
+      if options.size == 1 && (options.first.nil? ||
+         options.first.is_a?(Fixnum) || options.first.is_a?(Range))
+        options = options.first
+      end
+
+      if options.is_a? Fixnum
+        if options > 0
+          @min_arg_count = options
+          @max_arg_count = options
+        elsif options <= 0
+          @min_arg_count = -options
           @max_arg_count = -1
         end
-      elsif arg_count.is_a?(Array) && arg_count.all? { |a| a.is_a? Symbol }
-        @max_arg_count = @min_arg_count = arg_count.size
-        @arg_names = arg_count
-      elsif arg_count.is_a?(Range) || arg_count.is_a?(Array)
-        @min_arg_count = arg_count.first
-        @max_arg_count = arg_count.last
+      elsif options.is_a? Range
+        @min_arg_count = options.first
+        @max_arg_count = options.last
+      elsif options.is_a? Array
+        @arg_names = []
+        @max_arg_count = 0
+        @min_arg_count = 0
+        options.each do |arg|
+          if arg.is_a? Hash
+            arg = arg.map do |arg_name, opt|
+              [arg_name, opt.is_a?(Array) ? opt : [opt]]
+            end
+            arg = arg.sort_by do |arg_name, opt|
+              opt.include?(:optional) ? 1 : 0
+            end
+            arg.each do |arg_name, opt|
+              @arg_names << arg_name.to_sym
+              @min_arg_count += 1 unless opt.include? :optional
+              if opt.include? :remainder
+                @max_arg_count = -1
+                break
+              end
+              @max_arg_count += 1
+            end
+          else
+            @arg_names << arg.to_sym
+            @min_arg_count += 1
+            @max_arg_count += 1
+          end
+        end
       else
         @min_arg_count = 0
         @max_arg_count = 0

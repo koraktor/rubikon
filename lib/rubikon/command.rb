@@ -34,16 +34,14 @@ module Rubikon
     # @param [Application::Base] app The application this command belongs to
     # @param [Symbol, #to_sym] name The name of this command, used in application
     #        arguments
-    # @param [Range, Array, Numeric] arg_count The number of arguments this
-    #        command takes.
+    # @param options (see HasArguments#initialize)
     # @param [Proc] block The code block which should be executed by this
     #        command
     # @raise [ArgumentError] if the given application object isn't a Rubikon
     #        application
     # @raise [BlockMissingError] if no command code block is given and a
     #        command file does not exist
-    # @see HasArguments#arg_count=
-    def initialize(app, name, arg_count = nil, &block)
+    def initialize(app, name, *options, &block)
       super
 
       @params = {}
@@ -159,7 +157,6 @@ module Rubikon
     # method will return the value of the parameter.
     #
     # @param (see ClassMethods#method_missing)
-    # @see DSLMethods#params
     #
     # @example
     #   option :user, [:who]

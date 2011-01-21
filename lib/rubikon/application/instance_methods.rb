@@ -208,7 +208,8 @@ module Rubikon
           puts "  #{name.ljust(max_command_length)}    #{description}"
         end
 
-        if @commands.key?(:__default) && @commands[:__default].description != :hidden
+        if @commands.key?(:__default) &&
+           @commands[:__default].description != '<hidden>'
           put "\nYou can also call this application without a command:"
           puts @commands[:__default].help(false) + "\n"
         end
@@ -223,7 +224,8 @@ module Rubikon
         global_parameters = @global_parameters
         settings = @settings
 
-        command :help, 0..1, 'Show help for the application or a single command' do
+        command :help, 'Show help for the application or a single command',
+                :cmd => :optional do
           put settings[:help_banner]
 
           global_params = ''
@@ -243,11 +245,10 @@ module Rubikon
           app_help = lambda { |info| @__app__.instance_eval { help(info) } }
 
           unless args.first.nil?
-            command = args.first.to_sym
-            if commands.keys.include?(command)
-              puts commands[command].help
+            if commands.keys.include?(cmd)
+              puts commands[cmd].help
             else
-              app_help.call("The command \"#{command}\" is undefined. The following commands are available:")
+              app_help.call("The command \"#{cmd}\" is undefined. The following commands are available:")
             end
           else
             app_help.call(nil)
@@ -382,9 +383,9 @@ module Rubikon
         unless argv.empty?
           first = argv.first
           if first.start_with? '-'
-            raise UnknownParameterError.new first
+            raise UnknownParameterError.new(first)
           else
-            raise UnknownCommandError.new first
+            raise UnknownCommandError.new(first)
           end
         end
 

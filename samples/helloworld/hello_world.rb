@@ -17,8 +17,8 @@ class HelloWorld < Rubikon::Application::Base
 
   # Greet the whole world per default
   flag :more, 'Display more information while greeting'
-  option :name, [:who], 'A single name to greet'
   option :names, -1, 'One or more names to greet'
+  option :name, 'A single name to greet', :who
   default 'Simple hello world' do
     debug 'Starting to greet the world...'
     if given? :name
