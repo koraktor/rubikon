@@ -24,13 +24,13 @@ class TestHasArguments < Test::Unit::TestCase
     should 'allow a Numeric as argument count' do
       has_arg = HasArg.new 1
       assert_equal 1..1, has_arg.arg_count
-      assert_nil has_arg.arg_names
+      assert_equal [], has_arg.arg_names
     end
 
     should 'allow a Range as argument count' do
       has_arg = HasArg.new 1..3
       assert_equal 1..3, has_arg.arg_count
-      assert_nil has_arg.arg_names
+      assert_equal [], has_arg.arg_names
     end
 
     should 'allow a Symbol Array as argument names' do
@@ -87,6 +87,30 @@ class TestHasArguments < Test::Unit::TestCase
       assert_raise NoMethodError do
         has_arg.not_named
       end
+    end
+
+    should 'provide optional named arguments' do
+      has_arg = HasArg.new :required, :optional => :optional
+      has_arg << 'argument'
+      assert has_arg.args_full?
+      assert has_arg.more_args?
+      has_arg << 'argument'
+      assert !has_arg.more_args?
+      assert_equal 'argument', has_arg.required
+      assert_equal 'argument', has_arg.optional
+    end
+
+    should 'provide named arguments taking all remainding arguments' do
+      has_arg = HasArg.new :required, :remainder => :remainder
+      has_arg << 'argument'
+      assert has_arg.args_full?
+      assert has_arg.more_args?
+      has_arg << 'argument'
+      assert has_arg.more_args?
+      has_arg << 'argument'
+      assert has_arg.more_args?
+      assert_equal 'argument', has_arg.required
+      assert_equal %w{argument argument}, has_arg.remainder
     end
 
     should 'call its code block if it is activated' do

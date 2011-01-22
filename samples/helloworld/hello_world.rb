@@ -3,7 +3,7 @@
 # This code is free software; you can redistribute it and/or modify it under
 # the terms of the new BSD License.
 #
-# Copyright (c) 2010, Sebastian Staudt
+# Copyright (c) 2010-2011, Sebastian Staudt
 
 if ENV['RUBIKON_DEV']
   require File.join(File.expand_path(File.dirname(__FILE__)), '..', '..', 'lib', 'rubikon')
@@ -17,14 +17,14 @@ class HelloWorld < Rubikon::Application::Base
 
   # Greet the whole world per default
   flag :more, 'Display more information while greeting'
-  option :names, -1, 'One or more names to greet'
   option :name, 'A single name to greet', :who
+  option :names, 'One or more names to greet', :people => :remainder
   default 'Simple hello world' do
     debug 'Starting to greet the world...'
     if given? :name
-      greet parameters[:name].who
+      greet who
     elsif given? :names
-      names.args.each do |name|
+      names.people.each do |name|
         greet name
       end
     else

@@ -19,10 +19,6 @@ module Rubikon
 
     include Parameter
 
-    # @return [Array<String>] The arguments given to this parameter
-    attr_reader :args
-    alias_method :arguments, :args
-
     # Creates a new parameter with arguments with the given name and an
     # optional code block
     #
@@ -44,9 +40,9 @@ module Rubikon
     def initialize(app, name, *options, &block)
       super(app, name, &block)
 
-      @arg_names  = nil
+      @arg_names  = []
       @arg_values = nil
-      @args       = []
+      @args       = {}
 
       @description = options.shift if options.first.is_a? String
 
@@ -80,7 +76,9 @@ module Rubikon
             end
             arg.each do |arg_name, opt|
               @arg_names << arg_name.to_sym
-              @min_arg_count += 1 unless opt.include? :optional
+              unless opt.include?(:optional) || opt.include?(:remainder)
+                @min_arg_count += 1
+              end
               if opt.include? :remainder
                 @max_arg_count = -1
                 break
@@ -108,9 +106,20 @@ module Rubikon
     # @see #args
     # @since 0.4.0
     def [](arg)
-      arg = @arg_names.index(arg) if arg.is_a? Symbol
       @args[arg]
     end
+
+    # Returns the arguments given to this parameter. They are given as a Hash
+    # when there are named arguments or as an Array when there are no named
+    # arguments
+    #
+    # @return [Array<String>, Hash<Symbol, String>] The arguments given to this
+    #         parameter
+    # @since 0.6.0
+    def args
+      @arg_names.empty? ? @args.values : @args
+    end
+    alias_method :arguments, :args
 
     protected
 
@@ -126,10 +135,20 @@ module Rubikon
     # @see #args
     # @since 0.3.0
     def <<(arg)
-      if args_full? && @args.size == @max_arg_count
-        raise ExtraArgumentError.new(@name)
+      raise ExtraArgumentError.new(@name) unless more_args?
+
+      if @arg_names.size > @args.size
+        name = @arg_names[@args.size]
+        if @max_arg_count == -1 && @arg_names.size == @args.size + 1
+          @args[name] = [arg]
+        else
+          @args[name] = arg
+        end
+      elsif !@arg_names.empty? && @max_arg_count == -1
+        @args[@arg_names.last] << arg
+      else
+        @args[@args.size] = arg
       end
-      @args << arg
     end
 
     # Marks this parameter as active when it has been supplied by the user on
@@ -178,8 +197,8 @@ module Rubikon
     #     @user = name
     #   end
     def method_missing(name, *args, &block)
-      if args.empty? && !block_given? && !@arg_names.nil? && @arg_names.include?(name)
-        @args[@arg_names.index(name)]
+      if args.empty? && !block_given? && !@arg_names.empty? && @arg_names.include?(name)
+        @args[name]
       else
         super
       end

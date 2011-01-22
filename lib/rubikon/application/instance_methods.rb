@@ -244,7 +244,7 @@ module Rubikon
 
           app_help = lambda { |info| @__app__.instance_eval { help(info) } }
 
-          unless args.first.nil?
+          unless cmd.nil?
             if commands.keys.include?(cmd)
               puts commands[cmd].help
             else
