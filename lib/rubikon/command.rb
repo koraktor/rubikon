@@ -121,6 +121,16 @@ module Rubikon
 
     private
 
+    # Returns all parameters of this command that are active, i.e. that have
+    # been supplied on the command-line
+    #
+    # @return [Array<Parameter>] All currently active parameters of this
+    #         command
+    # @since 0.6.0
+    def active_params
+      @params.values.select { |param| param.active? }
+    end
+
     # Add a new parameter for this command
     #
     # @param [Parameter, Hash] parameter The parameter to add to this
@@ -165,11 +175,17 @@ module Rubikon
     #     puts "I feel #{mood}"
     #   end
     def method_missing(name, *args, &block)
-      if args.empty? && !block_given? && @params.key?(name)
-        @params[name]
-      else
-        super
+      if args.empty? && !block_given?
+        if @params.key?(name)
+          return @params[name]
+        else
+          active_params.each do |param|
+            return param.send(name) if param.respond_to_missing?(name)
+          end
+        end
       end
+
+      super
     end
 
     # Resets this command to its initial state
@@ -191,7 +207,9 @@ module Rubikon
     # @return +true+ if named parameter with the specified name exists
     # @see #method_missing
     def respond_to_missing?(name, include_private = false)
-      @params.key?(name) || super
+      @params.key?(name) ||
+      active_params.any? { |param| param.respond_to_missing?(name) } ||
+      super
     end
 
     # Run this command's code block

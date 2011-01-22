@@ -197,7 +197,7 @@ module Rubikon
     #     @user = name
     #   end
     def method_missing(name, *args, &block)
-      if args.empty? && !block_given? && !@arg_names.empty? && @arg_names.include?(name)
+      if args.empty? && !block_given? && @arg_names.include?(name)
         @args[name]
       else
         super
@@ -229,7 +229,7 @@ module Rubikon
     # @return +true+ if named argument with the specified name exists
     # @see #method_missing
     def respond_to_missing?(name, include_private = false)
-      !@arg_names.nil? && @arg_names.include?(name)
+      @arg_names.include? name
     end
 
   end
