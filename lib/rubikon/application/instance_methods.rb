@@ -245,7 +245,8 @@ module Rubikon
           app_help = lambda { |info| @__app__.instance_eval { help(info) } }
 
           unless cmd.nil?
-            if commands.keys.include?(cmd)
+            cmd = cmd.to_sym
+            if commands.key? cmd
               puts commands[cmd].help
             else
               app_help.call("The command \"#{cmd}\" is undefined. The following commands are available:")
