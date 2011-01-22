@@ -76,6 +76,22 @@ module Rubikon
 
   end
 
+  # Raised if an argument is passed, that does not match a validation rule
+  #
+  # @author Sebastian Staudt
+  # @see HasArguments#check_args
+  # @since 0.6.0
+  class UnexpectedArgumentError < ArgumentError
+
+    # Creates a new error and stores the given argument value
+    #
+    # @param [Symbol] arg The given argument value
+    def initialize(arg)
+      super "Unexpected argument: #{arg}"
+    end
+
+  end
+
   # Raised if a parameter has been supplied that does not exist
   #
   # @author Sebastian Staudt

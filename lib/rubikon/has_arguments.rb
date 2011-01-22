@@ -19,6 +19,12 @@ module Rubikon
 
     include Parameter
 
+    ARGUMENT_MATCHERS = {
+      :alnum   => /[[:alnum:]]+/,
+      :float   => /-?[0-9]+(?:\.[0-9]+)/,
+      :numeric => /-?[0-9]+/
+    }
+
     # Creates a new parameter with arguments with the given name and an
     # optional code block
     #
@@ -41,7 +47,7 @@ module Rubikon
       super(app, name, &block)
 
       @arg_names  = []
-      @arg_values = nil
+      @arg_values = {}
       @args       = {}
 
       @description = options.shift if options.first.is_a? String
@@ -75,7 +81,15 @@ module Rubikon
               opt.include?(:optional) ? 1 : 0
             end
             arg.each do |arg_name, opt|
+              matchers = opt.reject { |o| [:optional, :remainder].include? o }
+              opt -= matchers
               @arg_names << arg_name.to_sym
+              if !matchers.empty?
+                matchers.map! do |m|
+                  ARGUMENT_MATCHERS[m] || (m.is_a?(Regexp) ? m : m.to_s)
+                end
+                @arg_values[arg_name] = /^#{Regexp.union matchers}$/
+              end
               unless opt.include?(:optional) || opt.include?(:remainder)
                 @min_arg_count += 1
               end
@@ -183,6 +197,13 @@ module Rubikon
     # @since 0.3.0
     def check_args
       raise MissingArgumentError.new(@name) unless args_full?
+      unless @arg_values.empty?
+        @args.each do |name, arg|
+          unless arg =~ @arg_values[name]
+            raise UnexpectedArgumentError.new(arg)
+          end
+        end
+      end
     end
 
     # If a named argument with the specified method name exists, a call to that

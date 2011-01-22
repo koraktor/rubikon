@@ -9,7 +9,7 @@ require 'test_parameter'
 class HasArg
   include HasArguments
 
-  attr_reader :arg_names
+  attr_reader :arg_names, :arg_values
   public :<<, :active!, :arg_count, :args_full?, :check_args, :more_args?
 
   def initialize(*options)
@@ -25,18 +25,21 @@ class TestHasArguments < Test::Unit::TestCase
       has_arg = HasArg.new 1
       assert_equal 1..1, has_arg.arg_count
       assert_equal [], has_arg.arg_names
+      assert_equal ({}), has_arg.arg_values
     end
 
     should 'allow a Range as argument count' do
       has_arg = HasArg.new 1..3
       assert_equal 1..3, has_arg.arg_count
       assert_equal [], has_arg.arg_names
+      assert_equal ({}), has_arg.arg_values
     end
 
     should 'allow a Symbol Array as argument names' do
       has_arg = HasArg.new :arg1, :arg2, :arg3
       assert_equal 3..3, has_arg.arg_count
       assert_equal [:arg1, :arg2, :arg3], has_arg.arg_names
+      assert_equal ({}), has_arg.arg_values
     end
 
     should 'only have required arguments if argument count is > 0' do

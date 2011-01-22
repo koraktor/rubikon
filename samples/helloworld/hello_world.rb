@@ -18,18 +18,22 @@ class HelloWorld < Rubikon::Application::Base
   # Greet the whole world per default
   flag :more, 'Display more information while greeting'
   option :name, 'A single name to greet', :who
-  option :names, 'One or more names to greet', :people => :remainder
+  option :names, 'One or more names to greet', :who => :remainder
+  option :special, 'A special name', :who => ['Guybrush', /LeChuck/, :numeric]
   default 'Simple hello world' do
     debug 'Starting to greet the world...'
     if given? :name
-      greet who
+      names = [who]
     elsif given? :names
-      names.people.each do |name|
-        greet name
-      end
+      names = who
+    elsif given? :special
+      names = [who]
     else
-      greet 'World'
+      names = %w{World}
     end
+
+    names.each { |name| greet name }
+
     puts 'Nice to see you.' if given? :more
   end
 
