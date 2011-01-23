@@ -199,8 +199,13 @@ module Rubikon
       raise MissingArgumentError.new(@name) unless args_full?
       unless @arg_values.empty?
         @args.each do |name, arg|
-          unless arg =~ @arg_values[name]
-            raise UnexpectedArgumentError.new(arg)
+          unless @arg_values[name].nil?
+            arg = [arg] unless arg.is_a? Array
+            arg.each do |a|
+              unless a =~ @arg_values[name]
+                raise UnexpectedArgumentError.new(a)
+              end
+            end
           end
         end
       end
