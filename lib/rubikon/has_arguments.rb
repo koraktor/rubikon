@@ -40,17 +40,29 @@ module Rubikon
     #
     # @param [Application::Base] app The application this parameter belongs to
     # @param [Symbol, #to_sym] name The name of the parameter
-    # @param [Array] options A range or array allows any number of arguments
-    #        inside the limits between the first and the last element of the
-    #        range or array (-1 stands for an arbitrary number of arguments). A
-    #        positive number indicates the exact amount of required arguments
-    #        while a negative argument count indicates the amount of required
-    #        arguments, but allows additional, optional arguments. A argument
-    #        count of 0 means there are no required arguments, but it allows
-    #        optional arguments. Finally an array of symbols enables named
-    #        arguments where the argument count is the size of the array and
-    #        each argument is named
-    #        after the corresponding symbol.
+    # @param [Array] options A range allows any number of arguments inside the
+    #        limits of the range or array (-1 stands for an arbitrary number of
+    #        arguments). A positive number indicates the exact amount of
+    #        required arguments while a negative argument count indicates the
+    #        amount of required arguments, but allows additional, optional
+    #        arguments. A argument count of 0 means there are no required
+    #        arguments, but it allows optional arguments. An array of
+    #        symbols enables named arguments where the argument count is the
+    #        size of the array and each argument is named after the
+    #        corresponding symbol. Finally a hash may be used to specify
+    #        options for named arguments. The keys of the hash will be the
+    #        names of the arguments and the values are options for this
+    #        argument. You may specify multiple options as an array. Possible
+    #        options are:
+    #        - +:optional+ makes the argument optional
+    #        - +:remainder+ makes the argument take all remaining arguments as
+    #          an array
+    #        - One or more strings will cause the argument to be checked to be
+    #          equal to one of the strings
+    #        - One or more regular expressions will cause the argument to be
+    #          checked to match one of the expressions
+    #        - Other symbols may reference to a predefined regular expression
+    #          from {ARGUMENT_MATCHERS}
     # @param [Proc] block An optional code block to be executed if this
     #        option is used
     def initialize(app, name, *options, &block)
@@ -123,9 +135,9 @@ module Rubikon
 
     # Access the arguments of this parameter using a numeric or symbolic index
     #
-    # @param [Numeric, Symbol] The index of the argument to return. Numeric
-    #        indices can be used always while symbolic arguments are only
-    #        available for named arguments.
+    # @param [Numeric, Symbol] arg The name or index of the argument to return.
+    #        Numeric indices can be used always while symbolic arguments are
+    #        only available for named arguments.
     # @return The argument with the specified index
     # @see #args
     # @since 0.4.0

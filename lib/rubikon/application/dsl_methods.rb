@@ -143,7 +143,7 @@ module Rubikon
       # @see command
       # @since 0.2.0
       #
-      # @example Define a default command
+      # @example Define a default command with an argument
       #  default 'This is the default', :arg do
       #    ...
       #  end
@@ -271,9 +271,9 @@ module Rubikon
       # @see Option
       # @since 0.2.0
       #
-      # @example Define a global option
-      #  global_option :user, :login
-      # @example Define a global option with a block to execute
+      # @example Define a global option with an optional argument
+      #  global_option :user, :login => :optional
+      # @example Define a global option with an argument and a block to execute
       #  global_option :user, :login do
       #    @user = login
       #  end
@@ -347,7 +347,7 @@ module Rubikon
       # @see Option
       # @since 0.2.0
       #
-      # @example
+      # @example Define an option (and its alias) to a command
       #   option :message, 'A message', :text
       #   option :m => :message
       #   command :something do

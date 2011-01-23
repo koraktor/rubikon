@@ -207,7 +207,7 @@ class TestHasArguments < Test::Unit::TestCase
       assert_equal 'argument', has_arg.optional
     end
 
-    should 'provide named arguments taking all remainding arguments' do
+    should 'provide named arguments taking all remaining arguments' do
       has_arg = HasArg.new :required, :remainder => :remainder
       assert_equal 2..-1, has_arg.arg_count
       has_arg << 'argument'
@@ -222,7 +222,7 @@ class TestHasArguments < Test::Unit::TestCase
       assert_equal %w{argument argument}, has_arg.remainder
     end
 
-    should 'provide named arguments optionally taking all remainding arguments' do
+    should 'provide named arguments optionally taking all remaining arguments' do
       has_arg = HasArg.new :required, :remainder => [:optional, :remainder]
       assert_equal 1..-1, has_arg.arg_count
       has_arg << 'argument'
