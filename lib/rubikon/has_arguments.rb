@@ -90,7 +90,7 @@ module Rubikon
                 end
                 @arg_values[arg_name] = /^#{Regexp.union matchers}$/
               end
-              unless opt.include?(:optional) || opt.include?(:remainder)
+              unless opt.include? :optional
                 @min_arg_count += 1
               end
               if opt.include? :remainder
