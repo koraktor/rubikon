@@ -73,13 +73,14 @@ arguments.
 Flags and options are easily added to your application's commands using
 Rubikon's DSL:
 
-    flag :more
-    option :name, [:who]
-    command :hello do
+    flag :more, 'A flag'
+    option :name, 'An option', :who
+    command :hello, 'A command' do
       puts "Hello #{who}"
     end
 
-Please see the `samples` directory for more in detail sample applications.
+Please see the [Wiki][5] for more information on the DSL or the `samples`
+directory for more in detail sample applications.
 
 **Warning**:
 
@@ -95,13 +96,14 @@ section if you want to help to make Rubikon better.
 * Built-in methods to display progress bars and throbbers
 * Built-in support for configuration files
 * Built-in support for colored output
-* Automatic generation of a application help screen
+* Automatic generation of application and command help screens
+* User defined validation of option arguments
 
 ## Future plans
 
-* User defined type safety of option arguments
 * Improved error handling
-* Automatic generation of command help screens
+* General optimizations
+* Improved tests
 
 ## Requirements
 
@@ -149,7 +151,8 @@ LICENSE file.
 
 Follow Rubikon on Twitter [@rubikonrb](http://twitter.com/rubikonrb).
 
- [1]: http://github.com/koraktor/rubikon
- [2]: http://github.com/koraktor/rubikon/issues
+ [1]: https://github.com/koraktor/rubikon
+ [2]: https://github.com/koraktor/rubikon/issues
  [3]: http://koraktor.github.com/rubikon
- [4]: http://github.com/koraktor/rubikon/wiki/Compatibility
+ [4]: https://github.com/koraktor/rubikon/wiki/Compatibility
+ [5]: https://github.com/koraktor/rubikon/wiki
