@@ -19,9 +19,19 @@ module Rubikon
 
     include Parameter
 
+    # Provides a number of predefined regular expressions to check arguments
+    # against
+    #
+    # @see #initialize
+    # @since 0.6.0
     ARGUMENT_MATCHERS = {
+      # Allow only alphanumeric characters
       :alnum   => /[[:alnum:]]+/,
-      :float   => /-?[0-9]+(?:\.[0-9]+)/,
+      # Allow only floating point numbers as arguments
+      :float   => /-?[0-9]+(?:\.[0-9]+)?/,
+      # Allow only alphabetic characters
+      :letters => /[a-zA-Z]+/,
+      # Allow only numeric arguments
       :numeric => /-?[0-9]+/
     }
 
