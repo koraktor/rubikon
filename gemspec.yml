@@ -1,5 +1,4 @@
 name:        rubikon
-version:     0.5.3
 summary:     Rubikon - A Ruby console app framework
 description: A simple to use, yet powerful Ruby framework for building
              console-based applications.
