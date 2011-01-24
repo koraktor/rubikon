@@ -8,10 +8,18 @@ About
 Rubikon is a simple to use, yet powerful Ruby framework for building
 console-based applications.
 
-<div class="note">
-<h1>Note:</h1><br />
-Rubikon is still in an early development stage.
-</div>
+Features
+========
+
+* A simple to use DSL (domain-specific language)
+* Automatic checks for option arguments
+* Built-in methods to capture user input
+* Built-in methods to display progress bars and throbbers
+* Built-in support for configuration files
+* Built-in support for colored output
+* Automatic generation of application and command help screens
+* User defined validation of option arguments
+* Application sandboxing
 
 Installation
 ============
@@ -34,11 +42,22 @@ If you want to use the development code you should clone the Git repository:
 Requirements
 ============
 
-* Any other operating system which has a usable console and is supported by a
+* Any operating system which has a usable console and is supported by a
   compatible Ruby implementation
-* Ruby 1.8.6 or newer (see the [wiki][1] for more details)
+* Ruby 1.8.6 or newer (see the [wiki][1] for supported Rubies)
 
-Right now, Rubikon doesn't have any dependencies. So there's nothing else to
-worry about.
+Rubikon doesn't have any dependencies. So there's nothing else to worry
+about.
+
+Contact
+=======
+
+* Twitter: [@rubikonrb][2]
+* IRC: #rubikon on freenode.net
+* GitHub: [koraktor][3]
+* Mailing list: [Google Group][4]
 
 [1]: http://github.com/koraktor/rubikon/wiki/Compatibility
+[2]: http://twitter.com/rubikonrb
+[3]: http://github.com/koraktor
+[4]: http://groups.google.com/group/rubikonrb
