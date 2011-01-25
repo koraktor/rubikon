@@ -45,12 +45,7 @@ class TestApplication < Test::Unit::TestCase
         assert_instance_of SystemExit, e
         assert_equal 1, e.status
       end
-      if @app.instance.instance_eval { @settings[:colors] }
-        error_text = "\e[0;31mError:\e[0m\n"
-      else
-        error_text = "Error:\n"
-      end
-      assert_equal error_text, @estream.gets
+      assert_match /(?:\e\[0;31m)?Error:(?:\e\[0m)?\n/, @estream.gets
       assert_equal "    Unknown command: unknown\n", @estream.gets
     end
 
