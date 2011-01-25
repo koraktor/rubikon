@@ -1,7 +1,7 @@
 # This code is free software; you can redistribute it and/or modify it under
 # the terms of the new BSD License.
 #
-# Copyright (c) 2010, Sebastian Staudt
+# Copyright (c) 2010-2011, Sebastian Staudt
 
 module Rubikon
 
@@ -49,15 +49,19 @@ module Rubikon
     # @see .remove_color_filter
     def self.add_color_filter(io, enabled = true)
       raise TypeError unless io.respond_to? :puts
-      return if io.respond_to?(:color_filter)
+      return io if io.respond_to?(:color_filter)
 
       enabled = enabled && ENV['TERM'] != 'dumb'
       if enabled && RUBY_PLATFORM.downcase =~ /mswin(?!ce)|mingw|bccwin/
+        is_stdout = io == $stdout
+        is_stderr = io == $stderr
         begin
           require 'Win32/Console/ANSI'
         rescue LoadError 
           enabled = false
         end
+        io = $stdout if is_stdout
+        io = $stderr if is_stderr
       end
 
       class << io
@@ -84,6 +88,8 @@ module Rubikon
           end
         end
       end
+
+      io
     end
 
     # Disables color filtering on the given output stream

@@ -177,7 +177,7 @@ module Rubikon
       # @since 0.6.0
       def estream=(estream)
         if !estream.respond_to?(:color_filter)
-          ColoredIO.add_color_filter(estream, @settings[:colors])
+          estream = ColoredIO.add_color_filter(estream, @settings[:colors])
         end
         @settings[:estream] = estream
       end
@@ -348,7 +348,7 @@ module Rubikon
       # @see ColoredIO.add_color_filter
       def ostream=(ostream)
         if !ostream.respond_to?(:color_filter)
-          ColoredIO.add_color_filter(ostream, @settings[:colors])
+          ostream = ColoredIO.add_color_filter(ostream, @settings[:colors])
         end
         @settings[:ostream] = ostream
       end
