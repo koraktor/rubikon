@@ -33,7 +33,8 @@ module Rubikon
       #        This is the user's application.
       def inherited(subclass)
         subclass.class_eval { include Singleton }
-        subclass.send(:base_file=, File.expand_path(caller.first.split(':').first))
+        path = caller.first.match(/(.*?):\d+(?::.*)?/)[1]
+        subclass.send :base_file=, File.expand_path(path)
         at_exit do
           if subclass.send(:autorun?)
             InstanceMethods.instance_method(:run).bind(subclass.instance).call
