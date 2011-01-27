@@ -81,10 +81,10 @@ class TestApp < Application::Base
   end
 
   command :throbber do
-    throbber do
-      sleep 0.5
+    throbber :delay => 0.05 do
+      sleep 0.1
       puts 'don\'t'
-      sleep 0.5
+      sleep 0.1
       puts 'break'
     end
   end

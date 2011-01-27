@@ -544,6 +544,8 @@ module Rubikon
       #
       # @param [Proc] block The block to execute while the throbber is
       #        displayed
+      # @param options (see Throbber#initialize)
+      # @option options (see Throbber#initialize)
       # @see Throbber
       # @since 0.2.0
       # @yield While the block is executed a throbber is displayed
@@ -555,10 +557,10 @@ module Rubikon
       #      ...
       #    end
       #  end
-      def throbber(&block)
+      def throbber(options = {}, &block)
         hidden_output do |ostream|
           code_thread = Thread.new { block.call }
-          throbber_thread = Throbber.new(ostream, code_thread)
+          throbber_thread = Throbber.new(ostream, code_thread, options)
 
           code_thread.join
           throbber_thread.join
