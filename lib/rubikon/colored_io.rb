@@ -57,7 +57,7 @@ module Rubikon
         is_stderr = io == $stderr
         begin
           require 'Win32/Console/ANSI'
-        rescue LoadError 
+        rescue LoadError
           enabled = false
         end
         io = $stdout if is_stdout
@@ -67,9 +67,9 @@ module Rubikon
       class << io
         const_set :COLORS, COLORS
 
-        def puts(text = '')
-          self.class.
-            instance_method(:puts).bind(self).call color_filter(text.to_s)
+        def puts(*text)
+          text.map! { |t| color_filter t.to_s }
+          self.class.instance_method(:puts).bind(self).call *text
         end
       end
 
