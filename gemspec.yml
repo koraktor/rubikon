@@ -10,6 +10,9 @@ homepage: http://koraktor.github.com/rubikon
 has_yard: true
 
 require_paths: lib
+extra_doc_files:
+ - Changelog.md
+ - LICENSE
 
 development_dependencies:
   shoulda:   ~> 2.11.3
