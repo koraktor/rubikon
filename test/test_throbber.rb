@@ -16,14 +16,13 @@ class TestThrobber < Test::Unit::TestCase
     should 'work correctly' do
       ostream = StringIO.new
       started_at  = Time.now
-      finished_at = nil
       thread = Thread.new do
         sleep 0.1
-        finished_at = Time.now
       end
       throbber = Throbber.new(ostream, thread, :delay => 0.01)
       thread.join
       throbber.join
+      finished_at = Time.now
 
       spinner = '-\|/'
       check_throbber = ' '
