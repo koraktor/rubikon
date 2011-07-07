@@ -1,13 +1,10 @@
 # This code is free software; you can redistribute it and/or modify it under
 # the terms of the new BSD License.
 #
-# Copyright (c) 2009-2010, Sebastian Staudt
+# Copyright (c) 2009-2011, Sebastian Staudt
 
 require 'rake/testtask'
-
-samples_files = Dir.glob(File.join('samples', '**', '*.rb'))
-src_files = Dir.glob(File.join('lib', '**', '*.rb'))
-test_files = Dir.glob(File.join('test', '**', '*.rb'))
+require 'rubygems/package_task'
 
 task :default => :test
 
@@ -18,13 +15,9 @@ Rake::TestTask.new do |t|
   t.verbose = true
 end
 
-begin
-  gem 'ore-tasks', '~> 0.3.0'
-  require 'ore/tasks'
-
-  Ore::Tasks.new
-rescue LoadError
-  puts "Run `gem install ore-tasks` to install 'ore/tasks'."
+# Rake tasks for building the gem
+spec = Gem::Specification.load('rubikon.gemspec')
+Gem::PackageTask.new(spec) do |pkg|
 end
 
 begin
