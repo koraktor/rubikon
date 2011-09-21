@@ -42,9 +42,9 @@ module Rubikon
         end
 
         config.dup.each do |key, value|
-          value_list = value.split /[\r\n]+/
+          value_list = value.split(/[\r\n]+/)
           config[key] = value_list.inject({}) do |hash, val|
-            k, v = val.split /\s*=\s*/
+            k, v = val.split(/\s*=\s*/)
             hash[k] = v
             hash
           end

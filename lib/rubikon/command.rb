@@ -3,7 +3,6 @@
 #
 # Copyright (c) 2010-2011, Sebastian Staudt
 
-require 'rubikon/application/base'
 require 'rubikon/errors'
 require 'rubikon/has_arguments'
 require 'rubikon/parameter'

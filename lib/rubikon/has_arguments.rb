@@ -110,7 +110,7 @@ module Rubikon
                 matchers.map! do |m|
                   ARGUMENT_MATCHERS[m] || (m.is_a?(Regexp) ? m : m.to_s)
                 end
-                @arg_values[arg_name] = /^#{Regexp.union *matchers}$/
+                @arg_values[arg_name] = /^#{Regexp.union(*matchers)}$/
               end
               unless opt.include? :optional
                 @min_arg_count += 1
